@@ -10,17 +10,19 @@ export default function ParallaxHero() {
   const sectionRef = useRef<HTMLElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
+  const waveRef = useRef<HTMLDivElement>(null); // ✅ pindah ke sini
 
   useEffect(() => {
     const section = sectionRef.current;
     const bg = bgRef.current;
     const text = textRef.current;
-    if (!section || !bg || !text) return;
+    const wave = waveRef.current;
+    if (!section || !bg || !text || !wave) return;
 
     const ctx = gsap.context(() => {
       // Parallax background
       gsap.to(bg, {
-        yPercent: 40,
+        yPercent: 60,
         ease: "none",
         scrollTrigger: {
           trigger: section,
@@ -42,6 +44,22 @@ export default function ParallaxHero() {
           scrub: true,
         },
       });
+
+      // ✅ Fade out wave saat scroll
+      gsap.fromTo(
+        wave,
+        { opacity: 1 },
+        {
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: "40% top",
+            scrub: true,
+          },
+        },
+      );
     });
 
     return () => ctx.revert();
@@ -73,7 +91,10 @@ export default function ParallaxHero() {
       </div>
 
       {/* Wave divider */}
-      <div className="absolute bottom-0 w-full overflow-hidden leading-[0] z-10">
+      <div
+        ref={waveRef}
+        className="absolute bottom-0 w-full overflow-hidden leading-[0] z-10"
+      >
         <svg
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
