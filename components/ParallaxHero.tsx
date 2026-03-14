@@ -60,10 +60,15 @@ export default function ParallaxHero() {
       <div className="absolute inset-0 bg-black/30" />
 
       {/* Content */}
-      <div className="relative flex items-center justify-center h-full">
-        <div ref={textRef} className="text-white flex flex-col items-center">
-          <p>Hi!, I'm Gilang Arya Leksana</p>
-          <h1 className="text-6xl">Full-Stack Developer</h1>
+      <div className="relative flex items-center justify-center h-full px-4">
+        <div
+          ref={textRef}
+          className="text-white flex flex-col items-center text-center gap-2"
+        >
+          <p className="text-sm md:text-base">Hi!, I'm Gilang Arya Leksana</p>
+          <h1 className="text-3xl md:text-5xl lg:text-6xl">
+            Full-Stack Developer
+          </h1>
         </div>
       </div>
 
