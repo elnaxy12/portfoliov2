@@ -77,7 +77,7 @@ export default function ParallaxHero() {
         <svg
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
-          className="relative block w-full h-35"
+          className="relative block w-full h-20"
         >
           <path
             d="M0,0 C600,100 600,100 1200,0 L1200,120 L0,120 Z"
