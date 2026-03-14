@@ -16,7 +16,7 @@ export default function Sidebar() {
         G
       </h2>{" "}
       <div
-        className="h-70 w-[1px]"
+        className="h-1/2 w-[1px]"
         style={{ backgroundColor: "rgb(74, 85, 101)" }}
       ></div>
       <ul className="list-none space-y-6 p-4">
