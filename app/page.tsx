@@ -74,13 +74,11 @@ export default function Home() {
 
   return (
     <div className="bg-black overflow-hidden">
-      <aside className="w-64 fixed z-50">
-        <Sidebar />
-      </aside>
-
+      
       {/* Section 0: Hero */}
       <div className="section-panel">
         <ParallaxHero />
+        <Sidebar />
         <Navbar />
       </div>
 

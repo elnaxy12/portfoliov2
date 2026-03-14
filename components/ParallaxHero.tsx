@@ -66,7 +66,7 @@ export default function ParallaxHero() {
           className="text-white flex flex-col items-center text-center gap-2"
         >
           <p className="text-sm md:text-base">Hi!, I'm Gilang Arya Leksana</p>
-          <h1 className="text-3xl md:text-5xl lg:text-6xl">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold">
             Full-Stack Developer
           </h1>
         </div>

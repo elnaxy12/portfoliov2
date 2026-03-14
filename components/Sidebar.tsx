@@ -11,7 +11,7 @@ import Whatsapp from "./icons/Whatsapp";
 
 export default function Sidebar() {
   return (
-    <aside className="p-4 h-screen flex items-center flex-col justify-between absolute left-0 top-0">
+    <aside className="p-4 h-screen flex items-center flex-col justify-between absolute left-0 top-0 z-50">
       <h2 className={`${palette_mosaic.className} text-white text-4xl font-semibold`}>
         G
       </h2>{" "}
