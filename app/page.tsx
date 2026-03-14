@@ -74,9 +74,8 @@ export default function Home() {
 
   return (
     <div className="bg-black overflow-hidden">
-      
       {/* Section 0: Hero */}
-      <div className="section-panel">
+      <div className="section-panel h-screen">
         <ParallaxHero />
         <Sidebar />
         <Navbar />
@@ -84,12 +83,18 @@ export default function Home() {
 
       {/* Section 1 */}
       <div className="section-panel h-screen flex items-center justify-center">
-        <h1 className="sesi-title text-white text-5xl font-bold">Sesi 1</h1>
-      </div>
-
-      {/* Section 2 */}
-      <div className="section-panel h-screen flex items-center justify-center">
-        <h1 className="sesi-title text-white text-5xl font-bold">Sesi 2</h1>
+        <h1 className="sesi-title text-white text-xs md:text-base text-justify px-10 md:px-50 leading-loose">
+          “Hello everyone, my name is Gilang Arya. I am a Full Stack Developer
+          who is passionate about building modern web applications. I have
+          experience working with technologies such as JavaScript, React,
+          Next.js, and backend development, allowing me to develop both frontend
+          interfaces and backend systems. I enjoy creating interactive user
+          experiences and building scalable web systems. One of the projects
+          I’ve worked on is an online shop website with product filtering,
+          category systems, and shopping cart features. I’m always excited to
+          learn new technologies and improve my skills in full stack
+          development.”
+        </h1>
       </div>
     </div>
   );
