@@ -1,41 +1,77 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function ParallaxHero() {
+  const sectionRef = useRef<HTMLElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scroll = window.scrollY;
+    const section = sectionRef.current;
+    const bg = bgRef.current;
+    const text = textRef.current;
+    if (!section || !bg || !text) return;
 
-      if (bgRef.current) {
-        bgRef.current.style.transform = `translate3d(0, ${scroll * 0.4}px, 0)`;
-      }
-    };
+    const ctx = gsap.context(() => {
+      // Parallax background
+      gsap.to(bg, {
+        yPercent: 40,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
 
-    const smoothScroll = () => {
-      handleScroll();
-      requestAnimationFrame(smoothScroll);
-    };
+      // Fade out teks hero saat scroll
+      gsap.to(text, {
+        opacity: 0,
+        yPercent: -30,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "40% top",
+          scrub: true,
+        },
+      });
+    });
 
-    smoothScroll();
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      className="relative h-screen bg-fixed bg-center bg-cover"
-      style={{ backgroundImage: "url('images/parallax-hero.jpg')" }}
-    >
-      <div className="flex items-center justify-center h-full">
-        <h1 className="text-white text-5xl font-bold">Selamat Datang</h1>
+    <section ref={sectionRef} className="relative h-screen overflow-hidden">
+      {/* Background parallax layer */}
+      <div
+        ref={bgRef}
+        className="absolute inset-0 bg-center bg-cover scale-125"
+        style={{ backgroundImage: "url('images/parallax-hero.jpg')" }}
+      />
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/30" />
+
+      {/* Content */}
+      <div className="relative flex items-center justify-center h-full">
+        <h1 ref={textRef} className="text-white text-5xl font-bold">
+          Selamat Datang
+        </h1>
       </div>
 
-      <div className="absolute bottom-0 w-full overflow-hidden leading-[0]">
+      {/* Wave divider */}
+      <div className="absolute bottom-0 w-full overflow-hidden leading-[0] z-10">
         <svg
-          className="relative block w-full h-20"
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
+          className="relative block w-full h-20"
         >
           <path
             d="M0,0 C600,100 600,100 1200,0 L1200,120 L0,120 Z"
