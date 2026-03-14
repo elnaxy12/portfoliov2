@@ -1,10 +1,12 @@
 "use client";
-
+// Libraries
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { Observer } from "gsap/dist/Observer";
 import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
+
+// Components
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import ParallaxHero from "../components/ParallaxHero";

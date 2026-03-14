@@ -61,9 +61,10 @@ export default function ParallaxHero() {
 
       {/* Content */}
       <div className="relative flex items-center justify-center h-full">
-        <h1 ref={textRef} className="text-white text-5xl font-bold">
-          Selamat Datang
-        </h1>
+        <div ref={textRef} className="text-white flex flex-col items-center">
+          <p>Hi!, I'm Gilang Arya Leksana</p>
+          <h1 className="text-6xl">Full-Stack Developer</h1>
+        </div>
       </div>
 
       {/* Wave divider */}
