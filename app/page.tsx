@@ -190,7 +190,6 @@ export default function Home() {
         >
           <path
             d="M0,120 C600,0 600,0 1200,120 L1200,120 L0,120 Z"
-            style={{ fill: "var(--wave-color, #000000)" }}
           />
         </svg>
       </div>
