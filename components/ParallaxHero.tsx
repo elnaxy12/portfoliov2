@@ -15,7 +15,7 @@ export default function ParallaxHero() {
     const section = sectionRef.current;
     const bg = bgRef.current;
     const text = textRef.current;
-    if (!section || !bg || !text ) return;
+    if (!section || !bg || !text) return;
 
     const ctx = gsap.context(() => {
       // Parallax background

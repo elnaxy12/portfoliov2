@@ -224,7 +224,7 @@ export default function Home() {
     }
 
     setTimeout(() => ScrollTrigger.refresh(), 100);
-    
+
     return () => {
       observer.kill();
       ScrollTrigger.getAll().forEach((t) => t.kill());
