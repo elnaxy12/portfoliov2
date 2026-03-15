@@ -4,7 +4,7 @@ const UpperSvg = forwardRef<HTMLDivElement, {}>((props, ref) => {
   return (
     <div
       ref={ref}
-      className="sticky bottom-0 w-full overflow-hidden leading-[0] z-50 -mt-20 pointer-events-none"
+      className="absolute bottom-0 w-full overflow-hidden leading-[0] z-50 -mt-20 pointer-events-none"
     >
       <svg
         viewBox="0 0 1200 120"
