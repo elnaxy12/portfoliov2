@@ -12,6 +12,7 @@ import UpperSvg from "../components/svg/UpperSvg";
 import LowerSvg from "../components/svg/LowerSvg";
 
 import ParallaxHero from "../components/ParallaxHero";
+import HorizontalScroll from "../components/Horizontalscroll";
 
 gsap.registerPlugin(ScrollTrigger, Observer, ScrollToPlugin);
 
@@ -20,6 +21,8 @@ export default function Home() {
   const currentIndex = useRef(0);
   const section1Ref = useRef<HTMLDivElement>(null);
   const waveRef = useRef<HTMLDivElement>(null);
+  const hScrollRef = useRef<HTMLDivElement>(null);
+  const hTrackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sections = gsap.utils.toArray<HTMLElement>(".section-panel");
@@ -52,6 +55,21 @@ export default function Home() {
 
           gsap.to(window, {
             scrollTo: { y: sections[0], autoKill: false },
+            duration: 1,
+            ease: "power3.inOut",
+            onComplete: () => {
+              isAnimating.current = false;
+            },
+          });
+        }
+
+        // ← tambah ini: dari section horizontal scroll balik ke section wave
+        if (currentIndex.current === 2 && !isAnimating.current) {
+          isAnimating.current = true;
+          currentIndex.current = 1;
+
+          gsap.to(window, {
+            scrollTo: { y: sections[1], autoKill: false },
             duration: 1,
             ease: "power3.inOut",
             onComplete: () => {
@@ -172,6 +190,41 @@ export default function Home() {
       );
     }
 
+    // Horizontal scroll — setup SETELAH section1 supaya posisi benar
+    if (hScrollRef.current && hTrackRef.current) {
+      const track = hTrackRef.current;
+      const getTotalWidth = () => track.scrollWidth - window.innerWidth;
+
+      gsap.to(track, {
+        x: () => -getTotalWidth(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: hScrollRef.current,
+          start: "top top",
+          end: () => `+=${getTotalWidth()}`,
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onEnter: () => observer.disable(),
+          onLeave: () => {
+            observer.enable();
+            currentIndex.current = 2; // ← tandai sudah di section terakhir
+          },
+          onEnterBack: () => {
+            observer.disable();
+            currentIndex.current = 2; // ← tambah ini
+          },
+          onLeaveBack: () => {
+            observer.enable();
+            currentIndex.current = 1; // ← tambah ini
+          },
+        },
+      });
+    }
+
+    setTimeout(() => ScrollTrigger.refresh(), 100);
+    
     return () => {
       observer.kill();
       ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -211,8 +264,13 @@ export default function Home() {
         </h1>
       </div>
 
-      <div className="h-[50vh] relative bg-black">
+      <div className="section-panel relative bg-black">
         <LowerSvg />
+        <HorizontalScroll ref={hScrollRef} trackRef={hTrackRef}>
+          <div style={{ minWidth: "100vw", height: "100vh" }}>Slide 1</div>
+          <div style={{ minWidth: "100vw", height: "100vh" }}>Slide 2</div>
+          <div style={{ minWidth: "100vw", height: "100vh" }}>Slide 3</div>
+        </HorizontalScroll>
       </div>
     </div>
   );
