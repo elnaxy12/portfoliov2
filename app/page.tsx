@@ -195,7 +195,7 @@ export default function Home() {
         style={{ backgroundColor: "#000000" }}
       >
         <h1
-          className="sesi-title text-md md:text-base text-justify px-10 md:px-50 leading-loose"
+          className="sesi-title text-base md:text-base text-justify px-10 md:px-50 leading-loose"
           style={{ color: "#ffffff" }}
         >
           "Hello everyone, my name is Gilang Arya. I am a Full Stack Developer
