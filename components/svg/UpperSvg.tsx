@@ -1,6 +1,6 @@
-import { forwardRef } from "react"
+import { forwardRef } from "react";
 
-const UpperSvg = forwardRef<HTMLDivElement>((_, ref) => {
+const UpperSvg = forwardRef<HTMLDivElement, {}>((props, ref) => {
   return (
     <div
       ref={ref}
@@ -14,8 +14,8 @@ const UpperSvg = forwardRef<HTMLDivElement>((_, ref) => {
         <path d="M0,120 C600,0 600,0 1200,120 L1200,120 L0,120 Z" />
       </svg>
     </div>
-  )
-})
+  );
+});
 
-UpperSvg.displayName = "UpperSvg"
-export default UpperSvg
+UpperSvg.displayName = "UpperSvg";
+export default UpperSvg;
