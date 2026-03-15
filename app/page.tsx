@@ -93,7 +93,7 @@ export default function Home() {
           trigger: section1Ref.current,
           start: "top top",
           end: "+=3000",
-          scrub: 1,
+          scrub: true,
           pin: true,
           anticipatePin: 1,
 
