@@ -7,6 +7,10 @@ import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
 
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
+
+import UpperSvg from "../components/svg/UpperSvg";
+import LowerSvg from "../components/svg/LowerSvg";
+
 import ParallaxHero from "../components/ParallaxHero";
 
 gsap.registerPlugin(ScrollTrigger, Observer, ScrollToPlugin);
@@ -88,8 +92,8 @@ export default function Home() {
         scrollTrigger: {
           trigger: section1Ref.current,
           start: "top top",
-          end: "+=600",
-          scrub: true,
+          end: "+=3000",
+          scrub: 1.5,
           pin: true,
           anticipatePin: 1,
 
@@ -181,19 +185,7 @@ export default function Home() {
         <ParallaxHero />
         <Sidebar />
         <Navbar />
-
-        <div
-          ref={waveRef}
-          className="sticky bottom-0 w-full overflow-hidden leading-[0] z-50 -mt-20 pointer-events-none"
-        >
-          <svg
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-            className="relative block w-full h-10 md:h-20"
-          >
-            <path d="M0,120 C600,0 600,0 1200,120 L1200,120 L0,120 Z" />
-          </svg>
-        </div>
+        <UpperSvg ref={waveRef} />
       </div>
 
       {/* Section 1: scroll → hitam ke putih */}
@@ -219,21 +211,8 @@ export default function Home() {
         </h1>
       </div>
 
-      <div className="h-screen relative">
-        <div className="absolute top-0 w-full overflow-hidden leading-[0] z-50 pointer-events-none bg-black">
-          <svg
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-            className="relative block w-full h-10 md:h-20"
-            style={{ transform: "rotate(180deg)" }}
-          >
-            <path
-              d="M0,120 C600,0 600,0 1200,120 L1200,120 L0,120 Z"
-              fill="white"
-            />
-          </svg>
-        </div>
-
+      <div className="h-[50vh] relative bg-black">
+        <LowerSvg />
       </div>
     </div>
   );
