@@ -2,19 +2,17 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { Observer } from "gsap/dist/Observer";
 import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
+import Lenis from "lenis";
 
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-
 import UpperSvg from "../components/svg/UpperSvg";
 import LowerSvg from "../components/svg/LowerSvg";
-
 import ParallaxHero from "../components/ParallaxHero";
 import HorizontalScroll from "../components/Horizontalscroll";
 
-gsap.registerPlugin(ScrollTrigger, Observer, ScrollToPlugin);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 export default function Home() {
   const isAnimating = useRef(false);
@@ -23,62 +21,51 @@ export default function Home() {
   const waveRef = useRef<HTMLDivElement>(null);
   const hScrollRef = useRef<HTMLDivElement>(null);
   const hTrackRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    // ✅ Lenis selalu jalan — jangan stop/start manual
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      eventsTarget: window,
+    });
+    lenisRef.current = lenis;
+
+    // ✅ Sync Lenis → ScrollTrigger
+    lenis.on("scroll", () => ScrollTrigger.update());
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+
     const sections = gsap.utils.toArray<HTMLElement>(".section-panel");
 
-    const observer = Observer.create({
-      type: "wheel,touch",
-      wheelSpeed: -1,
-      tolerance: 10,
-      preventDefault: true,
-      onUp: () => {
-        if (currentIndex.current === 0 && !isAnimating.current) {
-          isAnimating.current = true;
-          currentIndex.current = 1;
+    const scrollToSection = (index: number) => {
+      if (isAnimating.current) return;
+      isAnimating.current = true;
+      currentIndex.current = index;
 
-          gsap.to(window, {
-            scrollTo: { y: sections[1], autoKill: false },
-            duration: 1,
-            ease: "power3.inOut",
-            onComplete: () => {
-              isAnimating.current = false;
-              observer.disable();
-            },
-          });
-        }
-      },
-      onDown: () => {
-        if (currentIndex.current === 1 && !isAnimating.current) {
-          isAnimating.current = true;
-          currentIndex.current = 0;
+      gsap.to(window, {
+        scrollTo: { y: sections[index], autoKill: false },
+        duration: 1,
+        ease: "power3.inOut",
+        onComplete: () => {
+          isAnimating.current = false;
+        },
+      });
+    };
 
-          gsap.to(window, {
-            scrollTo: { y: sections[0], autoKill: false },
-            duration: 1,
-            ease: "power3.inOut",
-            onComplete: () => {
-              isAnimating.current = false;
-            },
-          });
-        }
+    // ✅ Wheel handler untuk section 0 saja
+    const handleWheel = (e: WheelEvent) => {
+      if (currentIndex.current !== 0) return;
+      e.preventDefault();
 
-        // ← tambah ini: dari section horizontal scroll balik ke section wave
-        if (currentIndex.current === 2 && !isAnimating.current) {
-          isAnimating.current = true;
-          currentIndex.current = 1;
+      if (e.deltaY > 0) {
+        scrollToSection(1);
+      }
+    };
 
-          gsap.to(window, {
-            scrollTo: { y: sections[1], autoKill: false },
-            duration: 1,
-            ease: "power3.inOut",
-            onComplete: () => {
-              isAnimating.current = false;
-            },
-          });
-        }
-      },
-    });
+    window.addEventListener("wheel", handleWheel, { passive: false });
 
     // Fade-up tiap section
     sections.forEach((el) => {
@@ -104,8 +91,6 @@ export default function Home() {
 
     // Transisi warna Section 1 + wave
     if (section1Ref.current) {
-      let canSnapBack = false;
-
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section1Ref.current,
@@ -115,7 +100,15 @@ export default function Home() {
           pin: true,
           anticipatePin: 1,
 
+          snap: {
+            snapTo: [0, 1],
+            duration: { min: 0.3, max: 0.8 },
+            ease: "power3.inOut",
+            inertia: false,
+          },
+
           onEnter: () => {
+            currentIndex.current = 1;
             if (waveRef.current) {
               waveRef.current.style.position = "sticky";
               waveRef.current.style.bottom = "0";
@@ -126,6 +119,7 @@ export default function Home() {
           },
 
           onEnterBack: () => {
+            currentIndex.current = 1;
             if (waveRef.current) {
               waveRef.current.style.position = "sticky";
               waveRef.current.style.bottom = "0";
@@ -136,6 +130,7 @@ export default function Home() {
           },
 
           onLeave: () => {
+            currentIndex.current = 2;
             if (waveRef.current) {
               waveRef.current.style.position = "absolute";
               waveRef.current.style.zIndex = "10";
@@ -143,6 +138,7 @@ export default function Home() {
           },
 
           onLeaveBack: () => {
+            currentIndex.current = 0;
             if (waveRef.current) {
               waveRef.current.style.position = "absolute";
               waveRef.current.style.zIndex = "10";
@@ -151,8 +147,6 @@ export default function Home() {
               "--wave-color",
               "#000000",
             );
-            observer.enable();
-            currentIndex.current = 0;
           },
 
           onUpdate: (self) => {
@@ -162,20 +156,6 @@ export default function Home() {
               "--wave-color",
               `#${hex}${hex}${hex}`,
             );
-            if (self.progress >= 0.99) canSnapBack = true;
-            if (self.progress <= 0.01 && canSnapBack) {
-              canSnapBack = false;
-              observer.enable();
-              currentIndex.current = 0;
-              gsap.to(window, {
-                scrollTo: { y: 0, autoKill: false },
-                duration: 1,
-                ease: "power3.inOut",
-                onComplete: () => {
-                  isAnimating.current = false;
-                },
-              });
-            }
           },
         },
       });
@@ -190,7 +170,7 @@ export default function Home() {
       );
     }
 
-    // Horizontal scroll — setup SETELAH section1 supaya posisi benar
+    // Horizontal scroll
     if (hScrollRef.current && hTrackRef.current) {
       const track = hTrackRef.current;
       const getTotalWidth = () => track.scrollWidth - window.innerWidth;
@@ -206,18 +186,17 @@ export default function Home() {
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onEnter: () => observer.disable(),
+          onEnter: () => {
+            currentIndex.current = 2;
+          },
           onLeave: () => {
-            observer.enable();
-            currentIndex.current = 2; // ← tandai sudah di section terakhir
+            currentIndex.current = 2;
           },
           onEnterBack: () => {
-            observer.disable();
-            currentIndex.current = 2; // ← tambah ini
+            currentIndex.current = 2;
           },
           onLeaveBack: () => {
-            observer.enable();
-            currentIndex.current = 1; // ← tambah ini
+            currentIndex.current = 1;
           },
         },
       });
@@ -226,7 +205,8 @@ export default function Home() {
     setTimeout(() => ScrollTrigger.refresh(), 100);
 
     return () => {
-      observer.kill();
+      window.removeEventListener("wheel", handleWheel);
+      lenis.destroy();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
@@ -264,12 +244,19 @@ export default function Home() {
         </h1>
       </div>
 
-      <div className="section-panel relative bg-black">
+      {/* Section 2: Horizontal scroll */}
+      <div ref={hScrollRef} className="section-panel relative bg-black">
         <LowerSvg />
-        <HorizontalScroll ref={hScrollRef} trackRef={hTrackRef}>
-          <div style={{ minWidth: "100vw", height: "100vh" }}>Slide 1</div>
-          <div style={{ minWidth: "100vw", height: "100vh" }}>Slide 2</div>
-          <div style={{ minWidth: "100vw", height: "100vh" }}>Slide 3</div>
+        <HorizontalScroll trackRef={hTrackRef}>
+          <div className="flex justify-end items-end text-white" style={{ minWidth: "100vw", height: "100vh" }}>
+            <p>Slide 1</p>
+          </div>
+          <div className="flex justify-end items-end text-white" style={{ minWidth: "100vw", height: "100vh" }}>
+            <p>Slide 2</p>
+          </div>
+          <div className="flex justify-end items-end text-white" style={{ minWidth: "100vw", height: "100vh" }}>
+            <p>Slide 2</p>
+          </div>
         </HorizontalScroll>
       </div>
     </div>
