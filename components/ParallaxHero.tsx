@@ -50,16 +50,11 @@ export default function ParallaxHero() {
   return (
     <section ref={sectionRef} className="relative h-screen overflow-hidden">
       {/* Background parallax layer */}
-      <video
+      <div
         ref={bgRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover scale-125"
-      >
-        <source src="/videos/parallax-hero.mp4" type="video/mp4" />
-      </video>
+        className="absolute inset-0 bg-center bg-cover scale-125"
+        style={{ backgroundImage: "url('images/parallax-hero.jpg')" }}
+      />
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/30" />
