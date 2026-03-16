@@ -44,34 +44,43 @@ export default function PaperPlaneScene({
   const svgRef = useRef<SVGSVGElement>(null);
   const planeRef = useRef<HTMLDivElement>(null);
 
+  // ✅ Cache semua DOM refs — tidak query tiap frame
+  const measureRef = useRef<SVGPathElement | null>(null);
+  const trailRef = useRef<SVGPathElement | null>(null);
+  const glowRef = useRef<SVGPathElement | null>(null);
+  const planeGRef = useRef<SVGGElement | null>(null);
+
+  // ✅ Cache total length — tidak hitung tiap frame
+  const totalLenRef = useRef<number>(0);
+
   const update = useCallback(
     (progress: number) => {
-      const svg = svgRef.current;
       const plane = planeRef.current;
       const track = trackRef.current;
-      if (!svg || !plane || !track) return;
+      const measureEl = measureRef.current;
+      const trailEl = trailRef.current;
+      const glowEl = glowRef.current;
+      const planeG = planeGRef.current;
 
-      const measureEl = svg.querySelector<SVGPathElement>("#pp-measure");
-      const trailEl = svg.querySelector<SVGPathElement>("#pp-trail");
-      const glowEl = svg.querySelector<SVGPathElement>("#pp-glow");
-      const planeG = plane.querySelector<SVGGElement>("#pp-g");
-      if (!measureEl || !trailEl || !glowEl || !planeG) return;
+      if (!plane || !track || !measureEl || !trailEl || !glowEl || !planeG)
+        return;
 
-      const totalLen = measureEl.getTotalLength();
+      const totalLen = totalLenRef.current;
+      if (totalLen === 0) return;
+
       const len = Math.min(totalLen * progress, totalLen * 0.9998);
       const pt = measureEl.getPointAtLength(len);
       const pt2 = measureEl.getPointAtLength(
         Math.min(len + 0.3, totalLen * 0.9998),
       );
 
-      // ✅ Gunakan dimensi track (300vw x 100vh), bukan viewport
       const trackW = track.scrollWidth;
       const trackH = track.clientHeight;
 
       plane.style.left = `${(pt.x / 100) * trackW}px`;
       plane.style.top = `${(pt.y / 100) * trackH}px`;
 
-      // ✅ Koreksi angle: kompensasi aspect ratio distortion
+      // Koreksi angle dengan aspect ratio
       const scaleX = trackW / 100;
       const scaleY = trackH / 100;
       const dx = (pt2.x - pt.x) * scaleX;
@@ -79,7 +88,6 @@ export default function PaperPlaneScene({
       const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
 
       planeG.style.transform = `rotate(${angle}deg)`;
-      planeG.style.transformOrigin = "50% 50%";
 
       const offset = totalLen * (1 - progress);
       trailEl.style.strokeDashoffset = String(offset);
@@ -93,41 +101,50 @@ export default function PaperPlaneScene({
     const track = trackRef.current;
     if (!svg || !track) return;
 
-    svg.style.width = `${track.scrollWidth}px`;
+    // Cache DOM elements sekali
+    measureRef.current = svg.querySelector<SVGPathElement>("#pp-measure");
+    trailRef.current = svg.querySelector<SVGPathElement>("#pp-trail");
+    glowRef.current = svg.querySelector<SVGPathElement>("#pp-glow");
+    planeGRef.current =
+      planeRef.current?.querySelector<SVGGElement>("#pp-g") ?? null;
 
     const pathD = buildCatmullRom(WAYPOINTS);
-    svg.querySelector("#pp-measure")?.setAttribute("d", pathD);
-    svg.querySelector("#pp-trail")?.setAttribute("d", pathD);
-    svg.querySelector("#pp-glow")?.setAttribute("d", pathD);
+    measureRef.current?.setAttribute("d", pathD);
+    trailRef.current?.setAttribute("d", pathD);
+    glowRef.current?.setAttribute("d", pathD);
 
-    const measureEl = svg.querySelector<SVGPathElement>("#pp-measure");
-    const trailEl = svg.querySelector<SVGPathElement>("#pp-trail");
-    const glowEl = svg.querySelector<SVGPathElement>("#pp-glow");
-    if (measureEl && trailEl && glowEl) {
+    requestAnimationFrame(() => {
+      const measureEl = measureRef.current;
+      const trailEl = trailRef.current;
+      const glowEl = glowRef.current;
+      if (!measureEl || !trailEl || !glowEl || !track || !svg) return;
+
+      // Set SVG width sama dengan track
+      svg.style.width = `${track.scrollWidth}px`;
+
+      // Cache total length
       const total = measureEl.getTotalLength();
+      totalLenRef.current = total;
+
       trailEl.style.strokeDasharray = String(total);
       trailEl.style.strokeDashoffset = String(total);
       glowEl.style.strokeDasharray = String(total);
       glowEl.style.strokeDashoffset = String(total);
-    }
 
-    requestAnimationFrame(() => {
-      svg.style.width = `${track.scrollWidth}px`;
       update(0.001);
       onReady(update);
     });
-  }, [update, onReady]);
+  }, [update, onReady, trackRef]);
 
   return (
     <>
-      {/* Trail SVG — mengisi viewport (parent sudah 100vw x 100vh) */}
+      {/* Trail SVG */}
       <svg
         ref={svgRef}
         style={{
           position: "absolute",
           top: 0,
           left: 0,
-          width: "100%",
           height: "100%",
           pointerEvents: "none",
           overflow: "visible",
@@ -155,7 +172,7 @@ export default function PaperPlaneScene({
         />
       </svg>
 
-      {/* Plane — position absolute, left/top di-set via JS */}
+      {/* Plane */}
       <div
         ref={planeRef}
         style={{
@@ -165,6 +182,7 @@ export default function PaperPlaneScene({
           width: 64,
           height: 48,
           transform: "translate(-50%, -50%)",
+          willChange: "left, top",
           pointerEvents: "none",
           zIndex: 20,
         }}
@@ -175,7 +193,7 @@ export default function PaperPlaneScene({
           width={64}
           height={48}
         >
-          <g id="pp-g">
+          <g id="pp-g" style={{ transformOrigin: "50% 50%" }}>
             <polygon points="0,24 64,10 48,24" fill="white" />
             <polygon points="0,24 64,38 48,24" fill="white" />
             <line
