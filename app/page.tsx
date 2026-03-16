@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
@@ -25,13 +25,14 @@ export default function Home() {
   const lenisRef = useRef<Lenis | null>(null);
 
   const planeUpdateRef = useRef<((progress: number) => void) | null>(null);
+  const [arrived, setArrived] = useState(false);
+  const arrivedRef = useRef(false);
 
   const handlePlaneReady = useCallback((update: (progress: number) => void) => {
     planeUpdateRef.current = update;
   }, []);
 
   useEffect(() => {
-    // ✅ Lenis init
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -40,14 +41,12 @@ export default function Home() {
     });
     lenisRef.current = lenis;
 
-    // ✅ Sync Lenis → ScrollTrigger
     lenis.on("scroll", () => ScrollTrigger.update());
     gsap.ticker.add((time) => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
 
     const sections = gsap.utils.toArray<HTMLElement>(".section-panel");
 
-    // ✅ Pakai lenis.scrollTo bukan gsap.to window
     const scrollToSection = (index: number) => {
       if (isAnimating.current) return;
       isAnimating.current = true;
@@ -62,11 +61,9 @@ export default function Home() {
       });
     };
 
-    // ✅ Wheel handler untuk section 0 saja, dengan threshold
     const handleWheel = (e: WheelEvent) => {
       if (currentIndex.current !== 0) return;
       e.preventDefault();
-
       if (e.deltaY > 50) {
         scrollToSection(1);
       }
@@ -74,7 +71,6 @@ export default function Home() {
 
     window.addEventListener("wheel", handleWheel, { passive: false });
 
-    // Fade-up tiap section
     sections.forEach((el) => {
       const title = el.querySelector(".sesi-title");
       if (!title) return;
@@ -96,7 +92,6 @@ export default function Home() {
       );
     });
 
-    // Transisi warna Section 1 + wave
     if (section1Ref.current) {
       let lastColorValue = -1;
 
@@ -118,7 +113,6 @@ export default function Home() {
           },
 
           onEnter: () => {
-            // ❌ lenisRef.current?.stop(); → hapus ini
             currentIndex.current = 1;
             requestAnimationFrame(() => {
               if (waveRef.current) {
@@ -129,7 +123,6 @@ export default function Home() {
           },
 
           onEnterBack: () => {
-            // ❌ lenisRef.current?.stop(); → hapus ini
             currentIndex.current = 1;
             requestAnimationFrame(() => {
               if (waveRef.current) {
@@ -140,7 +133,6 @@ export default function Home() {
           },
 
           onLeave: () => {
-            // ❌ lenisRef.current?.start(); → hapus ini
             currentIndex.current = 2;
             requestAnimationFrame(() => {
               if (waveRef.current) {
@@ -151,7 +143,6 @@ export default function Home() {
           },
 
           onLeaveBack: () => {
-            // ❌ lenisRef.current?.start(); → hapus ini
             currentIndex.current = 0;
             requestAnimationFrame(() => {
               if (waveRef.current) {
@@ -188,7 +179,6 @@ export default function Home() {
       );
     }
 
-    // Horizontal scroll
     if (hScrollRef.current && hTrackRef.current) {
       const track = hTrackRef.current;
       const getTotalWidth = () => track.scrollWidth - window.innerWidth;
@@ -217,9 +207,17 @@ export default function Home() {
             currentIndex.current = 1;
           },
 
-          // ✅ INI yang kurang — sambungkan progress ke plane
           onUpdate: (self) => {
             planeUpdateRef.current?.(self.progress);
+
+            if (self.progress >= 0.98 && !arrivedRef.current) {
+              arrivedRef.current = true;
+              setTimeout(() => setArrived(true), 400);
+            }
+            if (self.progress < 0.95 && arrivedRef.current) {
+              arrivedRef.current = false;
+              setArrived(false);
+            }
           },
         },
       });
@@ -236,6 +234,47 @@ export default function Home() {
 
   return (
     <div>
+      {/* Welcome Text Overlay */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+          zIndex: 50,
+          opacity: arrived ? 1 : 0,
+          transition: "opacity 1.4s ease",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <h1
+            style={{
+              color: "white",
+              fontSize: "clamp(3rem, 8vw, 7rem)",
+              fontWeight: 200,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              margin: 0,
+            }}
+          >
+            Welcome
+          </h1>
+          <p
+            style={{
+              color: "rgba(255,255,255,0.4)",
+              fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
+              letterSpacing: "0.5em",
+              marginTop: "1rem",
+              textTransform: "uppercase",
+            }}
+          >
+            To My Website Visitors
+          </p>
+        </div>
+      </div>
+
       {/* Section 0: Hero */}
       <div className="section-panel h-screen bg-black relative">
         <ParallaxHero />
@@ -272,7 +311,6 @@ export default function Home() {
         <LowerSvg />
         <HorizontalScroll trackRef={hTrackRef}>
           <PaperPlaneScene trackRef={hTrackRef} onReady={handlePlaneReady} />
-
           <div
             className="flex justify-end items-end text-white"
             style={{ minWidth: "300vw", height: "100vh" }}

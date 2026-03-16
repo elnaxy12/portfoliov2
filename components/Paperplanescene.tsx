@@ -204,8 +204,8 @@ export default function PaperPlaneScene({
           position: "absolute",
           top: 0,
           left: 0,
-          width: 64,
-          height: 48,
+          width: 150,
+          height: 150,
           transform: "translate(-50%, -50%)",
           willChange: "left, top",
           pointerEvents: "none",
@@ -213,19 +213,19 @@ export default function PaperPlaneScene({
         }}
       >
         <svg
-          viewBox="0 0 64 48"
+          viewBox="0 0 100 100"
           xmlns="http://www.w3.org/2000/svg"
-          width={64}
-          height={48}
+          width={150}
+          height={150}
         >
           <g id="pp-g" style={{ transformOrigin: "50% 50%" }}>
-            <polygon points="0,24 64,10 48,24" fill="white" />
-            <polygon points="0,24 64,38 48,24" fill="white" />
+            <polygon points="0,50 100,22 75,50" fill="white" />
+            <polygon points="0,50 100,78 75,50" fill="white" />
             <line
               x1="0"
-              y1="24"
-              x2="48"
-              y2="24"
+              y1="50"
+              x2="75"
+              y2="50"
               stroke="rgba(0,0,0,0.12)"
               strokeWidth="0.5"
             />
