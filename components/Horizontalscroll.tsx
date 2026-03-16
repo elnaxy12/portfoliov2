@@ -8,8 +8,6 @@ interface HorizontalScrollProps {
   trackRef: React.RefObject<HTMLDivElement | null>;
 }
 
-// Pure wrapper — semua GSAP logic dikontrol dari page.tsx
-// supaya ScrollTrigger bisa ngitung posisi yang benar setelah pin section1 selesai
 const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
   ({ children, className = "", trackRef }, ref) => {
     return (
@@ -20,6 +18,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
           overflow: "hidden",
           width: "100vw",
           height: "100vh",
+          position: "relative",
         }}
       >
         <div
@@ -29,6 +28,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
             flexWrap: "nowrap",
             height: "100%",
             willChange: "transform",
+            position: "relative", // ← wajib agar plane bisa absolute di sini
           }}
         >
           {children}

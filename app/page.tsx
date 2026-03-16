@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
@@ -10,6 +10,7 @@ import Sidebar from "../components/Sidebar";
 import UpperSvg from "../components/svg/UpperSvg";
 import LowerSvg from "../components/svg/LowerSvg";
 import ParallaxHero from "../components/ParallaxHero";
+import PaperPlaneScene from "../components/Paperplanescene";
 import HorizontalScroll from "../components/Horizontalscroll";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
@@ -22,6 +23,12 @@ export default function Home() {
   const hScrollRef = useRef<HTMLDivElement>(null);
   const hTrackRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
+
+  const planeUpdateRef = useRef<((progress: number) => void) | null>(null);
+
+  const handlePlaneReady = useCallback((update: (progress: number) => void) => {
+    planeUpdateRef.current = update;
+  }, []);
 
   useEffect(() => {
     // ✅ Lenis init
@@ -97,7 +104,7 @@ export default function Home() {
         scrollTrigger: {
           trigger: section1Ref.current,
           start: "top top",
-          end: "+=3000",
+          end: "+=600",
           scrub: true,
           pin: true,
           anticipatePin: 1,
@@ -209,6 +216,11 @@ export default function Home() {
           onLeaveBack: () => {
             currentIndex.current = 1;
           },
+
+          // ✅ INI yang kurang — sambungkan progress ke plane
+          onUpdate: (self) => {
+            planeUpdateRef.current?.(self.progress);
+          },
         },
       });
     }
@@ -259,24 +271,12 @@ export default function Home() {
       <div ref={hScrollRef} className="section-panel relative bg-black">
         <LowerSvg />
         <HorizontalScroll trackRef={hTrackRef}>
+          <PaperPlaneScene trackRef={hTrackRef} onReady={handlePlaneReady} />
+
           <div
             className="flex justify-end items-end text-white"
-            style={{ minWidth: "100vw", height: "100vh" }}
-          >
-            <p>Slide 1</p>
-          </div>
-          <div
-            className="flex justify-end items-end text-white"
-            style={{ minWidth: "100vw", height: "100vh" }}
-          >
-            <p>Slide 2</p>
-          </div>
-          <div
-            className="flex justify-end items-end text-white"
-            style={{ minWidth: "100vw", height: "100vh" }}
-          >
-            <p>Slide 2</p>
-          </div>
+            style={{ minWidth: "300vw", height: "100vh" }}
+          ></div>
         </HorizontalScroll>
       </div>
     </div>
