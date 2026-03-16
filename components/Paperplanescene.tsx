@@ -2,19 +2,30 @@
 
 import { useEffect, useRef, useCallback } from "react";
 
-const WAYPOINTS = [
-  { x: -3, y: 55 },
-  { x: 8, y: 45 },
-  { x: 18, y: 62 },
-  { x: 28, y: 30 },
-  { x: 38, y: 58 },
-  { x: 50, y: 25 },
-  { x: 62, y: 50 },
-  { x: 72, y: 22 },
-  { x: 82, y: 48 },
-  { x: 92, y: 28 },
-  { x: 103, y: 42 },
-];
+function getWaypoints() {
+  const aspect = window.innerWidth / window.innerHeight;
+  const amp = Math.min(aspect / 1.78, 1);
+
+  const base = [
+    { x: -3, y: 55 },
+    { x: 8, y: 45 },
+    { x: 18, y: 62 },
+    { x: 28, y: 30 },
+    { x: 38, y: 58 },
+    { x: 50, y: 25 },
+    { x: 62, y: 50 },
+    { x: 72, y: 22 },
+    { x: 82, y: 48 },
+    { x: 92, y: 28 },
+    { x: 103, y: 42 },
+  ];
+
+  const centerY = 42;
+  return base.map((pt) => ({
+    x: pt.x,
+    y: centerY + (pt.y - centerY) * amp,
+  }));
+}
 
 function buildCatmullRom(pts: { x: number; y: number }[]) {
   let d = `M ${pts[0].x} ${pts[0].y}`;
@@ -44,13 +55,10 @@ export default function PaperPlaneScene({
   const svgRef = useRef<SVGSVGElement>(null);
   const planeRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Cache semua DOM refs — tidak query tiap frame
   const measureRef = useRef<SVGPathElement | null>(null);
   const trailRef = useRef<SVGPathElement | null>(null);
   const glowRef = useRef<SVGPathElement | null>(null);
   const planeGRef = useRef<SVGGElement | null>(null);
-
-  // ✅ Cache total length — tidak hitung tiap frame
   const totalLenRef = useRef<number>(0);
 
   const update = useCallback(
@@ -80,7 +88,6 @@ export default function PaperPlaneScene({
       plane.style.left = `${(pt.x / 100) * trackW}px`;
       plane.style.top = `${(pt.y / 100) * trackH}px`;
 
-      // Koreksi angle dengan aspect ratio
       const scaleX = trackW / 100;
       const scaleY = trackH / 100;
       const dx = (pt2.x - pt.x) * scaleX;
@@ -101,14 +108,13 @@ export default function PaperPlaneScene({
     const track = trackRef.current;
     if (!svg || !track) return;
 
-    // Cache DOM elements sekali
     measureRef.current = svg.querySelector<SVGPathElement>("#pp-measure");
     trailRef.current = svg.querySelector<SVGPathElement>("#pp-trail");
     glowRef.current = svg.querySelector<SVGPathElement>("#pp-glow");
     planeGRef.current =
       planeRef.current?.querySelector<SVGGElement>("#pp-g") ?? null;
 
-    const pathD = buildCatmullRom(WAYPOINTS);
+    const pathD = buildCatmullRom(getWaypoints());
     measureRef.current?.setAttribute("d", pathD);
     trailRef.current?.setAttribute("d", pathD);
     glowRef.current?.setAttribute("d", pathD);
@@ -119,10 +125,8 @@ export default function PaperPlaneScene({
       const glowEl = glowRef.current;
       if (!measureEl || !trailEl || !glowEl || !track || !svg) return;
 
-      // Set SVG width sama dengan track
       svg.style.width = `${track.scrollWidth}px`;
 
-      // Cache total length
       const total = measureEl.getTotalLength();
       totalLenRef.current = total;
 
@@ -134,11 +138,33 @@ export default function PaperPlaneScene({
       update(0.001);
       onReady(update);
     });
+
+    // ✅ Rebuild path saat resize
+    const handleResize = () => {
+      const pathD = buildCatmullRom(getWaypoints());
+      measureRef.current?.setAttribute("d", pathD);
+      trailRef.current?.setAttribute("d", pathD);
+      glowRef.current?.setAttribute("d", pathD);
+
+      if (svg && track) {
+        svg.style.width = `${track.scrollWidth}px`;
+      }
+
+      const total = measureRef.current?.getTotalLength() ?? 0;
+      totalLenRef.current = total;
+
+      if (trailRef.current && glowRef.current) {
+        trailRef.current.style.strokeDasharray = String(total);
+        glowRef.current.style.strokeDasharray = String(total);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [update, onReady, trackRef]);
 
   return (
     <>
-      {/* Trail SVG */}
       <svg
         ref={svgRef}
         style={{
@@ -172,7 +198,6 @@ export default function PaperPlaneScene({
         />
       </svg>
 
-      {/* Plane */}
       <div
         ref={planeRef}
         style={{
