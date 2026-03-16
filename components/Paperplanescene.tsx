@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 
 function getWaypoints() {
   const aspect = window.innerWidth / window.innerHeight;
@@ -60,6 +60,11 @@ export default function PaperPlaneScene({
   const glowRef = useRef<SVGPathElement | null>(null);
   const planeGRef = useRef<SVGGElement | null>(null);
   const totalLenRef = useRef<number>(0);
+
+  // ✅ useState di level komponen, bukan di dalam callback
+  const [planeSize, setPlaneSize] = useState(() =>
+    typeof window !== "undefined" && window.innerWidth < 768 ? 60 : 150,
+  );
 
   const update = useCallback(
     (progress: number) => {
@@ -139,8 +144,12 @@ export default function PaperPlaneScene({
       onReady(update);
     });
 
-    // ✅ Rebuild path saat resize
+    // ✅ Satu handleResize yang handle semuanya
     const handleResize = () => {
+      // update plane size
+      setPlaneSize(window.innerWidth < 768 ? 60 : 150);
+
+      // rebuild path
       const pathD = buildCatmullRom(getWaypoints());
       measureRef.current?.setAttribute("d", pathD);
       trailRef.current?.setAttribute("d", pathD);
@@ -204,8 +213,8 @@ export default function PaperPlaneScene({
           position: "absolute",
           top: 0,
           left: 0,
-          width: 150,
-          height: 150,
+          width: planeSize,
+          height: planeSize,
           transform: "translate(-50%, -50%)",
           willChange: "left, top",
           pointerEvents: "none",
@@ -215,8 +224,8 @@ export default function PaperPlaneScene({
         <svg
           viewBox="0 0 100 100"
           xmlns="http://www.w3.org/2000/svg"
-          width={150}
-          height={150}
+          width={planeSize}
+          height={planeSize}
         >
           <g id="pp-g" style={{ transformOrigin: "50% 50%" }}>
             <polygon points="0,50 100,22 75,50" fill="white" />
