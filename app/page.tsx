@@ -200,7 +200,7 @@ export default function Home() {
           trigger: hScrollRef.current,
           start: "top top",
           end: () => `+=${getTotalWidth()}`,
-          scrub: 1,
+          scrub: true,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
