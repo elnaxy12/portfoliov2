@@ -63,7 +63,7 @@ export default function PaperPlaneScene({
 
   // ✅ useState di level komponen, bukan di dalam callback
   const [planeSize, setPlaneSize] = useState(() =>
-    typeof window !== "undefined" && window.innerWidth < 768 ? 60 : 150,
+    typeof window !== "undefined" && window.innerWidth < 768 ? 40 : 150,
   );
 
   const update = useCallback(
