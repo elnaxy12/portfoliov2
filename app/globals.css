@@ -25,3 +25,16 @@ body {
   color: var(--foreground);
   font-family: var(--font-poppins), sans-serif;
 }
+
+.wave-sticky {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+}
+
+.wave-absolute {
+  position: absolute;
+  z-index: 10;
+}

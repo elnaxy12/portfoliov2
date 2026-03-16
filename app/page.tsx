@@ -24,7 +24,7 @@ export default function Home() {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    // ✅ Lenis selalu jalan — jangan stop/start manual
+    // ✅ Lenis init
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -40,27 +40,27 @@ export default function Home() {
 
     const sections = gsap.utils.toArray<HTMLElement>(".section-panel");
 
+    // ✅ Pakai lenis.scrollTo bukan gsap.to window
     const scrollToSection = (index: number) => {
       if (isAnimating.current) return;
       isAnimating.current = true;
       currentIndex.current = index;
 
-      gsap.to(window, {
-        scrollTo: { y: sections[index], autoKill: false },
+      lenis.scrollTo(sections[index] as HTMLElement, {
         duration: 1,
-        ease: "power3.inOut",
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         onComplete: () => {
           isAnimating.current = false;
         },
       });
     };
 
-    // ✅ Wheel handler untuk section 0 saja
+    // ✅ Wheel handler untuk section 0 saja, dengan threshold
     const handleWheel = (e: WheelEvent) => {
       if (currentIndex.current !== 0) return;
       e.preventDefault();
 
-      if (e.deltaY > 0) {
+      if (e.deltaY > 50) {
         scrollToSection(1);
       }
     };
@@ -91,6 +91,8 @@ export default function Home() {
 
     // Transisi warna Section 1 + wave
     if (section1Ref.current) {
+      let lastColorValue = -1;
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section1Ref.current,
@@ -107,50 +109,60 @@ export default function Home() {
             inertia: false,
           },
 
+          // ✅ Stop Lenis saat section 1 aktif (pin)
           onEnter: () => {
+            lenisRef.current?.stop();
             currentIndex.current = 1;
-            if (waveRef.current) {
-              waveRef.current.style.position = "sticky";
-              waveRef.current.style.bottom = "0";
-              waveRef.current.style.left = "0";
-              waveRef.current.style.width = "100%";
-              waveRef.current.style.zIndex = "50";
-            }
+            requestAnimationFrame(() => {
+              if (waveRef.current) {
+                waveRef.current.classList.remove("wave-absolute");
+                waveRef.current.classList.add("wave-sticky");
+              }
+            });
           },
 
           onEnterBack: () => {
+            lenisRef.current?.stop();
             currentIndex.current = 1;
-            if (waveRef.current) {
-              waveRef.current.style.position = "sticky";
-              waveRef.current.style.bottom = "0";
-              waveRef.current.style.left = "0";
-              waveRef.current.style.width = "100%";
-              waveRef.current.style.zIndex = "50";
-            }
+            requestAnimationFrame(() => {
+              if (waveRef.current) {
+                waveRef.current.classList.remove("wave-absolute");
+                waveRef.current.classList.add("wave-sticky");
+              }
+            });
           },
 
           onLeave: () => {
+            lenisRef.current?.start();
             currentIndex.current = 2;
-            if (waveRef.current) {
-              waveRef.current.style.position = "absolute";
-              waveRef.current.style.zIndex = "10";
-            }
+            requestAnimationFrame(() => {
+              if (waveRef.current) {
+                waveRef.current.classList.remove("wave-sticky");
+                waveRef.current.classList.add("wave-absolute");
+              }
+            });
           },
 
           onLeaveBack: () => {
+            lenisRef.current?.start();
             currentIndex.current = 0;
-            if (waveRef.current) {
-              waveRef.current.style.position = "absolute";
-              waveRef.current.style.zIndex = "10";
-            }
+            requestAnimationFrame(() => {
+              if (waveRef.current) {
+                waveRef.current.classList.remove("wave-sticky");
+                waveRef.current.classList.add("wave-absolute");
+              }
+            });
             document.documentElement.style.setProperty(
               "--wave-color",
               "#000000",
             );
           },
 
+          // ✅ Throttle onUpdate — skip kalau nilai sama
           onUpdate: (self) => {
             const value = Math.round(self.progress * 255);
+            if (value === lastColorValue) return;
+            lastColorValue = value;
             const hex = value.toString(16).padStart(2, "0");
             document.documentElement.style.setProperty(
               "--wave-color",
@@ -248,13 +260,22 @@ export default function Home() {
       <div ref={hScrollRef} className="section-panel relative bg-black">
         <LowerSvg />
         <HorizontalScroll trackRef={hTrackRef}>
-          <div className="flex justify-end items-end text-white" style={{ minWidth: "100vw", height: "100vh" }}>
+          <div
+            className="flex justify-end items-end text-white"
+            style={{ minWidth: "100vw", height: "100vh" }}
+          >
             <p>Slide 1</p>
           </div>
-          <div className="flex justify-end items-end text-white" style={{ minWidth: "100vw", height: "100vh" }}>
+          <div
+            className="flex justify-end items-end text-white"
+            style={{ minWidth: "100vw", height: "100vh" }}
+          >
             <p>Slide 2</p>
           </div>
-          <div className="flex justify-end items-end text-white" style={{ minWidth: "100vw", height: "100vh" }}>
+          <div
+            className="flex justify-end items-end text-white"
+            style={{ minWidth: "100vw", height: "100vh" }}
+          >
             <p>Slide 2</p>
           </div>
         </HorizontalScroll>
