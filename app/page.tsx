@@ -104,14 +104,14 @@ export default function Home() {
 
           snap: {
             snapTo: [0, 1],
+            directional: true,
             duration: { min: 0.3, max: 0.8 },
             ease: "power3.inOut",
             inertia: false,
           },
 
-          // ✅ Stop Lenis saat section 1 aktif (pin)
           onEnter: () => {
-            lenisRef.current?.stop();
+            // ❌ lenisRef.current?.stop(); → hapus ini
             currentIndex.current = 1;
             requestAnimationFrame(() => {
               if (waveRef.current) {
@@ -122,7 +122,7 @@ export default function Home() {
           },
 
           onEnterBack: () => {
-            lenisRef.current?.stop();
+            // ❌ lenisRef.current?.stop(); → hapus ini
             currentIndex.current = 1;
             requestAnimationFrame(() => {
               if (waveRef.current) {
@@ -133,7 +133,7 @@ export default function Home() {
           },
 
           onLeave: () => {
-            lenisRef.current?.start();
+            // ❌ lenisRef.current?.start(); → hapus ini
             currentIndex.current = 2;
             requestAnimationFrame(() => {
               if (waveRef.current) {
@@ -144,7 +144,7 @@ export default function Home() {
           },
 
           onLeaveBack: () => {
-            lenisRef.current?.start();
+            // ❌ lenisRef.current?.start(); → hapus ini
             currentIndex.current = 0;
             requestAnimationFrame(() => {
               if (waveRef.current) {
@@ -158,7 +158,6 @@ export default function Home() {
             );
           },
 
-          // ✅ Throttle onUpdate — skip kalau nilai sama
           onUpdate: (self) => {
             const value = Math.round(self.progress * 255);
             if (value === lastColorValue) return;
