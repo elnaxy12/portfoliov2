@@ -239,7 +239,7 @@ export default function PaperPlaneScene({
           id="pp-glow"
           fill="none"
           stroke="rgba(255,255,255,0.06)"
-          strokeWidth="1.5"
+          strokeWidth="4"
           strokeLinecap="round"
         />
         <path
@@ -329,8 +329,8 @@ export default function PaperPlaneScene({
           position: "absolute",
           top: 0,
           left: 0,
-          width: "clamp(80px, 12vw, 160px)",
-          height: "clamp(80px, 12vw, 160px)",
+          width: "clamp(300px, 12vw, 160px)",
+          height: "clamp(300px, 12vw, 160px)",
           transform: "translate(-50%, -50%)",
           willChange: "left, top, transform",
           pointerEvents: "none",
