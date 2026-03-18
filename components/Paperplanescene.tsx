@@ -43,6 +43,14 @@ function buildCatmullRom(pts: { x: number; y: number }[]) {
   return d;
 }
 
+function getStrokeWidths() {
+  const isMobile = window.innerWidth < 768;
+  return {
+    trail: isMobile ? 1.0 : 0.5,
+    glow: isMobile ? 1.0 : 0.5,
+  };
+}
+
 const SKILL_STOPS = [
   { progress: 0.12, label: "React", sub: "UI Library", offsetY: -75 },
   { progress: 0.25, label: "Next.js", sub: "Full Stack Framework", offsetY: 0 },
@@ -71,6 +79,12 @@ export default function PaperPlaneScene({
   const glowRef = useRef<SVGPathElement | null>(null);
   const totalLenRef = useRef<number>(0);
 
+  const applyStrokeWidths = useCallback(() => {
+    const { trail, glow } = getStrokeWidths();
+    trailRef.current?.setAttribute("stroke-width", String(trail));
+    glowRef.current?.setAttribute("stroke-width", String(glow));
+  }, []);
+
   const positionSkillLabels = useCallback(() => {
     const measureEl = measureRef.current;
     const track = trackRef.current;
@@ -81,6 +95,7 @@ export default function PaperPlaneScene({
 
     const trackW = track.scrollWidth;
     const trackH = track.clientHeight;
+    const isMobile = window.innerWidth < 768;
 
     SKILL_STOPS.forEach((stop, i) => {
       const len = Math.min(totalLen * stop.progress, totalLen * 0.9998);
@@ -89,11 +104,14 @@ export default function PaperPlaneScene({
       const xPx = (pt.x / 100) * trackW;
       const yPx = (pt.y / 100) * trackH;
 
+      // ✅ offsetY diperkecil di mobile agar label tidak keluar viewport
+      const offsetY = isMobile ? stop.offsetY * 0.4 : stop.offsetY;
+
       const el = skillRefsMap.current.get(i);
       if (!el) return;
 
       el.style.left = `${xPx}px`;
-      el.style.top = `${yPx + stop.offsetY}px`;
+      el.style.top = `${yPx + offsetY}px`;
       el.style.opacity = "0";
       el.style.transform = "translate(-50%, 0px)";
     });
@@ -107,7 +125,6 @@ export default function PaperPlaneScene({
       const trailEl = trailRef.current;
       const glowEl = glowRef.current;
 
-      // ✅ Tidak ada planeG di sini
       if (!plane || !track || !measureEl || !trailEl || !glowEl) return;
 
       const totalLen = totalLenRef.current;
@@ -128,7 +145,6 @@ export default function PaperPlaneScene({
       const dy = (pt2.y - pt.y) * scaleY;
       const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
 
-      // ✅ Rotasi langsung ke div wrapper
       plane.style.left = `${(pt.x / 100) * trackW}px`;
       plane.style.top = `${(pt.y / 100) * trackH}px`;
       plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
@@ -137,12 +153,15 @@ export default function PaperPlaneScene({
       trailEl.style.strokeDashoffset = String(offset);
       glowEl.style.strokeDashoffset = String(offset);
 
+      const isMobile = window.innerWidth < 768;
+
       SKILL_STOPS.forEach((stop, i) => {
         const el = skillRefsMap.current.get(i);
         if (!el) return;
 
         const arrived = progress >= stop.progress - 0.01;
-        const passed = progress >= stop.progress + 0.15;
+        // ✅ Window tampil lebih lama di mobile
+        const passed = progress >= stop.progress + (isMobile ? 0.12 : 0.15);
 
         if (arrived && !passed) {
           el.style.opacity = "1";
@@ -189,6 +208,7 @@ export default function PaperPlaneScene({
       glowEl.style.strokeDasharray = String(total);
       glowEl.style.strokeDashoffset = String(total);
 
+      applyStrokeWidths();
       positionSkillLabels();
       update(0.001);
       onReady(update);
@@ -210,12 +230,13 @@ export default function PaperPlaneScene({
         glowRef.current.style.strokeDasharray = String(total);
       }
 
+      applyStrokeWidths();
       positionSkillLabels();
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [update, onReady, trackRef, positionSkillLabels]);
+  }, [update, onReady, trackRef, positionSkillLabels, applyStrokeWidths]);
 
   return (
     <>
@@ -239,14 +260,12 @@ export default function PaperPlaneScene({
           id="pp-glow"
           fill="none"
           stroke="rgba(255,255,255,0.06)"
-          strokeWidth="1.5"
           strokeLinecap="round"
         />
         <path
           id="pp-trail"
           fill="none"
           stroke="rgba(255,255,255,0.3)"
-          strokeWidth="0.18"
           strokeDasharray="1 1.8"
           strokeLinecap="round"
         />
@@ -291,7 +310,8 @@ export default function PaperPlaneScene({
           >
             <div
               style={{
-                fontSize: "clamp(0.7rem, 1.2vw, 0.95rem)",
+                // ✅ vw lebih besar agar terbaca di mobile
+                fontSize: "clamp(0.75rem, 3vw, 0.95rem)",
                 fontWeight: 600,
                 color: "white",
                 letterSpacing: "0.1em",
@@ -302,7 +322,8 @@ export default function PaperPlaneScene({
             </div>
             <div
               style={{
-                fontSize: "clamp(0.55rem, 0.9vw, 0.65rem)",
+                // ✅ sub label juga diperbesar di mobile
+                fontSize: "clamp(0.6rem, 2.5vw, 0.65rem)",
                 color: "rgba(255,255,255,0.45)",
                 letterSpacing: "0.12em",
                 marginTop: "2px",
@@ -338,7 +359,7 @@ export default function PaperPlaneScene({
         }}
       >
         <img
-        className="rotate-[-130deg]"
+          className="rotate-[-130deg]"
           src="/images/paper-plane.png"
           alt=""
           style={{ width: "100%", height: "100%" }}
