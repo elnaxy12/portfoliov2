@@ -345,7 +345,7 @@ export default function PaperPlaneScene({
       ))}
 
       <div
-        className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
+        className="w-[200px] h-[200px]"
         ref={planeRef}
         style={{
           position: "absolute",
@@ -359,7 +359,7 @@ export default function PaperPlaneScene({
       >
         <img
           src="images/paper-plane.png"
-          className="w-[100px] h-[100px] md:w-[200px] md:h-[200px] rotate-[-130deg]"
+          className="w-[200px] h-[200px] rotate-[-130deg]"
           id="pp-g"
         />
       </div>
