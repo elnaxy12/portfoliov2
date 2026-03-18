@@ -338,7 +338,7 @@ export default function PaperPlaneScene({
         }}
       >
         <img
-        className="rotate-"
+        className="rotate-[-130deg]"
           src="/images/paper-plane.png"
           alt=""
           style={{ width: "100%", height: "100%" }}
