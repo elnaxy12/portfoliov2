@@ -44,18 +44,18 @@ function buildCatmullRom(pts: { x: number; y: number }[]) {
 }
 
 const SKILL_STOPS = [
-  { progress: 0.12, label: "React", sub: "UI Library", offsetY: -80 },
+  { progress: 0.12, label: "React", sub: "UI Library", offsetY: -75 },
   {
     progress: 0.25,
     label: "Next.js",
     sub: "Full Stack Framework",
     offsetY: 0,
   }, 
-  { progress: 0.38, label: "TypeScript", sub: "Type Safety", offsetY: -80 },
+  { progress: 0.38, label: "TypeScript", sub: "Type Safety", offsetY: -75 },
   { progress: 0.52, label: "Node.js", sub: "Backend Runtime", offsetY: 0 },
-  { progress: 0.65, label: "Tailwind CSS", sub: "Styling", offsetY: -80 },
+  { progress: 0.65, label: "Tailwind CSS", sub: "Styling", offsetY: -75 },
   { progress: 0.78, label: "PostgreSQL", sub: "Database", offsetY: 0 },
-  { progress: 0.9, label: "Docker", sub: "DevOps", offsetY: -80 },
+  { progress: 0.9, label: "Docker", sub: "DevOps", offsetY: -75 },
 ];
 
 interface PaperPlaneSceneProps {
