@@ -44,18 +44,13 @@ function buildCatmullRom(pts: { x: number; y: number }[]) {
 }
 
 const SKILL_STOPS = [
-  { progress: 0.12, label: "React", sub: "UI Library", offsetY: -75 },
-  {
-    progress: 0.25,
-    label: "Next.js",
-    sub: "Full Stack Framework",
-    offsetY: 0,
-  }, 
-  { progress: 0.38, label: "TypeScript", sub: "Type Safety", offsetY: -75 },
+  { progress: 0.12, label: "React", sub: "UI Library", offsetY: -110 },
+  { progress: 0.25, label: "Next.js", sub: "Full Stack Framework", offsetY: 0 },
+  { progress: 0.38, label: "TypeScript", sub: "Type Safety", offsetY: -110 },
   { progress: 0.52, label: "Node.js", sub: "Backend Runtime", offsetY: 0 },
-  { progress: 0.65, label: "Tailwind CSS", sub: "Styling", offsetY: -75 },
+  { progress: 0.65, label: "Tailwind CSS", sub: "Styling", offsetY: -110 },
   { progress: 0.78, label: "PostgreSQL", sub: "Database", offsetY: 0 },
-  { progress: 0.9, label: "Docker", sub: "DevOps", offsetY: -75 },
+  { progress: 0.9, label: "Docker", sub: "DevOps", offsetY: -110 },
 ];
 
 interface PaperPlaneSceneProps {
@@ -74,11 +69,7 @@ export default function PaperPlaneScene({
   const measureRef = useRef<SVGPathElement | null>(null);
   const trailRef = useRef<SVGPathElement | null>(null);
   const glowRef = useRef<SVGPathElement | null>(null);
-  const planeGRef = useRef<SVGGElement | null>(null);
   const totalLenRef = useRef<number>(0);
-  const skillPositionsRef = useRef<{ x: number; y: number; above: boolean }[]>(
-    [],
-  );
 
   const positionSkillLabels = useCallback(() => {
     const measureEl = measureRef.current;
@@ -115,10 +106,9 @@ export default function PaperPlaneScene({
       const measureEl = measureRef.current;
       const trailEl = trailRef.current;
       const glowEl = glowRef.current;
-      const planeG = planeGRef.current;
 
-      if (!plane || !track || !measureEl || !trailEl || !glowEl || !planeG)
-        return;
+      // ✅ Tidak ada planeG di sini
+      if (!plane || !track || !measureEl || !trailEl || !glowEl) return;
 
       const totalLen = totalLenRef.current;
       if (totalLen === 0) return;
@@ -132,22 +122,21 @@ export default function PaperPlaneScene({
       const trackW = track.scrollWidth;
       const trackH = track.clientHeight;
 
-      plane.style.left = `${(pt.x / 100) * trackW}px`;
-      plane.style.top = `${(pt.y / 100) * trackH}px`;
-
       const scaleX = trackW / 100;
       const scaleY = trackH / 100;
       const dx = (pt2.x - pt.x) * scaleX;
       const dy = (pt2.y - pt.y) * scaleY;
       const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
 
-      planeG.style.transform = `rotate(${angle}deg)`;
+      // ✅ Rotasi langsung ke div wrapper
+      plane.style.left = `${(pt.x / 100) * trackW}px`;
+      plane.style.top = `${(pt.y / 100) * trackH}px`;
+      plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
 
       const offset = totalLen * (1 - progress);
       trailEl.style.strokeDashoffset = String(offset);
       glowEl.style.strokeDashoffset = String(offset);
 
-      // Update visibility skill labels
       SKILL_STOPS.forEach((stop, i) => {
         const el = skillRefsMap.current.get(i);
         if (!el) return;
@@ -178,8 +167,6 @@ export default function PaperPlaneScene({
     measureRef.current = svg.querySelector<SVGPathElement>("#pp-measure");
     trailRef.current = svg.querySelector<SVGPathElement>("#pp-trail");
     glowRef.current = svg.querySelector<SVGPathElement>("#pp-glow");
-    planeGRef.current =
-      planeRef.current?.querySelector<SVGGElement>("#pp-g") ?? null;
 
     const pathD = buildCatmullRom(getWaypoints());
     measureRef.current?.setAttribute("d", pathD);
@@ -202,9 +189,7 @@ export default function PaperPlaneScene({
       glowEl.style.strokeDasharray = String(total);
       glowEl.style.strokeDashoffset = String(total);
 
-      // Posisikan skill labels setelah total length diketahui
       positionSkillLabels();
-
       update(0.001);
       onReady(update);
     });
@@ -215,9 +200,7 @@ export default function PaperPlaneScene({
       trailRef.current?.setAttribute("d", pathD);
       glowRef.current?.setAttribute("d", pathD);
 
-      if (svg && track) {
-        svg.style.width = `${track.scrollWidth}px`;
-      }
+      if (svg && track) svg.style.width = `${track.scrollWidth}px`;
 
       const total = measureRef.current?.getTotalLength() ?? 0;
       totalLenRef.current = total;
@@ -269,7 +252,6 @@ export default function PaperPlaneScene({
         />
       </svg>
 
-      {/* Skill Labels — posisi mengikuti titik di path */}
       {SKILL_STOPS.map((_, i) => (
         <div
           key={i}
@@ -289,7 +271,6 @@ export default function PaperPlaneScene({
             whiteSpace: "nowrap",
           }}
         >
-          {/* Connector line */}
           <div
             style={{
               width: "1px",
@@ -299,10 +280,9 @@ export default function PaperPlaneScene({
               display: i % 2 === 0 ? "none" : "block",
             }}
           />
-
           <div
             style={{
-              padding: "6px 14px",
+              padding: "clamp(8px, 2vw, 12px) clamp(12px, 3vw, 18px)",
               border: "1px solid rgba(255,255,255,0.15)",
               borderRadius: "4px",
               background: "rgba(0,0,0,0.4)",
@@ -311,7 +291,7 @@ export default function PaperPlaneScene({
           >
             <div
               style={{
-                fontSize: "clamp(0.7rem, 1.2vw, 0.95rem)",
+                fontSize: "clamp(1.1rem, 3.5vw, 1.5rem)",
                 fontWeight: 600,
                 color: "white",
                 letterSpacing: "0.1em",
@@ -322,7 +302,7 @@ export default function PaperPlaneScene({
             </div>
             <div
               style={{
-                fontSize: "clamp(0.55rem, 0.9vw, 0.65rem)",
+                fontSize: "clamp(0.8rem, 2.5vw, 1rem)",
                 color: "rgba(255,255,255,0.45)",
                 letterSpacing: "0.12em",
                 marginTop: "2px",
@@ -331,7 +311,6 @@ export default function PaperPlaneScene({
               {SKILL_STOPS[i].sub}
             </div>
           </div>
-
           <div
             style={{
               width: "1px",
@@ -345,22 +324,24 @@ export default function PaperPlaneScene({
       ))}
 
       <div
-        className="w-[200px] h-[200px]"
         ref={planeRef}
         style={{
           position: "absolute",
           top: 0,
           left: 0,
+          width: "clamp(120px, 20vw, 600px)",
+          height: "clamp(120px, 20vw, 600px)",
           transform: "translate(-50%, -50%)",
-          willChange: "left, top",
+          willChange: "left, top, transform",
           pointerEvents: "none",
           zIndex: 20,
         }}
       >
         <img
-          src="images/paper-plane.png"
-          className="w-[200px] h-[200px] rotate-[-130deg]"
-          id="pp-g"
+          className="rotate-[-130deg]"
+          src="/images/paper-plane.png"
+          alt=""
+          style={{ width: "100%", height: "100%" }}
         />
       </div>
     </>
