@@ -261,7 +261,7 @@ export default function Home() {
           <PaperPlaneScene trackRef={hTrackRef} onReady={handlePlaneReady} />
           <div
             className="flex justify-end items-end text-white"
-            style={{ minWidth: "300vw", height: "100vh" }}
+            style={{ minWidth: "600vw", height: "100vh" }}
           ></div>
         </HorizontalScroll>
       </div>
