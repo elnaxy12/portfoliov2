@@ -44,13 +44,13 @@ function buildCatmullRom(pts: { x: number; y: number }[]) {
 }
 
 const SKILL_STOPS = [
-  { progress: 0.12, label: "React", sub: "UI Library", offsetY: -110 },
+  { progress: 0.12, label: "React", sub: "UI Library", offsetY: -75 },
   { progress: 0.25, label: "Next.js", sub: "Full Stack Framework", offsetY: 0 },
-  { progress: 0.38, label: "TypeScript", sub: "Type Safety", offsetY: -110 },
+  { progress: 0.38, label: "TypeScript", sub: "Type Safety", offsetY: -75 },
   { progress: 0.52, label: "Node.js", sub: "Backend Runtime", offsetY: 0 },
-  { progress: 0.65, label: "Tailwind CSS", sub: "Styling", offsetY: -110 },
+  { progress: 0.65, label: "Tailwind CSS", sub: "Styling", offsetY: -75 },
   { progress: 0.78, label: "PostgreSQL", sub: "Database", offsetY: 0 },
-  { progress: 0.9, label: "Docker", sub: "DevOps", offsetY: -110 },
+  { progress: 0.9, label: "Docker", sub: "DevOps", offsetY: -75 },
 ];
 
 interface PaperPlaneSceneProps {
@@ -282,7 +282,7 @@ export default function PaperPlaneScene({
           />
           <div
             style={{
-              padding: "clamp(8px, 2vw, 12px) clamp(12px, 3vw, 18px)",
+              padding: "6px 14px",
               border: "1px solid rgba(255,255,255,0.15)",
               borderRadius: "4px",
               background: "rgba(0,0,0,0.4)",
@@ -291,7 +291,7 @@ export default function PaperPlaneScene({
           >
             <div
               style={{
-                fontSize: "clamp(1.1rem, 3.5vw, 1.5rem)",
+                fontSize: "clamp(0.7rem, 1.2vw, 0.95rem)",
                 fontWeight: 600,
                 color: "white",
                 letterSpacing: "0.1em",
@@ -302,7 +302,7 @@ export default function PaperPlaneScene({
             </div>
             <div
               style={{
-                fontSize: "clamp(0.8rem, 2.5vw, 1rem)",
+                fontSize: "clamp(0.55rem, 0.9vw, 0.65rem)",
                 color: "rgba(255,255,255,0.45)",
                 letterSpacing: "0.12em",
                 marginTop: "2px",
@@ -329,8 +329,8 @@ export default function PaperPlaneScene({
           position: "absolute",
           top: 0,
           left: 0,
-          width: "clamp(120px, 20vw, 600px)",
-          height: "clamp(120px, 20vw, 600px)",
+          width: "clamp(80px, 12vw, 160px)",
+          height: "clamp(80px, 12vw, 160px)",
           transform: "translate(-50%, -50%)",
           willChange: "left, top, transform",
           pointerEvents: "none",
@@ -338,7 +338,7 @@ export default function PaperPlaneScene({
         }}
       >
         <img
-          className="rotate-[-130deg]"
+        className="rotate-[-130deg]"
           src="/images/paper-plane.png"
           alt=""
           style={{ width: "100%", height: "100%" }}
