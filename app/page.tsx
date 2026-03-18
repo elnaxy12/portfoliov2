@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
@@ -19,10 +19,12 @@ export default function Home() {
   const isAnimating = useRef(false);
   const currentIndex = useRef(0);
   const section1Ref = useRef<HTMLDivElement>(null);
+  const section3Ref = useRef<HTMLDivElement>(null);
   const waveRef = useRef<HTMLDivElement>(null);
   const hScrollRef = useRef<HTMLDivElement>(null);
   const hTrackRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
+  const ballRef = useRef<HTMLDivElement>(null);
 
   const planeUpdateRef = useRef<((progress: number) => void) | null>(null);
 
@@ -155,14 +157,14 @@ export default function Home() {
           },
 
           onUpdate: (self) => {
-            const value = Math.round(self.progress * 255);
-            if (value === lastColorValue) return;
-            lastColorValue = value;
-            const hex = value.toString(16).padStart(2, "0");
-            document.documentElement.style.setProperty(
-              "--wave-color",
-              `#${hex}${hex}${hex}`,
-            );
+            planeUpdateRef.current?.(Math.min(self.progress, 1));
+
+            if (ballRef.current) {
+              const ballProgress = Math.max(0, (self.progress - 1.0) / 0.05);
+              const scale = ballProgress * 180;
+              ballRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
+              ballRef.current.style.opacity = ballProgress > 0 ? "1" : "0";
+            }
           },
         },
       });
@@ -187,7 +189,7 @@ export default function Home() {
         scrollTrigger: {
           trigger: hScrollRef.current,
           start: "top top",
-          end: () => `+=${getTotalWidth()}`,
+          end: () => `+=${getTotalWidth() + 800}`,
           scrub: true,
           pin: true,
           anticipatePin: 1,
@@ -206,7 +208,14 @@ export default function Home() {
           },
 
           onUpdate: (self) => {
-            planeUpdateRef.current?.(self.progress);
+            planeUpdateRef.current?.(Math.min(self.progress, 1)); // plane tetap max di 1
+
+            if (ballRef.current) {
+              const ballProgress = Math.max(0, (self.progress - 0.95) / 0.05);
+              const scale = ballProgress * 180;
+              ballRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
+              ballRef.current.style.opacity = ballProgress > 0 ? "1" : "0";
+            }
           },
         },
       });
@@ -230,7 +239,6 @@ export default function Home() {
         <Navbar />
         <UpperSvg ref={waveRef} />
       </div>
-
       {/* Section 1: scroll → hitam ke putih */}
       <div
         ref={section1Ref}
@@ -253,7 +261,6 @@ export default function Home() {
           development."
         </h1>
       </div>
-
       {/* Section 2: Horizontal scroll */}
       <div ref={hScrollRef} className="section-panel relative bg-black">
         <LowerSvg />
@@ -265,6 +272,34 @@ export default function Home() {
           ></div>
         </HorizontalScroll>
       </div>
+      {/* Ball Animation */}
+      <div
+        ref={ballRef}
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          width: "20px",
+          height: "20px",
+          borderRadius: "50%",
+          background: "#ffffff",
+          transform: "translate(-50%, -50%) scale(0)",
+          zIndex: 99,
+          pointerEvents: "none",
+        }}
+      />
+      {/* Section 3 */}
+      <div
+        ref={section3Ref}
+        className="section-panel h-screen flex items-center justify-center"
+        style={{
+          backgroundColor: "#ffffff",
+          position: "relative",
+          zIndex: 100,
+        }}
+      >
+        <p className="text-black text-4xl">technologies</p>
+      </div>{" "}
     </div>
   );
 }
