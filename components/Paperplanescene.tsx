@@ -43,6 +43,21 @@ function buildCatmullRom(pts: { x: number; y: number }[]) {
   return d;
 }
 
+const SKILL_STOPS = [
+  { progress: 0.12, label: "React", sub: "UI Library", offsetY: -80 },
+  {
+    progress: 0.25,
+    label: "Next.js",
+    sub: "Full Stack Framework",
+    offsetY: 0,
+  }, 
+  { progress: 0.38, label: "TypeScript", sub: "Type Safety", offsetY: -80 },
+  { progress: 0.52, label: "Node.js", sub: "Backend Runtime", offsetY: 0 },
+  { progress: 0.65, label: "Tailwind CSS", sub: "Styling", offsetY: -80 },
+  { progress: 0.78, label: "PostgreSQL", sub: "Database", offsetY: 0 },
+  { progress: 0.9, label: "Docker", sub: "DevOps", offsetY: -80 },
+];
+
 interface PaperPlaneSceneProps {
   trackRef: React.RefObject<HTMLDivElement | null>;
   onReady: (update: (progress: number) => void) => void;
@@ -54,12 +69,44 @@ export default function PaperPlaneScene({
 }: PaperPlaneSceneProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const planeRef = useRef<HTMLDivElement>(null);
+  const skillRefsMap = useRef<Map<number, HTMLDivElement>>(new Map());
 
   const measureRef = useRef<SVGPathElement | null>(null);
   const trailRef = useRef<SVGPathElement | null>(null);
   const glowRef = useRef<SVGPathElement | null>(null);
   const planeGRef = useRef<SVGGElement | null>(null);
   const totalLenRef = useRef<number>(0);
+  const skillPositionsRef = useRef<{ x: number; y: number; above: boolean }[]>(
+    [],
+  );
+
+  const positionSkillLabels = useCallback(() => {
+    const measureEl = measureRef.current;
+    const track = trackRef.current;
+    if (!measureEl || !track) return;
+
+    const totalLen = totalLenRef.current;
+    if (totalLen === 0) return;
+
+    const trackW = track.scrollWidth;
+    const trackH = track.clientHeight;
+
+    SKILL_STOPS.forEach((stop, i) => {
+      const len = Math.min(totalLen * stop.progress, totalLen * 0.9998);
+      const pt = measureEl.getPointAtLength(len);
+
+      const xPx = (pt.x / 100) * trackW;
+      const yPx = (pt.y / 100) * trackH;
+
+      const el = skillRefsMap.current.get(i);
+      if (!el) return;
+
+      el.style.left = `${xPx}px`;
+      el.style.top = `${yPx + stop.offsetY}px`;
+      el.style.opacity = "0";
+      el.style.transform = "translate(-50%, 0px)";
+    });
+  }, [trackRef]);
 
   const update = useCallback(
     (progress: number) => {
@@ -99,6 +146,26 @@ export default function PaperPlaneScene({
       const offset = totalLen * (1 - progress);
       trailEl.style.strokeDashoffset = String(offset);
       glowEl.style.strokeDashoffset = String(offset);
+
+      // Update visibility skill labels
+      SKILL_STOPS.forEach((stop, i) => {
+        const el = skillRefsMap.current.get(i);
+        if (!el) return;
+
+        const arrived = progress >= stop.progress - 0.01;
+        const passed = progress >= stop.progress + 0.15;
+
+        if (arrived && !passed) {
+          el.style.opacity = "1";
+          el.style.transform = "translate(-50%, 0px)";
+        } else if (!arrived) {
+          el.style.opacity = "0";
+          el.style.transform = "translate(-50%, 10px)";
+        } else {
+          el.style.opacity = "0";
+          el.style.transform = "translate(-50%, -10px)";
+        }
+      });
     },
     [trackRef],
   );
@@ -135,11 +202,13 @@ export default function PaperPlaneScene({
       glowEl.style.strokeDasharray = String(total);
       glowEl.style.strokeDashoffset = String(total);
 
+      // Posisikan skill labels setelah total length diketahui
+      positionSkillLabels();
+
       update(0.001);
       onReady(update);
     });
 
-    // ✅ Rebuild path saat resize
     const handleResize = () => {
       const pathD = buildCatmullRom(getWaypoints());
       measureRef.current?.setAttribute("d", pathD);
@@ -157,11 +226,13 @@ export default function PaperPlaneScene({
         trailRef.current.style.strokeDasharray = String(total);
         glowRef.current.style.strokeDasharray = String(total);
       }
+
+      positionSkillLabels();
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [update, onReady, trackRef]);
+  }, [update, onReady, trackRef, positionSkillLabels]);
 
   return (
     <>
@@ -198,8 +269,83 @@ export default function PaperPlaneScene({
         />
       </svg>
 
+      {/* Skill Labels — posisi mengikuti titik di path */}
+      {SKILL_STOPS.map((_, i) => (
+        <div
+          key={i}
+          ref={(el) => {
+            if (el) skillRefsMap.current.set(i, el);
+          }}
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            opacity: 0,
+            transform: "translate(-50%, 0px)",
+            transition: "opacity 0.5s ease, transform 0.5s ease",
+            pointerEvents: "none",
+            zIndex: 15,
+            textAlign: "center",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {/* Connector line */}
+          <div
+            style={{
+              width: "1px",
+              height: "20px",
+              background: "rgba(255,255,255,0.3)",
+              margin: "0 auto",
+              display: i % 2 === 0 ? "none" : "block",
+            }}
+          />
+
+          <div
+            style={{
+              padding: "6px 14px",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: "4px",
+              background: "rgba(0,0,0,0.4)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "clamp(0.7rem, 1.2vw, 0.95rem)",
+                fontWeight: 600,
+                color: "white",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              {SKILL_STOPS[i].label}
+            </div>
+            <div
+              style={{
+                fontSize: "clamp(0.55rem, 0.9vw, 0.65rem)",
+                color: "rgba(255,255,255,0.45)",
+                letterSpacing: "0.12em",
+                marginTop: "2px",
+              }}
+            >
+              {SKILL_STOPS[i].sub}
+            </div>
+          </div>
+
+          <div
+            style={{
+              width: "1px",
+              height: "20px",
+              background: "rgba(255,255,255,0.3)",
+              margin: "0 auto",
+              display: i % 2 === 0 ? "block" : "none",
+            }}
+          />
+        </div>
+      ))}
+
       <div
-        className="w-[50px] h-[50px] md:w-[150px] md:h-[150px]"
+        className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
         ref={planeRef}
         style={{
           position: "absolute",
@@ -211,24 +357,11 @@ export default function PaperPlaneScene({
           zIndex: 20,
         }}
       >
-        <svg
-          className="w-[50px] h-[50px] md:w-[150px] md:h-[150px]"
-          viewBox="0 0 100 100"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g id="pp-g" style={{ transformOrigin: "50% 50%" }}>
-            <polygon points="0,50 100,22 75,50" fill="white" />
-            <polygon points="0,50 100,78 75,50" fill="white" />
-            <line
-              x1="0"
-              y1="50"
-              x2="75"
-              y2="50"
-              stroke="rgba(0,0,0,0.12)"
-              strokeWidth="0.5"
-            />
-          </g>
-        </svg>
+        <img
+          src="images/paper-plane.png"
+          className="w-[100px] h-[100px] md:w-[200px] md:h-[200px] rotate-[-130deg]"
+          id="pp-g"
+        />
       </div>
     </>
   );
