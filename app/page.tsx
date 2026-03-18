@@ -26,6 +26,8 @@ export default function Home() {
 
   const planeUpdateRef = useRef<((progress: number) => void) | null>(null);
 
+  const [trackWidth, setTrackWidth] = useState("300vw");
+
   const handlePlaneReady = useCallback((update: (progress: number) => void) => {
     planeUpdateRef.current = update;
   }, []);
@@ -212,10 +214,18 @@ export default function Home() {
       });
     }
 
+    const update = () => {
+      setTrackWidth(window.innerWidth < 768 ? "600vw" : "300vw");
+    };
+
+    update();
+    window.addEventListener("resize", update);
+
     setTimeout(() => ScrollTrigger.refresh(), 100);
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("resize", update);
       lenis.destroy();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
@@ -261,7 +271,7 @@ export default function Home() {
           <PaperPlaneScene trackRef={hTrackRef} onReady={handlePlaneReady} />
           <div
             className="flex justify-end items-end text-white"
-            style={{ minWidth: "300vw", height: "100vh" }}
+            style={{ minWidth: trackWidth, height: "100vh" }}
           ></div>
         </HorizontalScroll>
       </div>
