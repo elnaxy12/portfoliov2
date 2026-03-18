@@ -25,8 +25,6 @@ export default function Home() {
   const lenisRef = useRef<Lenis | null>(null);
 
   const planeUpdateRef = useRef<((progress: number) => void) | null>(null);
-  const [arrived, setArrived] = useState(false);
-  const arrivedRef = useRef(false);
 
   const handlePlaneReady = useCallback((update: (progress: number) => void) => {
     planeUpdateRef.current = update;
@@ -209,15 +207,6 @@ export default function Home() {
 
           onUpdate: (self) => {
             planeUpdateRef.current?.(self.progress);
-
-            if (self.progress >= 0.98 && !arrivedRef.current) {
-              arrivedRef.current = true;
-              setTimeout(() => setArrived(true), 400);
-            }
-            if (self.progress < 0.95 && arrivedRef.current) {
-              arrivedRef.current = false;
-              setArrived(false);
-            }
           },
         },
       });
@@ -234,47 +223,6 @@ export default function Home() {
 
   return (
     <div>
-      {/* Welcome Text Overlay */}
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
-          zIndex: 50,
-          opacity: arrived ? 1 : 0,
-          transition: "opacity 1.4s ease",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <h1
-            style={{
-              color: "white",
-              fontSize: "clamp(3rem, 8vw, 7rem)",
-              fontWeight: 200,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              margin: 0,
-            }}
-          >
-            Welcome
-          </h1>
-          <p
-            style={{
-              color: "rgba(255,255,255,0.4)",
-              fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
-              letterSpacing: "0.5em",
-              marginTop: "1rem",
-              textTransform: "uppercase",
-            }}
-          >
-            To My Website Visitors
-          </p>
-        </div>
-      </div>
-
       {/* Section 0: Hero */}
       <div className="section-panel h-screen bg-black relative">
         <ParallaxHero />
