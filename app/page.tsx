@@ -213,7 +213,7 @@ export default function Home() {
       ScrollTrigger.create({
         trigger: ballSectionRef.current,
         start: "top top",
-        end: "+=1200",
+        end: "+=500",
         scrub: true,
         pin: true,
         anticipatePin: 1,
@@ -311,7 +311,7 @@ export default function Home() {
           height: "20px",
           borderRadius: "50%",
           background: "#ffffff",
-          transform: "translate(-50%, -50%) scale(0)",
+          transform: "translate(-50%, -50%) scale(1)",
           zIndex: 999,
           pointerEvents: "none",
         }}
