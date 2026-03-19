@@ -214,7 +214,7 @@ export default function Home() {
         trigger: ballSectionRef.current,
         start: "top top",
         end: "+=1200",
-        scrub: true,
+        scrub: 2,
         pin: true,
         anticipatePin: 1,
         onEnter: () => {
