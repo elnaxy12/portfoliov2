@@ -213,21 +213,15 @@ export default function Home() {
       ScrollTrigger.create({
         trigger: ballSectionRef.current,
         start: "top top",
-        end: "+=500",
+        end: "+=1200",
         scrub: true,
         pin: true,
         anticipatePin: 1,
         onEnter: () => {
-          currentIndex.current = 3;
-        },
-        onLeave: () => {
-          currentIndex.current = 4;
-        },
-        onEnterBack: () => {
-          currentIndex.current = 3;
+          if (ballRef.current) ballRef.current.style.display = "block"; // ← tampilkan
         },
         onLeaveBack: () => {
-          currentIndex.current = 2;
+          if (ballRef.current) ballRef.current.style.display = "none"; // ← sembunyikan
         },
         onUpdate: (self) => {
           updateBall(self.progress, 0, 1, 180);
@@ -314,6 +308,7 @@ export default function Home() {
           transform: "translate(-50%, -50%) scale(1)",
           zIndex: 999,
           pointerEvents: "none",
+          display: "none",
         }}
       />
 
