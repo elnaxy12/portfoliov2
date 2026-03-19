@@ -1,17 +1,34 @@
-export default function LowerSvg() {
+// LowerSvg.tsx
+import { forwardRef } from "react";
+
+const LowerSvg = forwardRef<SVGSVGElement>((_, ref) => {
   return (
-    <div className="absolute top-0 w-full overflow-hidden leading-[0] z-50 pointer-events-none bg-black">
+    <div
+      style={{
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        width: "100%",
+        lineHeight: 0,
+        pointerEvents: "none",
+        zIndex: 10,
+      }}
+    >
       <svg
-        viewBox="0 0 1200 120"
+        ref={ref}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1440 120"
         preserveAspectRatio="none"
-        className="relative block w-full h-10 md:h-20"
-        style={{ transform: "rotate(180deg)" }}
+        style={{ display: "block", width: "100%", height: "120px" }}
       >
         <path
-          d="M0,120 C600,0 600,0 1200,120 L1200,120 L0,120 Z"
-          fill="white"
+          d="M0,0 C360,120 1080,120 1440,0 L1440,120 L0,120 Z"
+          fill="#000000"
         />
       </svg>
     </div>
   );
-}
+});
+
+LowerSvg.displayName = "LowerSvg";
+export default LowerSvg;

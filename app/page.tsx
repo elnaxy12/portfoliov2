@@ -208,7 +208,7 @@ export default function Home() {
       });
     }
 
-    // Section 3: Ball putih membesar di bg hitam
+    // Section 3 + 4: Ball putih membesar, lalu konten technologies muncul
     if (ballSectionRef.current) {
       ScrollTrigger.create({
         trigger: ballSectionRef.current,
@@ -218,13 +218,36 @@ export default function Home() {
         pin: true,
         anticipatePin: 1,
         onEnter: () => {
-          if (ballRef.current) ballRef.current.style.display = "block"; // ← tampilkan
+          currentIndex.current = 3;
+        },
+        onLeave: () => {
+          currentIndex.current = 4;
+        },
+        onEnterBack: () => {
+          currentIndex.current = 3;
         },
         onLeaveBack: () => {
-          if (ballRef.current) ballRef.current.style.display = "none"; // ← sembunyikan
+          currentIndex.current = 2;
         },
         onUpdate: (self) => {
-          updateBall(self.progress, 0, 1, 180);
+          if (!ballRef.current) return;
+
+          const progress = self.progress;
+
+          // Scale ball hingga memenuhi seluruh layar
+          const maxScale =
+            Math.ceil(
+              Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 20,
+            ) + 5;
+
+          const scale = 1 + progress * maxScale;
+          ballRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+          // Fade-in konten section4 di 80% terakhir
+          if (section4Ref.current) {
+            const contentOpacity = progress > 0.8 ? (progress - 0.8) / 0.2 : 0;
+            section4Ref.current.style.opacity = String(contentOpacity);
+          }
         },
       });
     }
@@ -269,11 +292,11 @@ export default function Home() {
           learn new technologies and improve my skills in full stack
           development."
         </h1>
+        <LowerSvg />
       </div>
 
       {/* Section 2: Horizontal scroll + paper plane */}
       <div ref={hScrollRef} className="section-panel relative bg-black">
-        <LowerSvg />
         <HorizontalScroll trackRef={hTrackRef}>
           <PaperPlaneScene trackRef={hTrackRef} onReady={handlePlaneReady} />
           <div
@@ -294,35 +317,44 @@ export default function Home() {
         }}
       />
 
-      {/* Ball */}
+      {/* Section 3: Ball putih membesar */}
       <div
-        ref={ballRef}
-        style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          width: "20px",
-          height: "20px",
-          borderRadius: "50%",
-          background: "#ffffff",
-          transform: "translate(-50%, -50%) scale(1)",
-          zIndex: 999,
-          pointerEvents: "none",
-          display: "none",
-        }}
-      />
-
-      {/* Section 4: Technologies */}
-      <div
-        ref={section4Ref}
+        ref={ballSectionRef}
         className="section-panel h-screen flex items-center justify-center"
         style={{
-          backgroundColor: "#ffffff",
+          backgroundColor: "#000000",
           position: "relative",
-          zIndex: 1000,
+          overflow: "hidden",
         }}
       >
-        <p className="text-black text-4xl">technologies</p>
+        {/* Ball sekaligus jadi background Section 4 */}
+        <div
+          ref={ballRef}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: "20px",
+            height: "20px",
+            borderRadius: "50%",
+            background: "#ffffff",
+            transform: "translate(-50%, -50%) scale(1)",
+            zIndex: 2,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Konten Section 4 — muncul saat ball sudah memenuhi layar */}
+        <div
+          ref={section4Ref}
+          style={{
+            position: "relative",
+            zIndex: 3,
+            opacity: 0,
+          }}
+        >
+          <p className="text-black text-4xl">technologies</p>
+        </div>
       </div>
     </div>
   );
