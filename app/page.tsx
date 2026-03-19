@@ -292,16 +292,23 @@ export default function Home() {
           learn new technologies and improve my skills in full stack
           development."
         </h1>
-        <LowerSvg />
       </div>
 
       {/* Section 2: Horizontal scroll + paper plane */}
-      <div ref={hScrollRef} className="section-panel relative bg-black">
+      <div className="section-panel h-[50vh] relative bg-black">
+        <LowerSvg />
+      </div>
+
+      <div ref={hScrollRef} className="section-panel bg-black">
         <HorizontalScroll trackRef={hTrackRef}>
           <PaperPlaneScene trackRef={hTrackRef} onReady={handlePlaneReady} />
           <div
             className="flex"
-            style={{ minWidth: "300vw", height: "100vh" }}
+            style={{
+              minWidth: "300vw",
+              height: "100vh",
+              paddingBottom: "120px",
+            }}
           ></div>
         </HorizontalScroll>
       </div>
@@ -309,7 +316,7 @@ export default function Home() {
       {/* Section 3: Ball putih membesar */}
       <div
         ref={ballSectionRef}
-        className="section-panel h-screen"
+        className="section-panel h-[1px]"
         style={{
           backgroundColor: "#000000",
           position: "relative",
@@ -353,7 +360,7 @@ export default function Home() {
             opacity: 0,
           }}
         >
-          <p className="text-black text-4xl">technologies</p>
+          <p className="text-black text-4xl">Capek;|</p>
         </div>
       </div>
     </div>
