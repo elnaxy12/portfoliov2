@@ -28,7 +28,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
             flexWrap: "nowrap",
             height: "100%",
             willChange: "transform",
-            position: "relative", // ← wajib agar plane bisa absolute di sini
+            position: "relative",
           }}
         >
           {children}

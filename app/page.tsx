@@ -2,7 +2,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
 import Lenis from "lenis";
 
 import Navbar from "../components/Navbar";
@@ -13,18 +12,21 @@ import ParallaxHero from "../components/ParallaxHero";
 import PaperPlaneScene from "../components/Paperplanescene";
 import HorizontalScroll from "../components/Horizontalscroll";
 
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+import { useBallAnimation } from "../hooks/useBallAnimation";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
   const isAnimating = useRef(false);
   const currentIndex = useRef(0);
   const section1Ref = useRef<HTMLDivElement>(null);
-  const section3Ref = useRef<HTMLDivElement>(null);
+  const ballSectionRef = useRef<HTMLDivElement>(null);
+  const section4Ref = useRef<HTMLDivElement>(null);
   const waveRef = useRef<HTMLDivElement>(null);
   const hScrollRef = useRef<HTMLDivElement>(null);
   const hTrackRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
-  const ballRef = useRef<HTMLDivElement>(null);
+  const { ballRef, updateBall } = useBallAnimation();
 
   const planeUpdateRef = useRef<((progress: number) => void) | null>(null);
 
@@ -92,9 +94,8 @@ export default function Home() {
       );
     });
 
+    // Section 1: hitam → putih
     if (section1Ref.current) {
-      let lastColorValue = -1;
-
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section1Ref.current,
@@ -156,16 +157,7 @@ export default function Home() {
             );
           },
 
-          onUpdate: (self) => {
-            planeUpdateRef.current?.(Math.min(self.progress, 1));
-
-            if (ballRef.current) {
-              const ballProgress = Math.max(0, (self.progress - 1.0) / 0.05);
-              const scale = ballProgress * 180;
-              ballRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
-              ballRef.current.style.opacity = ballProgress > 0 ? "1" : "0";
-            }
-          },
+          onUpdate: (self) => {},
         },
       });
 
@@ -179,6 +171,7 @@ export default function Home() {
       );
     }
 
+    // Section 2: Horizontal scroll + paper plane
     if (hScrollRef.current && hTrackRef.current) {
       const track = hTrackRef.current;
       const getTotalWidth = () => track.scrollWidth - window.innerWidth;
@@ -196,27 +189,48 @@ export default function Home() {
           invalidateOnRefresh: true,
           onEnter: () => {
             currentIndex.current = 2;
+            planeUpdateRef.current?.(0);
           },
           onLeave: () => {
-            currentIndex.current = 2;
+            currentIndex.current = 3;
           },
           onEnterBack: () => {
             currentIndex.current = 2;
+            planeUpdateRef.current?.(0);
           },
           onLeaveBack: () => {
             currentIndex.current = 1;
           },
-
           onUpdate: (self) => {
-            planeUpdateRef.current?.(Math.min(self.progress, 1)); // plane tetap max di 1
-
-            if (ballRef.current) {
-              const ballProgress = Math.max(0, (self.progress - 0.95) / 0.05);
-              const scale = ballProgress * 180;
-              ballRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
-              ballRef.current.style.opacity = ballProgress > 0 ? "1" : "0";
-            }
+            planeUpdateRef.current?.(Math.min(self.progress, 1));
           },
+        },
+      });
+    }
+
+    // Section 3: Ball putih membesar di bg hitam
+    if (ballSectionRef.current) {
+      ScrollTrigger.create({
+        trigger: ballSectionRef.current,
+        start: "top top",
+        end: "+=1200",
+        scrub: true,
+        pin: true,
+        anticipatePin: 1,
+        onEnter: () => {
+          currentIndex.current = 3;
+        },
+        onLeave: () => {
+          currentIndex.current = 4;
+        },
+        onEnterBack: () => {
+          currentIndex.current = 3;
+        },
+        onLeaveBack: () => {
+          currentIndex.current = 2;
+        },
+        onUpdate: (self) => {
+          updateBall(self.progress, 0, 1, 180);
         },
       });
     }
@@ -228,7 +242,7 @@ export default function Home() {
       lenis.destroy();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
-  }, []);
+  }, [updateBall]);
 
   return (
     <div>
@@ -239,6 +253,7 @@ export default function Home() {
         <Navbar />
         <UpperSvg ref={waveRef} />
       </div>
+
       {/* Section 1: scroll → hitam ke putih */}
       <div
         ref={section1Ref}
@@ -261,18 +276,31 @@ export default function Home() {
           development."
         </h1>
       </div>
-      {/* Section 2: Horizontal scroll */}
+
+      {/* Section 2: Horizontal scroll + paper plane */}
       <div ref={hScrollRef} className="section-panel relative bg-black">
         <LowerSvg />
         <HorizontalScroll trackRef={hTrackRef}>
           <PaperPlaneScene trackRef={hTrackRef} onReady={handlePlaneReady} />
           <div
-            className="flex justify-end items-end text-white"
+            className="flex"
             style={{ minWidth: "300vw", height: "100vh" }}
           ></div>
         </HorizontalScroll>
       </div>
-      {/* Ball Animation */}
+
+      {/* Section 3: Ball putih membesar */}
+      <div
+        ref={ballSectionRef}
+        className="section-panel h-screen"
+        style={{
+          backgroundColor: "#000000",
+          position: "relative",
+          zIndex: 100,
+        }}
+      />
+
+      {/* Ball */}
       <div
         ref={ballRef}
         style={{
@@ -284,22 +312,23 @@ export default function Home() {
           borderRadius: "50%",
           background: "#ffffff",
           transform: "translate(-50%, -50%) scale(0)",
-          zIndex: 99,
+          zIndex: 999,
           pointerEvents: "none",
         }}
       />
-      {/* Section 3 */}
+
+      {/* Section 4: Technologies */}
       <div
-        ref={section3Ref}
+        ref={section4Ref}
         className="section-panel h-screen flex items-center justify-center"
         style={{
           backgroundColor: "#ffffff",
           position: "relative",
-          zIndex: 100,
+          zIndex: 1000,
         }}
       >
         <p className="text-black text-4xl">technologies</p>
-      </div>{" "}
+      </div>
     </div>
   );
 }
