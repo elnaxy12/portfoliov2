@@ -295,7 +295,7 @@ export default function Home() {
       </div>
 
       {/* Section 2: Horizontal scroll + paper plane */}
-      <div className="section-panel h-[50vh] relative bg-black">
+      <div className="section-panel relative bg-black">
         <LowerSvg />
       </div>
 
