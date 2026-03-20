@@ -11,6 +11,7 @@ import LowerSvg from "../components/svg/LowerSvg";
 import ParallaxHero from "../components/ParallaxHero";
 import PaperPlaneScene from "../components/Paperplanescene";
 import HorizontalScroll from "../components/Horizontalscroll";
+import Section4 from "../components/Section4";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
 
@@ -104,7 +105,6 @@ export default function Home() {
           scrub: true,
           pin: true,
           anticipatePin: 1,
-
           snap: {
             snapTo: [0, 1],
             directional: true,
@@ -112,7 +112,6 @@ export default function Home() {
             ease: "power3.inOut",
             inertia: false,
           },
-
           onEnter: () => {
             currentIndex.current = 1;
             requestAnimationFrame(() => {
@@ -122,7 +121,6 @@ export default function Home() {
               }
             });
           },
-
           onEnterBack: () => {
             currentIndex.current = 1;
             requestAnimationFrame(() => {
@@ -132,7 +130,6 @@ export default function Home() {
               }
             });
           },
-
           onLeave: () => {
             currentIndex.current = 2;
             requestAnimationFrame(() => {
@@ -142,7 +139,6 @@ export default function Home() {
               }
             });
           },
-
           onLeaveBack: () => {
             currentIndex.current = 0;
             requestAnimationFrame(() => {
@@ -156,8 +152,7 @@ export default function Home() {
               "#000000",
             );
           },
-
-          onUpdate: (self) => {},
+          onUpdate: () => {},
         },
       });
 
@@ -208,7 +203,7 @@ export default function Home() {
       });
     }
 
-    // Section 3 + 4: Ball putih membesar, lalu konten technologies muncul
+    // Section 3 + 4: Ball putih membesar, lalu konten muncul
     if (ballSectionRef.current) {
       ScrollTrigger.create({
         trigger: ballSectionRef.current,
@@ -234,7 +229,6 @@ export default function Home() {
 
           const progress = self.progress;
 
-          // Scale ball hingga memenuhi seluruh layar
           const maxScale =
             Math.ceil(
               Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 20,
@@ -243,10 +237,36 @@ export default function Home() {
           const scale = 1 + progress * maxScale;
           ballRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
 
-          // Fade-in konten section4 di 80% terakhir
+          // Fade-in section4 wrapper di 80–100% progress
           if (section4Ref.current) {
             const contentOpacity = progress > 0.8 ? (progress - 0.8) / 0.2 : 0;
             section4Ref.current.style.opacity = String(contentOpacity);
+
+            // Stagger kartu satu kali saat progress melewati 0.82
+            const cards =
+              section4Ref.current.querySelectorAll<HTMLElement>(
+                ".offering-card",
+              );
+            if (progress > 0.82) {
+              cards.forEach((card, i) => {
+                if (card.dataset.animated) return; // jangan ulang
+                card.dataset.animated = "1";
+                setTimeout(() => {
+                  card.style.transition =
+                    "opacity 0.45s ease, transform 0.45s ease";
+                  card.style.opacity = "1";
+                  card.style.transform = "translateY(0)";
+                }, i * 90);
+              });
+            } else {
+              // Reset saat scroll balik
+              cards.forEach((card) => {
+                delete card.dataset.animated;
+                card.style.transition = "none";
+                card.style.opacity = "0";
+                card.style.transform = "translateY(16px)";
+              });
+            }
           }
         },
       });
@@ -260,6 +280,17 @@ export default function Home() {
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, [updateBall]);
+
+  // Set initial state kartu sebelum animasi
+  useEffect(() => {
+    if (!section4Ref.current) return;
+    const cards =
+      section4Ref.current.querySelectorAll<HTMLElement>(".offering-card");
+    cards.forEach((card) => {
+      card.style.opacity = "0";
+      card.style.transform = "translateY(16px)";
+    });
+  }, []);
 
   return (
     <div>
@@ -309,32 +340,22 @@ export default function Home() {
               height: "100vh",
               paddingBottom: "120px",
             }}
-          ></div>
+          />
         </HorizontalScroll>
       </div>
 
-      {/* Section 3: Ball putih membesar */}
+      {/* Section 3+4: Ball membesar → Section4 muncul */}
+      {/* ✅ Hanya SATU div dengan ballSectionRef — duplikat h-[1px] dihapus */}
       <div
         ref={ballSectionRef}
-        className="section-panel h-[1px]"
-        style={{
-          backgroundColor: "#000000",
-          position: "relative",
-          zIndex: 100,
-        }}
-      />
-
-      {/* Section 3: Ball putih membesar */}
-      <div
-        ref={ballSectionRef}
-        className="section-panel h-screen flex items-center justify-center"
+        className="section-panel h-screen flex items-start justify-center"
         style={{
           backgroundColor: "#000000",
           position: "relative",
           overflow: "hidden",
         }}
       >
-        {/* Ball sekaligus jadi background Section 4 */}
+        {/* Ball yang membesar jadi background putih */}
         <div
           ref={ballRef}
           style={{
@@ -351,16 +372,22 @@ export default function Home() {
           }}
         />
 
-        {/* Konten Section 4 — muncul saat ball sudah memenuhi layar */}
+        {/* Section4 — opacity dikontrol onUpdate di atas */}
         <div
           ref={section4Ref}
           style={{
             position: "relative",
             zIndex: 3,
             opacity: 0,
+            width: "100%",
+            padding: "0 2rem",
+            maxHeight: "100vh",
+            overflowY: "auto",
+            alignSelf: "flex-start",
+            paddingTop: "1.5rem",
           }}
         >
-          <p className="text-black text-4xl">Capek;|</p>
+          <Section4 />
         </div>
       </div>
     </div>
