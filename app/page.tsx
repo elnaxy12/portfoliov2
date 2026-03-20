@@ -348,7 +348,7 @@ export default function Home() {
       {/* ✅ Hanya SATU div dengan ballSectionRef — duplikat h-[1px] dihapus */}
       <div
         ref={ballSectionRef}
-        className="section-panel h-screen flex items-start justify-center"
+        className="section-panel h-screen flex items-start md:items-center justify-center"
         style={{
           backgroundColor: "#000000",
           position: "relative",
@@ -383,7 +383,7 @@ export default function Home() {
             padding: "0 2rem",
             maxHeight: "100vh",
             overflowY: "auto",
-            alignSelf: "flex-start",
+            alignSelf: "flex-center",
             paddingTop: "1.5rem",
           }}
         >
