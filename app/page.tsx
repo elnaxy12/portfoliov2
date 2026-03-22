@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import Lenis from "lenis";
 
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -14,10 +13,17 @@ import HorizontalScroll from "../components/Horizontalscroll";
 import Section4 from "../components/Section4";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
+import { useLenis } from "../hooks/useLenis";
+import { useSectionAnimations } from "../hooks/useSectionAnimations";
+import { useSection1 } from "../hooks/useSection1";
+import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
+import { useBallSection } from "../hooks/useballsection";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
+  const scrollXRef = useRef<number>(0);
+  const [scrollX, setScrollX] = useState(0);
   const isAnimating = useRef(false);
   const currentIndex = useRef(0);
   const section1Ref = useRef<HTMLDivElement>(null);
@@ -25,272 +31,20 @@ export default function Home() {
   const section4Ref = useRef<HTMLDivElement>(null);
   const waveRef = useRef<HTMLDivElement>(null);
   const hScrollRef = useRef<HTMLDivElement>(null);
-  const hTrackRef = useRef<HTMLDivElement>(null);
-  const lenisRef = useRef<Lenis | null>(null);
-  const { ballRef, updateBall } = useBallAnimation();
-
+  const trackRef = useRef<HTMLDivElement>(null);
   const planeUpdateRef = useRef<((progress: number) => void) | null>(null);
 
-  const handlePlaneReady = useCallback((update: (progress: number) => void) => {
+  const { ballRef } = useBallAnimation();
+
+  const handleReady = useCallback((update: (progress: number) => void) => {
     planeUpdateRef.current = update;
   }, []);
 
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      eventsTarget: window,
-    });
-    lenisRef.current = lenis;
-
-    lenis.on("scroll", () => ScrollTrigger.update());
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
-    gsap.ticker.lagSmoothing(0);
-
-    const sections = gsap.utils.toArray<HTMLElement>(".section-panel");
-
-    const scrollToSection = (index: number) => {
-      if (isAnimating.current) return;
-      isAnimating.current = true;
-      currentIndex.current = index;
-
-      lenis.scrollTo(sections[index] as HTMLElement, {
-        duration: 1,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        onComplete: () => {
-          isAnimating.current = false;
-        },
-      });
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (currentIndex.current !== 0) return;
-      e.preventDefault();
-      if (e.deltaY > 50) {
-        scrollToSection(1);
-      }
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-
-    sections.forEach((el) => {
-      const title = el.querySelector(".sesi-title");
-      if (!title) return;
-
-      gsap.fromTo(
-        title,
-        { opacity: 0, y: 60 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 75%",
-            toggleActions: "play none none reverse",
-          },
-        },
-      );
-    });
-
-    // Section 1: hitam → putih
-    if (section1Ref.current) {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section1Ref.current,
-          start: "top top",
-          end: "+=600",
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          snap: {
-            snapTo: [0, 1],
-            directional: true,
-            duration: { min: 0.3, max: 0.8 },
-            ease: "power3.inOut",
-            inertia: false,
-          },
-          onEnter: () => {
-            currentIndex.current = 1;
-            requestAnimationFrame(() => {
-              if (waveRef.current) {
-                waveRef.current.classList.remove("wave-absolute");
-                waveRef.current.classList.add("wave-sticky");
-              }
-            });
-          },
-          onEnterBack: () => {
-            currentIndex.current = 1;
-            requestAnimationFrame(() => {
-              if (waveRef.current) {
-                waveRef.current.classList.remove("wave-absolute");
-                waveRef.current.classList.add("wave-sticky");
-              }
-            });
-          },
-          onLeave: () => {
-            currentIndex.current = 2;
-            requestAnimationFrame(() => {
-              if (waveRef.current) {
-                waveRef.current.classList.remove("wave-sticky");
-                waveRef.current.classList.add("wave-absolute");
-              }
-            });
-          },
-          onLeaveBack: () => {
-            currentIndex.current = 0;
-            requestAnimationFrame(() => {
-              if (waveRef.current) {
-                waveRef.current.classList.remove("wave-sticky");
-                waveRef.current.classList.add("wave-absolute");
-              }
-            });
-            document.documentElement.style.setProperty(
-              "--wave-color",
-              "#000000",
-            );
-          },
-          onUpdate: () => {},
-        },
-      });
-
-      tl.to(section1Ref.current, {
-        backgroundColor: "#ffffff",
-        ease: "none",
-      }).to(
-        section1Ref.current.querySelector(".sesi-title"),
-        { color: "#000000", ease: "none" },
-        "<",
-      );
-    }
-
-    // Section 2: Horizontal scroll + paper plane
-    if (hScrollRef.current && hTrackRef.current) {
-      const track = hTrackRef.current;
-      const getTotalWidth = () => track.scrollWidth - window.innerWidth;
-
-      gsap.to(track, {
-        x: () => -getTotalWidth(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: hScrollRef.current,
-          start: "top top",
-          end: () => `+=${getTotalWidth() + 800}`,
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onEnter: () => {
-            currentIndex.current = 2;
-            planeUpdateRef.current?.(0);
-          },
-          onLeave: () => {
-            currentIndex.current = 3;
-          },
-          onEnterBack: () => {
-            currentIndex.current = 2;
-            planeUpdateRef.current?.(0);
-          },
-          onLeaveBack: () => {
-            currentIndex.current = 1;
-          },
-          onUpdate: (self) => {
-            planeUpdateRef.current?.(Math.min(self.progress, 1));
-          },
-        },
-      });
-    }
-
-    // Section 3 + 4: Ball putih membesar, lalu konten muncul
-    if (ballSectionRef.current) {
-      ScrollTrigger.create({
-        trigger: ballSectionRef.current,
-        start: "top top",
-        end: "+=1200",
-        scrub: 2,
-        pin: true,
-        anticipatePin: 1,
-        onEnter: () => {
-          currentIndex.current = 3;
-        },
-        onLeave: () => {
-          currentIndex.current = 4;
-        },
-        onEnterBack: () => {
-          currentIndex.current = 3;
-        },
-        onLeaveBack: () => {
-          currentIndex.current = 2;
-        },
-        onUpdate: (self) => {
-          if (!ballRef.current) return;
-
-          const progress = self.progress;
-
-          const maxScale =
-            Math.ceil(
-              Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 20,
-            ) + 5;
-
-          const scale = 1 + progress * maxScale;
-          ballRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
-
-          // Fade-in section4 wrapper di 80–100% progress
-          if (section4Ref.current) {
-            const contentOpacity = progress > 0.8 ? (progress - 0.8) / 0.2 : 0;
-            section4Ref.current.style.opacity = String(contentOpacity);
-
-            // Stagger kartu satu kali saat progress melewati 0.82
-            const cards =
-              section4Ref.current.querySelectorAll<HTMLElement>(
-                ".offering-card",
-              );
-            if (progress > 0.82) {
-              cards.forEach((card, i) => {
-                if (card.dataset.animated) return; // jangan ulang
-                card.dataset.animated = "1";
-                setTimeout(() => {
-                  card.style.transition =
-                    "opacity 0.45s ease, transform 0.45s ease";
-                  card.style.opacity = "1";
-                  card.style.transform = "translateY(0)";
-                }, i * 90);
-              });
-            } else {
-              // Reset saat scroll balik
-              cards.forEach((card) => {
-                delete card.dataset.animated;
-                card.style.transition = "none";
-                card.style.opacity = "0";
-                card.style.transform = "translateY(16px)";
-              });
-            }
-          }
-        },
-      });
-    }
-
-    setTimeout(() => ScrollTrigger.refresh(), 100);
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-      lenis.destroy();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
-  }, [updateBall]);
-
-  // Set initial state kartu sebelum animasi
-  useEffect(() => {
-    if (!section4Ref.current) return;
-    const cards =
-      section4Ref.current.querySelectorAll<HTMLElement>(".offering-card");
-    cards.forEach((card) => {
-      card.style.opacity = "0";
-      card.style.transform = "translateY(16px)";
-    });
-  }, []);
+  const lenisRef = useLenis((x) => setScrollX(x));
+  useSectionAnimations(lenisRef, currentIndex, isAnimating);
+  useSection1(section1Ref, waveRef, currentIndex);
+  useHorizontalScroll(hScrollRef, trackRef, planeUpdateRef, currentIndex);
+  useBallSection(ballSectionRef, ballRef, section4Ref, currentIndex);
 
   return (
     <div>
@@ -331,8 +85,12 @@ export default function Home() {
       </div>
 
       <div ref={hScrollRef} className="section-panel bg-black">
-        <HorizontalScroll trackRef={hTrackRef}>
-          <PaperPlaneScene trackRef={hTrackRef} onReady={handlePlaneReady} />
+        <HorizontalScroll trackRef={trackRef} scrollXRef={scrollXRef}>
+          <PaperPlaneScene
+            trackRef={trackRef}
+            onReady={handleReady}
+            scrollXRef={scrollXRef}
+          />
           <div
             className="flex"
             style={{
@@ -345,7 +103,6 @@ export default function Home() {
       </div>
 
       {/* Section 3+4: Ball membesar → Section4 muncul */}
-      {/* ✅ Hanya SATU div dengan ballSectionRef — duplikat h-[1px] dihapus */}
       <div
         ref={ballSectionRef}
         className="section-panel h-screen flex items-start md:items-center justify-center"
@@ -355,7 +112,6 @@ export default function Home() {
           overflow: "hidden",
         }}
       >
-        {/* Ball yang membesar jadi background putih */}
         <div
           ref={ballRef}
           style={{
@@ -372,7 +128,6 @@ export default function Home() {
           }}
         />
 
-        {/* Section4 — opacity dikontrol onUpdate di atas */}
         <div
           ref={section4Ref}
           style={{
