@@ -14,20 +14,33 @@ const IMAGE_URLS = [
 ];
 
 const OFFSCREEN_SIZE = 100;
+const PARTICLE_SEED = 42;
 const LERP_SPEED = 0.06;
+
+function makeRng(seed: number) {
+  let s = seed;
+  return () => {
+    s |= 0;
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
 function getWaypoints() {
+  // Flat, gerakan mendatar
   return [
-    { x: -3, y: 50 },
-    { x: 15, y: 48 },
-    { x: 30, y: 52 },
-    { x: 50, y: 47 },
-    { x: 70, y: 51 },
-    { x: 85, y: 49 },
+    { x: -3,  y: 50 },
+    { x: 15,  y: 48 },
+    { x: 30,  y: 52 },
+    { x: 50,  y: 47 },
+    { x: 70,  y: 51 },
+    { x: 85,  y: 49 },
     { x: 103, y: 50 },
   ];
 }
@@ -49,20 +62,8 @@ function buildCatmullRom(pts: { x: number; y: number }[], offsetY = 0) {
   return d;
 }
 
-// Konfigurasi manual per partikel: size dan posisi Y
-// offsetY: negatif = atas, positif = bawah (dalam unit viewBox 0-100)
-const PARTICLE_CONFIGS = [
-  { size: 160, offsetY: -22 }, // besar, atas
-  { size: 55, offsetY: 18 }, // kecil, bawah
-  { size: 120, offsetY: 20 }, // besar, bawah
-  { size: 45, offsetY: -18 }, // kecil, atas
-  { size: 90, offsetY: 25 }, // sedang, bawah
-  { size: 70, offsetY: -25 }, // sedang, atas
-  { size: 40, offsetY: 12 }, // kecil, sedikit bawah
-];
-
 interface Particle {
-  spawnDelay: number;
+  progressOffset: number; // offset progress dari scroll utama
   offsetY: number;
   size: number;
   rotation: number;
@@ -127,47 +128,46 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
 
         svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
 
+        const rng = makeRng(PARTICLE_SEED);
         const waypoints = getWaypoints();
-        // rotasi random tapi deterministic per index
-        const rotations = [30, 120, 200, 310, 75, 260, 150];
 
-        particlesRef.current = Array.from(
-          { length: PARTICLE_COUNT },
-          (_, i) => {
-            const config = PARTICLE_CONFIGS[i];
-            const spawnDelay = i * 0.04;
+        particlesRef.current = Array.from({ length: PARTICLE_COUNT }, (_, i) => {
+          // Setiap partikel punya progress offset tersebar merata
+          // sehingga mereka tersebar sepanjang path, tidak kumpul
+          const baseProgress = (i + 1) / (PARTICLE_COUNT + 1);
+          const jitter = (rng() - 0.5) * 0.05;
+          const progressOffset = Math.min(Math.max(baseProgress + jitter, 0.05), 0.95);
 
-            const pathEl = document.createElementNS(
-              "http://www.w3.org/2000/svg",
-              "path",
-            );
-            pathEl.setAttribute("class", "particle-path");
-            pathEl.setAttribute("fill", "none");
-            pathEl.setAttribute("stroke", "none");
-            pathEl.setAttribute(
-              "d",
-              buildCatmullRom(waypoints, config.offsetY),
-            );
-            svg.appendChild(pathEl);
+          // Offset Y kecil supaya tidak swing
+          const offsetY = (rng() - 0.5) * 12;
 
-            const totalLen = pathEl.getTotalLength();
-            const pt = pathEl.getPointAtLength(0);
-            const initY = (pt.y / 100) * vh;
+          const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          pathEl.setAttribute("class", "particle-path");
+          pathEl.setAttribute("fill", "none");
+          pathEl.setAttribute("stroke", "none");
+          pathEl.setAttribute("d", buildCatmullRom(waypoints, offsetY));
+          svg.appendChild(pathEl);
 
-            return {
-              spawnDelay,
-              offsetY: config.offsetY,
-              size: config.size,
-              rotation: rotations[i] ?? 0,
-              currentX: -config.size,
-              currentY: initY,
-              currentOpacity: 0,
-              imageIndex: i % IMAGE_URLS.length,
-              pathEl,
-              totalLen,
-            };
-          },
-        );
+          const totalLen = pathEl.getTotalLength();
+
+          // Posisi awal di titik path sesuai progressOffset
+          const pt = pathEl.getPointAtLength(totalLen * progressOffset);
+          const initX = (pt.x / 100) * trackW;
+          const initY = (pt.y / 100) * vh;
+
+          return {
+            progressOffset,
+            offsetY,
+            size: 40 + rng() * rng() * 160,
+            rotation: rng() * 360,
+            currentX: initX,
+            currentY: initY,
+            currentOpacity: 0,
+            imageIndex: i % IMAGE_URLS.length,
+            pathEl,
+            totalLen,
+          };
+        });
       };
 
       const resize = () => {
@@ -202,8 +202,12 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
           const ready = offscreenReadyRef.current[p.imageIndex];
           if (!ready || !offscreen || p.totalLen === 0) return;
 
+          // Setiap partikel bergerak di progressnya sendiri:
+          // scrollProgress menentukan seberapa jauh scroll,
+          // progressOffset menentukan posisi relatif partikel di path
+          // Partikel tersebar: ada yang lebih depan, ada yang lebih belakang
           const particleProgress = Math.min(
-            Math.max(scrollProgress - p.spawnDelay, 0),
+            Math.max(scrollProgress + (p.progressOffset - 0.5) * 0.4, 0),
             0.9998,
           );
 
@@ -240,11 +244,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
               ? LERP_SPEED * 3
               : LERP_SPEED;
 
-          p.currentOpacity = lerp(
-            p.currentOpacity,
-            targetOpacity,
-            opacitySpeed,
-          );
+          p.currentOpacity = lerp(p.currentOpacity, targetOpacity, opacitySpeed);
 
           if (p.currentOpacity < 0.001) return;
 
