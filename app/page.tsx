@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
@@ -17,7 +17,7 @@ import { useLenis } from "../hooks/useLenis";
 import { useSectionAnimations } from "../hooks/useSectionAnimations";
 import { useSection1 } from "../hooks/useSection1";
 import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
-import { useBallSection } from "../hooks/useballsection";
+import { useBallSection } from "../hooks/useBallSection";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,6 +38,17 @@ export default function Home() {
 
   const handleReady = useCallback((update: (progress: number) => void) => {
     planeUpdateRef.current = update;
+  }, []);
+
+  useEffect(() => {
+    ScrollTrigger.config({
+      ignoreMobileResize: true,
+    });
+    ScrollTrigger.normalizeScroll(true);
+
+    return () => {
+      ScrollTrigger.normalizeScroll(false);
+    };
   }, []);
 
   const lenisRef = useLenis((x) => setScrollX(x));
