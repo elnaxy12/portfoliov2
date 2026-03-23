@@ -43,7 +43,13 @@ export default function Home() {
   const lenisRef = useLenis((x) => setScrollX(x));
   useSectionAnimations(lenisRef, currentIndex, isAnimating);
   useSection1(section1Ref, waveRef, currentIndex);
-  useHorizontalScroll(hScrollRef, trackRef, planeUpdateRef, currentIndex);
+  useHorizontalScroll(
+    hScrollRef,
+    trackRef,
+    planeUpdateRef,
+    currentIndex,
+    scrollXRef,
+  );
   useBallSection(ballSectionRef, ballRef, section4Ref, currentIndex);
 
   return (
@@ -80,11 +86,11 @@ export default function Home() {
       </div>
 
       {/* Section 2: Horizontal scroll + paper plane */}
-      <div className="section-panel relative bg-black">
+      <div className="section-panel relative bg-[#9B8EC7]">
         <LowerSvg />
       </div>
 
-      <div ref={hScrollRef} className="section-panel bg-black">
+      <div ref={hScrollRef} className="section-panel">
         <HorizontalScroll trackRef={trackRef} scrollXRef={scrollXRef}>
           <PaperPlaneScene
             trackRef={trackRef}
@@ -105,9 +111,8 @@ export default function Home() {
       {/* Section 3+4: Ball membesar → Section4 muncul */}
       <div
         ref={ballSectionRef}
-        className="section-panel h-screen flex items-start md:items-center justify-center"
+        className="section-panel h-screen flex items-start md:items-center justify-center bg-[#BDA6CE]"
         style={{
-          backgroundColor: "#000000",
           position: "relative",
           overflow: "hidden",
         }}
