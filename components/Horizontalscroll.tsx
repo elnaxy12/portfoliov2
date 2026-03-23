@@ -151,13 +151,11 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
           const targetOpacity =
             targetX > vw + p.size
               ? 0 // belum masuk dari kanan
-              : targetX > vw - fadeRange
-                ? Math.max(1 - (targetX - (vw - fadeRange)) / fadeRange, 0) // fade in kanan
-                : targetX < -p.size - fadeRange
-                  ? 0 // sudah jauh di luar kiri
-                  : targetX < -p.size
-                    ? Math.max((targetX + p.size + fadeRange) / fadeRange, 0) // fade out kiri
-                    : 1;
+              : targetX < -p.size - fadeRange
+                ? 0 // sudah jauh di luar kiri
+                : targetX < -p.size
+                  ? Math.max((targetX + p.size + fadeRange) / fadeRange, 0) // fade out kiri
+                  : 1; // langsung penuh, tanpa fade in kanan
 
           p.currentX = lerp(p.currentX, targetX, LERP_SPEED);
 
