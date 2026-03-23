@@ -46,8 +46,8 @@ function getWaypoints(isMobile: boolean): { x: number; y: number }[] {
 
 // ✅ FIXED: Proper typing + deklarasi lengkap
 function buildCatmullRom(
-  pts: { x: number; y: number }[],
-  offsetY: number = 0,
+  pts: { x: number; y: number }[], 
+  offsetY: number = 0
 ): string {
   const shifted = pts.map((p) => ({ x: p.x, y: p.y + offsetY }));
   let d = `M ${shifted[0].x} ${shifted[0].y}`;
@@ -121,9 +121,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
         rafRef.current = 0;
       }
       if (svgRef.current) {
-        svgRef.current
-          .querySelectorAll(".particle-path")
-          .forEach((el) => el.remove());
+        svgRef.current.querySelectorAll(".particle-path").forEach((el) => el.remove());
       }
       particlesRef.current = [];
       offscreenReadyRef.current = [];
@@ -174,18 +172,13 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
         svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
 
         const waypoints = getWaypoints(isMobile);
-        const rotations = isMobile
-          ? [30, 120, 200, 310]
-          : [30, 120, 200, 310, 75, 260, 150];
+        const rotations = isMobile ? [30, 120, 200, 310] : [30, 120, 200, 310, 75, 260, 150];
 
         particlesRef.current = Array.from({ length: particleCount }, (_, i) => {
           const config = PARTICLE_CONFIGS[i];
           const spawnDelay = i * (isMobile ? 0.06 : 0.04);
 
-          const pathEl = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "path",
-          );
+          const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
           pathEl.setAttribute("class", "particle-path");
           pathEl.setAttribute("fill", "none");
           pathEl.setAttribute("stroke", "none");
@@ -264,16 +257,8 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
             p.currentX = targetX;
             p.currentY = targetY;
           } else {
-            p.currentX = lerp(
-              p.currentX,
-              targetX,
-              isMobile ? LERP_SPEED * 1.5 : LERP_SPEED,
-            );
-            p.currentY = lerp(
-              p.currentY,
-              targetY,
-              isMobile ? LERP_SPEED * 1.5 : LERP_SPEED,
-            );
+            p.currentX = lerp(p.currentX, targetX, isMobile ? LERP_SPEED * 1.5 : LERP_SPEED);
+            p.currentY = lerp(p.currentY, targetY, isMobile ? LERP_SPEED * 1.5 : LERP_SPEED);
           }
 
           const fadeRange = p.size * (isMobile ? 2 : 3);
@@ -287,11 +272,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
                   : 1;
 
           const opacitySpeed = isSnapBack ? 1 : LERP_SPEED * (isMobile ? 4 : 3);
-          p.currentOpacity = lerp(
-            p.currentOpacity,
-            targetOpacity,
-            opacitySpeed,
-          );
+          p.currentOpacity = lerp(p.currentOpacity, targetOpacity, opacitySpeed);
 
           if (p.currentOpacity < 0.001) return;
 
