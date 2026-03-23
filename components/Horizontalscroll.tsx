@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect, useRef, useCallback, useState } from "react";
+import { forwardRef, useEffect, useRef } from "react";
 
 const PARTICLE_COUNT = 7;
 const IMAGE_URLS = [
@@ -13,26 +13,14 @@ const IMAGE_URLS = [
   "/images/particle/939383347672-removebg-preview.png",
 ];
 
-const OFFSCREEN_SIZE = 80;
-const LERP_SPEED = 0.08;
+const OFFSCREEN_SIZE = 100;
+const LERP_SPEED = 0.06;
 
-function lerp(a: number, b: number, t: number): number {
+function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-// ✅ FIXED: Pindah ke atas + proper typing
-function getWaypoints(isMobile: boolean): { x: number; y: number }[] {
-  if (isMobile) {
-    return [
-      { x: -2, y: 48 },
-      { x: 12, y: 46 },
-      { x: 25, y: 50 },
-      { x: 40, y: 45 },
-      { x: 55, y: 49 },
-      { x: 70, y: 47 },
-      { x: 98, y: 48 },
-    ];
-  }
+function getWaypoints() {
   return [
     { x: -3, y: 50 },
     { x: 15, y: 48 },
@@ -44,11 +32,7 @@ function getWaypoints(isMobile: boolean): { x: number; y: number }[] {
   ];
 }
 
-// ✅ FIXED: Proper typing + deklarasi lengkap
-function buildCatmullRom(
-  pts: { x: number; y: number }[], 
-  offsetY: number = 0
-): string {
+function buildCatmullRom(pts: { x: number; y: number }[], offsetY = 0) {
   const shifted = pts.map((p) => ({ x: p.x, y: p.y + offsetY }));
   let d = `M ${shifted[0].x} ${shifted[0].y}`;
   for (let i = 1; i < shifted.length; i++) {
@@ -65,14 +49,16 @@ function buildCatmullRom(
   return d;
 }
 
-const PARTICLE_CONFIGS: Array<{ size: number; offsetY: number }> = [
-  { size: 120, offsetY: -18 },
-  { size: 40, offsetY: 15 },
-  { size: 90, offsetY: 16 },
-  { size: 35, offsetY: -15 },
-  { size: 70, offsetY: 20 },
-  { size: 55, offsetY: -20 },
-  { size: 30, offsetY: 10 },
+// Konfigurasi manual per partikel: size dan posisi Y
+// offsetY: negatif = atas, positif = bawah (dalam unit viewBox 0-100)
+const PARTICLE_CONFIGS = [
+  { size: 160, offsetY: -22 }, // besar, atas
+  { size: 55, offsetY: 18 }, // kecil, bawah
+  { size: 120, offsetY: 20 }, // besar, bawah
+  { size: 45, offsetY: -18 }, // kecil, atas
+  { size: 90, offsetY: 25 }, // sedang, bawah
+  { size: 70, offsetY: -25 }, // sedang, atas
+  { size: 40, offsetY: 12 }, // kecil, sedikit bawah
 ];
 
 interface Particle {
@@ -100,62 +86,31 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const svgRef = useRef<SVGSVGElement>(null);
     const offscreensRef = useRef<HTMLCanvasElement[]>([]);
-    const offscreenReadyRef = useRef<boolean[]>([]);
+    const offscreenReadyRef = useRef<boolean[]>(
+      Array(IMAGE_URLS.length).fill(false),
+    );
     const particlesRef = useRef<Particle[]>([]);
     const rafRef = useRef<number>(0);
     const prevScrollRef = useRef<number>(0);
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-      const checkMobile = () => {
-        setIsMobile(window.innerWidth < 768);
-      };
-      checkMobile();
-      window.addEventListener("resize", checkMobile);
-      return () => window.removeEventListener("resize", checkMobile);
-    }, []);
-
-    const cleanup = useCallback(() => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = 0;
-      }
-      if (svgRef.current) {
-        svgRef.current.querySelectorAll(".particle-path").forEach((el) => el.remove());
-      }
-      particlesRef.current = [];
-      offscreenReadyRef.current = [];
-    }, []);
 
     useEffect(() => {
       const canvas = canvasRef.current;
       const svg = svgRef.current;
-      if (!canvas || !svg) return cleanup;
-
+      if (!canvas || !svg) return;
       const ctx = canvas.getContext("2d");
-      if (!ctx) return cleanup;
-
-      const particleCount = isMobile ? 4 : PARTICLE_COUNT;
-      offscreenReadyRef.current = Array(IMAGE_URLS.length).fill(false);
+      if (!ctx) return;
 
       offscreensRef.current = IMAGE_URLS.map((url, i) => {
         const offscreen = document.createElement("canvas");
         offscreen.width = OFFSCREEN_SIZE;
         offscreen.height = OFFSCREEN_SIZE;
         const img = new Image();
-        img.crossOrigin = "anonymous";
         img.onload = () => {
           const offCtx = offscreen.getContext("2d");
           if (offCtx) {
-            offCtx.imageSmoothingEnabled = true;
-            offCtx.imageSmoothingQuality = "high";
             offCtx.drawImage(img, 0, 0, OFFSCREEN_SIZE, OFFSCREEN_SIZE);
             offscreenReadyRef.current[i] = true;
           }
-        };
-        img.onerror = () => {
-          console.warn(`Failed to load: ${url}`);
-          offscreenReadyRef.current[i] = true;
         };
         img.src = url;
         return offscreen;
@@ -164,46 +119,55 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
       const initParticles = () => {
         const trackW = trackRef.current?.scrollWidth ?? 0;
         const vw = window.innerWidth;
-        if (trackW <= vw * 1.5) {
+        const vh = window.innerHeight;
+        if (trackW <= vw) {
           requestAnimationFrame(initParticles);
           return;
         }
 
         svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
 
-        const waypoints = getWaypoints(isMobile);
-        const rotations = isMobile ? [30, 120, 200, 310] : [30, 120, 200, 310, 75, 260, 150];
+        const waypoints = getWaypoints();
+        // rotasi random tapi deterministic per index
+        const rotations = [30, 120, 200, 310, 75, 260, 150];
 
-        particlesRef.current = Array.from({ length: particleCount }, (_, i) => {
-          const config = PARTICLE_CONFIGS[i];
-          const spawnDelay = i * (isMobile ? 0.06 : 0.04);
+        particlesRef.current = Array.from(
+          { length: PARTICLE_COUNT },
+          (_, i) => {
+            const config = PARTICLE_CONFIGS[i];
+            const spawnDelay = i * 0.04;
 
-          const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          pathEl.setAttribute("class", "particle-path");
-          pathEl.setAttribute("fill", "none");
-          pathEl.setAttribute("stroke", "none");
-          // ✅ FIXED: Sekarang buildCatmullRom tersedia
-          pathEl.setAttribute("d", buildCatmullRom(waypoints, config.offsetY));
-          svg.appendChild(pathEl);
+            const pathEl = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "path",
+            );
+            pathEl.setAttribute("class", "particle-path");
+            pathEl.setAttribute("fill", "none");
+            pathEl.setAttribute("stroke", "none");
+            pathEl.setAttribute(
+              "d",
+              buildCatmullRom(waypoints, config.offsetY),
+            );
+            svg.appendChild(pathEl);
 
-          const totalLen = pathEl.getTotalLength();
-          const pt = pathEl.getPointAtLength(0);
-          const vh = window.innerHeight;
-          const initY = (pt.y / 100) * vh;
+            const totalLen = pathEl.getTotalLength();
+            const pt = pathEl.getPointAtLength(0);
+            const initY = (pt.y / 100) * vh;
 
-          return {
-            spawnDelay,
-            offsetY: config.offsetY,
-            size: config.size,
-            rotation: rotations[i] ?? 0,
-            currentX: -config.size,
-            currentY: initY,
-            currentOpacity: 0,
-            imageIndex: i % IMAGE_URLS.length,
-            pathEl,
-            totalLen,
-          };
-        });
+            return {
+              spawnDelay,
+              offsetY: config.offsetY,
+              size: config.size,
+              rotation: rotations[i] ?? 0,
+              currentX: -config.size,
+              currentY: initY,
+              currentOpacity: 0,
+              imageIndex: i % IMAGE_URLS.length,
+              pathEl,
+              totalLen,
+            };
+          },
+        );
       };
 
       const resize = () => {
@@ -215,7 +179,6 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
         }
         initParticles();
       };
-
       resize();
       window.addEventListener("resize", resize);
 
@@ -257,11 +220,11 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
             p.currentX = targetX;
             p.currentY = targetY;
           } else {
-            p.currentX = lerp(p.currentX, targetX, isMobile ? LERP_SPEED * 1.5 : LERP_SPEED);
-            p.currentY = lerp(p.currentY, targetY, isMobile ? LERP_SPEED * 1.5 : LERP_SPEED);
+            p.currentX = lerp(p.currentX, targetX, LERP_SPEED);
+            p.currentY = lerp(p.currentY, targetY, LERP_SPEED);
           }
 
-          const fadeRange = p.size * (isMobile ? 2 : 3);
+          const fadeRange = p.size * 3;
           const targetOpacity =
             p.currentX > vw + p.size
               ? 0
@@ -271,8 +234,17 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
                   ? Math.max((p.currentX + p.size + fadeRange) / fadeRange, 0)
                   : 1;
 
-          const opacitySpeed = isSnapBack ? 1 : LERP_SPEED * (isMobile ? 4 : 3);
-          p.currentOpacity = lerp(p.currentOpacity, targetOpacity, opacitySpeed);
+          const opacitySpeed = isSnapBack
+            ? 1
+            : targetOpacity > p.currentOpacity
+              ? LERP_SPEED * 3
+              : LERP_SPEED;
+
+          p.currentOpacity = lerp(
+            p.currentOpacity,
+            targetOpacity,
+            opacitySpeed,
+          );
 
           if (p.currentOpacity < 0.001) return;
 
@@ -290,10 +262,11 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
       rafRef.current = requestAnimationFrame(tick);
 
       return () => {
-        cleanup();
+        cancelAnimationFrame(rafRef.current);
         window.removeEventListener("resize", resize);
+        svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
       };
-    }, [isMobile, trackRef, scrollXRef, cleanup]);
+    }, [trackRef, scrollXRef]);
 
     return (
       <div
@@ -304,7 +277,6 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
           width: "100vw",
           height: "100vh",
           position: "relative",
-          touchAction: "pan-y",
         }}
       >
         <svg
@@ -342,7 +314,6 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
             height: "100%",
             willChange: "transform",
             position: "relative",
-            minWidth: isMobile ? "400vw" : "300vw",
           }}
         >
           {children}
@@ -353,4 +324,5 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
 );
 
 HorizontalScroll.displayName = "HorizontalScroll";
+
 export default HorizontalScroll;
