@@ -15,10 +15,11 @@ export function useHorizontalScroll(
     const track = hTrackRef.current;
     const isMobile = window.innerWidth < 768;
 
-    // Gunakan visualViewport width di mobile agar tidak berubah saat address bar hide/show
-    const getVW = () =>
-      (typeof visualViewport !== "undefined" ? visualViewport.width : null) ??
-      window.innerWidth;
+    // Simpan reference dulu agar TypeScript tidak komplain null
+    const vp: VisualViewport | null =
+      typeof visualViewport !== "undefined" ? visualViewport : null;
+
+    const getVW = () => vp?.width ?? window.innerWidth;
 
     const getTotalWidth = () => track.scrollWidth - getVW();
 
@@ -28,16 +29,11 @@ export function useHorizontalScroll(
       scrollTrigger: {
         trigger: hScrollRef.current,
         start: "top top",
-        // Di mobile kurangi extra scroll agar tidak terlalu panjang
         end: () => `+=${getTotalWidth() + (isMobile ? 300 : 800)}`,
-        scrub: isMobile ? 0.5 : true, // sedikit smoothing di mobile
+        scrub: isMobile ? 0.5 : true,
         pin: true,
-        anticipatePin: isMobile ? 0 : 1, // matikan di mobile — penyebab jump
+        anticipatePin: isMobile ? 0 : 1,
         invalidateOnRefresh: true,
-        // Refresh ScrollTrigger saat visualViewport resize (address bar mobile)
-        onRefresh: () => {
-          ScrollTrigger.refresh();
-        },
         onEnter: () => {
           currentIndex.current = 2;
           planeUpdateRef.current?.(0);
@@ -56,7 +52,6 @@ export function useHorizontalScroll(
         onUpdate: (self) => {
           const progress = Math.min(self.progress, 1);
 
-          // Interpolasi #9B8EC7 → #BDA6CE
           const r = Math.round(155 + (189 - 155) * progress);
           const g = Math.round(142 + (166 - 142) * progress);
           const b = Math.round(199 + (206 - 199) * progress);
@@ -71,8 +66,7 @@ export function useHorizontalScroll(
       },
     });
 
-    // Di mobile: refresh ScrollTrigger saat visualViewport berubah
-    // (misalnya address bar browser muncul/sembunyi)
+    // Debounced refresh saat visualViewport resize (address bar mobile)
     let vpTimeout: ReturnType<typeof setTimeout>;
     const handleVPResize = () => {
       clearTimeout(vpTimeout);
@@ -81,15 +75,11 @@ export function useHorizontalScroll(
       }, 150);
     };
 
-    if (typeof visualViewport !== "undefined") {
-      visualViewport.addEventListener("resize", handleVPResize);
-    }
+    vp?.addEventListener("resize", handleVPResize);
 
     return () => {
       clearTimeout(vpTimeout);
-      if (typeof visualViewport !== "undefined") {
-        visualViewport.removeEventListener("resize", handleVPResize);
-      }
+      vp?.removeEventListener("resize", handleVPResize);
       ScrollTrigger.getAll()
         .filter((t) => t.vars.trigger === hScrollRef.current)
         .forEach((t) => t.kill());
