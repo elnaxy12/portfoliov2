@@ -44,7 +44,10 @@ export default function Home() {
     ScrollTrigger.config({
       ignoreMobileResize: true,
     });
-    ScrollTrigger.normalizeScroll(true);
+  ScrollTrigger.normalizeScroll({
+    allowNestedScroll: true,  
+    lockAxis: true,
+  });
 
     return () => {
       ScrollTrigger.normalizeScroll(false);
@@ -146,6 +149,7 @@ export default function Home() {
 
         <div
           ref={section4Ref}
+          data-lenis-prevent
           style={{
             position: "relative",
             zIndex: 3,
@@ -156,6 +160,7 @@ export default function Home() {
             overflowY: "auto",
             alignSelf: "flex-center",
             paddingTop: "1.5rem",
+            WebkitOverflowScrolling: "touch",
           }}
         >
           <Section4 />
