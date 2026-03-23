@@ -1,6 +1,7 @@
 import { useEffect, RefObject } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import Lenis from "lenis";
 
 export function useHorizontalScroll(
   hScrollRef: RefObject<HTMLDivElement | null>,
@@ -8,6 +9,7 @@ export function useHorizontalScroll(
   planeUpdateRef: RefObject<((progress: number) => void) | null>,
   currentIndex: RefObject<number>,
   scrollXRef: RefObject<number>,
+  lenisRef: RefObject<Lenis | null>, // ← tambah param
 ) {
   useEffect(() => {
     if (!hScrollRef.current || !hTrackRef.current) return;
@@ -15,12 +17,10 @@ export function useHorizontalScroll(
     const track = hTrackRef.current;
     const isMobile = window.innerWidth < 768;
 
-    // Simpan reference dulu agar TypeScript tidak komplain null
     const vp: VisualViewport | null =
       typeof visualViewport !== "undefined" ? visualViewport : null;
 
     const getVW = () => vp?.width ?? window.innerWidth;
-
     const getTotalWidth = () => track.scrollWidth - getVW();
 
     gsap.to(track, {
@@ -37,17 +37,38 @@ export function useHorizontalScroll(
         onEnter: () => {
           currentIndex.current = 2;
           planeUpdateRef.current?.(0);
+
+          // Pause Lenis saat masuk pinned section di mobile
+          // agar tidak konflik dengan ScrollTrigger scrub
+          if (isMobile) lenisRef.current?.stop();
         },
         onLeave: () => {
           currentIndex.current = 3;
+
+          // Resume Lenis setelah keluar pinned section
+          if (isMobile) {
+            lenisRef.current?.start();
+            // Beri jeda singkat lalu refresh agar ScrollTrigger
+            // sections berikutnya terhitung ulang dengan benar
+            setTimeout(() => {
+              ScrollTrigger.refresh();
+            }, 50);
+          }
         },
         onEnterBack: () => {
           currentIndex.current = 2;
           planeUpdateRef.current?.(0);
+          if (isMobile) lenisRef.current?.stop();
         },
         onLeaveBack: () => {
           currentIndex.current = 1;
           scrollXRef.current = 0;
+          if (isMobile) {
+            lenisRef.current?.start();
+            setTimeout(() => {
+              ScrollTrigger.refresh();
+            }, 50);
+          }
         },
         onUpdate: (self) => {
           const progress = Math.min(self.progress, 1);
@@ -62,11 +83,17 @@ export function useHorizontalScroll(
 
           scrollXRef.current = progress * getTotalWidth();
           planeUpdateRef.current?.(progress);
+
+          // Di mobile, saat progress hampir selesai, start lagi Lenis
+          // supaya user bisa lanjut scroll ke section berikutnya
+          // tanpa harus tunggu onLeave yang kadang terlambat di mobile
+          if (isMobile && progress >= 0.98 && lenisRef.current?.isStopped) {
+            lenisRef.current.start();
+          }
         },
       },
     });
 
-    // Debounced refresh saat visualViewport resize (address bar mobile)
     let vpTimeout: ReturnType<typeof setTimeout>;
     const handleVPResize = () => {
       clearTimeout(vpTimeout);
@@ -80,9 +107,18 @@ export function useHorizontalScroll(
     return () => {
       clearTimeout(vpTimeout);
       vp?.removeEventListener("resize", handleVPResize);
+      // Pastikan Lenis tidak tertinggal dalam state stopped
+      lenisRef.current?.start();
       ScrollTrigger.getAll()
         .filter((t) => t.vars.trigger === hScrollRef.current)
         .forEach((t) => t.kill());
     };
-  }, [hScrollRef, hTrackRef, planeUpdateRef, currentIndex, scrollXRef]);
+  }, [
+    hScrollRef,
+    hTrackRef,
+    planeUpdateRef,
+    currentIndex,
+    scrollXRef,
+    lenisRef,
+  ]);
 }

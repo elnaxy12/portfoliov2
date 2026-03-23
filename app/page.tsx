@@ -70,6 +70,7 @@ export default function Home() {
     planeUpdateRef,
     currentIndex,
     scrollXRef,
+    lenisRef
   );
   useBallSection(ballSectionRef, ballRef, section4Ref, currentIndex);
 
