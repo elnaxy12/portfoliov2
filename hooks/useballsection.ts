@@ -20,19 +20,28 @@ export function useBallSection(
 
   useEffect(() => {
     if (!ballSectionRef.current) return;
-
+    const isMobile = window.innerWidth < 768;
+    
     ScrollTrigger.create({
       trigger: ballSectionRef.current,
       start: "top top",
       end: "+=1200",
-      scrub: window.innerWidth < 768 ? true : 2,
+      scrub: isMobile ? 0.5 : 2,
       pin: true,
       anticipatePin: 0,
       invalidateOnRefresh: true,
-      onEnter: () => { currentIndex.current = 3; },
-      onLeave: () => { currentIndex.current = 4; },
-      onEnterBack: () => { currentIndex.current = 3; },
-      onLeaveBack: () => { currentIndex.current = 2; },
+      onEnter: () => {
+        currentIndex.current = 3;
+      },
+      onLeave: () => {
+        currentIndex.current = 4;
+      },
+      onEnterBack: () => {
+        currentIndex.current = 3;
+      },
+      onLeaveBack: () => {
+        currentIndex.current = 2;
+      },
       onUpdate: (self) => {
         if (!ballRef.current) return;
 
@@ -56,7 +65,8 @@ export function useBallSection(
               if (card.dataset.animated) return;
               card.dataset.animated = "1";
               setTimeout(() => {
-                card.style.transition = "opacity 0.45s ease, transform 0.45s ease";
+                card.style.transition =
+                  "opacity 0.45s ease, transform 0.45s ease";
                 card.style.opacity = "1";
                 card.style.transform = "translateY(0)";
               }, i * 90);
