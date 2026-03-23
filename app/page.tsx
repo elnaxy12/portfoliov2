@@ -40,26 +40,26 @@ export default function Home() {
     planeUpdateRef.current = update;
   }, []);
 
-  useEffect(() => {
-    ScrollTrigger.config({
-      ignoreMobileResize: true,
-    });
+  // useEffect(() => {
+  //   ScrollTrigger.config({
+  //     ignoreMobileResize: true,
+  //   });
 
-    const isMobile = window.innerWidth < 768;
+  //   const isMobile = window.innerWidth < 768;
 
-    if (isMobile) {
-      ScrollTrigger.normalizeScroll({
-        allowNestedScroll: true,
-        lockAxis: true,
-      });
-    } else {
-      ScrollTrigger.normalizeScroll(true);
-    }
+  //   if (isMobile) {
+  //     ScrollTrigger.normalizeScroll({
+  //       allowNestedScroll: true,
+  //       lockAxis: true,
+  //     });
+  //   } else {
+  //     ScrollTrigger.normalizeScroll(true);
+  //   }
 
-    return () => {
-      ScrollTrigger.normalizeScroll(false);
-    };
-  }, []);
+  //   return () => {
+  //     ScrollTrigger.normalizeScroll(false);
+  //   };
+  // }, []);
 
   const lenisRef = useLenis((x) => setScrollX(x));
   useSectionAnimations(lenisRef, currentIndex, isAnimating);
