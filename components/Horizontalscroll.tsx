@@ -51,27 +51,26 @@ function buildCatmullRom(pts: { x: number; y: number }[], offsetY = 0) {
 
 // Konfigurasi manual per partikel: size dan posisi Y
 // offsetY: negatif = atas, positif = bawah (dalam unit viewBox 0-100)
-const isMobile = window.innerWidth < 768;
+// ✅ Tidak pakai window di sini — aman untuk SSR
+const PARTICLE_CONFIGS_MOBILE = [
+  { size: 60, offsetY: -8 }, // besar, atas
+  { size: 30, offsetY: 8 }, // kecil, bawah
+  { size: 50, offsetY: 10 }, // besar, bawah
+  { size: 25, offsetY: -8 }, // kecil, atas
+  { size: 40, offsetY: 12 }, // sedang, bawah
+  { size: 35, offsetY: -10 }, // sedang, atas
+  { size: 20, offsetY: 6 }, // kecil, sedikit bawah
+];
 
-const PARTICLE_CONFIGS = isMobile
-  ? [
-      { size: 60, offsetY: -8 }, // besar, atas
-      { size: 30, offsetY: 8 }, // kecil, bawah
-      { size: 50, offsetY: 10 }, // besar, bawah
-      { size: 25, offsetY: -8 }, // kecil, atas
-      { size: 40, offsetY: 12 }, // sedang, bawah
-      { size: 35, offsetY: -10 }, // sedang, atas
-      { size: 20, offsetY: 6 }, // kecil, sedikit bawah
-    ]
-  : [
-      { size: 160, offsetY: -22 },
-      { size: 55, offsetY: 18 },
-      { size: 120, offsetY: 20 },
-      { size: 45, offsetY: -18 },
-      { size: 90, offsetY: 25 },
-      { size: 70, offsetY: -25 },
-      { size: 40, offsetY: 12 },
-    ];
+const PARTICLE_CONFIGS_DESKTOP = [
+  { size: 160, offsetY: -22 },
+  { size: 55, offsetY: 18 },
+  { size: 120, offsetY: 20 },
+  { size: 45, offsetY: -18 },
+  { size: 90, offsetY: 25 },
+  { size: 70, offsetY: -25 },
+  { size: 40, offsetY: 12 },
+];
 
 interface Particle {
   spawnDelay: number;
@@ -137,7 +136,11 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
           return;
         }
 
-        const isMobile = vw < 768; // ← di sini aman
+        // ✅ window diakses di sini — aman karena sudah dalam useEffect (browser only)
+        const isMobile = vw < 768;
+        const PARTICLE_CONFIGS = isMobile
+          ? PARTICLE_CONFIGS_MOBILE
+          : PARTICLE_CONFIGS_DESKTOP;
 
         svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
 
