@@ -33,16 +33,20 @@ function lerp(a: number, b: number, t: number) {
 }
 
 function getWaypoints() {
-  // Flat, gerakan mendatar
-  return [
-    { x: -3,  y: 50 },
-    { x: 15,  y: 48 },
-    { x: 30,  y: 52 },
-    { x: 50,  y: 47 },
-    { x: 70,  y: 51 },
-    { x: 85,  y: 49 },
-    { x: 103, y: 50 },
+  const base = [
+    { x: -3, y: 55 },
+    { x: 8, y: 45 },
+    { x: 18, y: 62 },
+    { x: 28, y: 30 },
+    { x: 38, y: 58 },
+    { x: 50, y: 25 },
+    { x: 62, y: 50 },
+    { x: 72, y: 22 },
+    { x: 82, y: 48 },
+    { x: 92, y: 28 },
+    { x: 103, y: 42 },
   ];
+  return base;
 }
 
 function buildCatmullRom(pts: { x: number; y: number }[], offsetY = 0) {
@@ -63,15 +67,15 @@ function buildCatmullRom(pts: { x: number; y: number }[], offsetY = 0) {
 }
 
 interface Particle {
-  progressOffset: number; // offset progress dari scroll utama
-  offsetY: number;
+  progress: number; // posisi di sepanjang path (0–1)
+  offsetY: number; // offset Y dari path utama
   size: number;
   rotation: number;
   currentX: number;
   currentY: number;
   currentOpacity: number;
   imageIndex: number;
-  pathEl: SVGPathElement;
+  pathEl: SVGPathElement; // path SVG khusus per partikel
   totalLen: number;
 }
 
@@ -101,6 +105,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
+      // Load images
       offscreensRef.current = IMAGE_URLS.map((url, i) => {
         const offscreen = document.createElement("canvas");
         offscreen.width = OFFSCREEN_SIZE;
@@ -120,54 +125,63 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
       const initParticles = () => {
         const trackW = trackRef.current?.scrollWidth ?? 0;
         const vw = window.innerWidth;
-        const vh = window.innerHeight;
         if (trackW <= vw) {
           requestAnimationFrame(initParticles);
           return;
         }
 
+        // Bersihkan path lama
         svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
 
         const rng = makeRng(PARTICLE_SEED);
         const waypoints = getWaypoints();
 
-        particlesRef.current = Array.from({ length: PARTICLE_COUNT }, (_, i) => {
-          // Setiap partikel punya progress offset tersebar merata
-          // sehingga mereka tersebar sepanjang path, tidak kumpul
-          const baseProgress = (i + 1) / (PARTICLE_COUNT + 1);
-          const jitter = (rng() - 0.5) * 0.05;
-          const progressOffset = Math.min(Math.max(baseProgress + jitter, 0.05), 0.95);
+        particlesRef.current = Array.from(
+          { length: PARTICLE_COUNT },
+          (_, i) => {
+            // Progress awal tersebar merata dengan sedikit jitter
+            const baseProgress = (i + 1) / (PARTICLE_COUNT + 1);
+            const jitter = (rng() - 0.5) * (1 / (PARTICLE_COUNT + 1)) * 0.6;
+            const progress = Math.min(
+              Math.max(baseProgress + jitter, 0.05),
+              0.95,
+            );
 
-          // Offset Y kecil supaya tidak swing
-          const offsetY = (rng() - 0.5) * 12;
+            // Offset Y random (-20 sampai +20 dalam koordinat SVG viewBox)
+            const offsetY = (rng() - 0.5) * 40;
 
-          const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          pathEl.setAttribute("class", "particle-path");
-          pathEl.setAttribute("fill", "none");
-          pathEl.setAttribute("stroke", "none");
-          pathEl.setAttribute("d", buildCatmullRom(waypoints, offsetY));
-          svg.appendChild(pathEl);
+            // Buat path SVG per partikel
+            const pathEl = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "path",
+            );
+            pathEl.setAttribute("class", "particle-path");
+            pathEl.setAttribute("fill", "none");
+            pathEl.setAttribute("stroke", "none");
+            pathEl.setAttribute("d", buildCatmullRom(waypoints, offsetY));
+            svg.appendChild(pathEl);
 
-          const totalLen = pathEl.getTotalLength();
+            const totalLen = pathEl.getTotalLength();
 
-          // Posisi awal di titik path sesuai progressOffset
-          const pt = pathEl.getPointAtLength(totalLen * progressOffset);
-          const initX = (pt.x / 100) * trackW;
-          const initY = (pt.y / 100) * vh;
+            // Posisi awal langsung di titik path yang benar
+            const pt = pathEl.getPointAtLength(totalLen * progress);
+            const initX = (pt.x / 100) * trackW;
+            const initY = (pt.y / 100) * window.innerHeight;
 
-          return {
-            progressOffset,
-            offsetY,
-            size: 40 + rng() * rng() * 160,
-            rotation: rng() * 360,
-            currentX: initX,
-            currentY: initY,
-            currentOpacity: 0,
-            imageIndex: i % IMAGE_URLS.length,
-            pathEl,
-            totalLen,
-          };
-        });
+            return {
+              progress,
+              offsetY,
+              size: 40 + rng() * rng() * 160,
+              rotation: rng() * 360,
+              currentX: initX,
+              currentY: initY,
+              currentOpacity: 0,
+              imageIndex: i % IMAGE_URLS.length,
+              pathEl,
+              totalLen,
+            };
+          },
+        );
       };
 
       const resize = () => {
@@ -195,19 +209,19 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
         const vh = canvas.height;
         const trackW = trackRef.current?.scrollWidth ?? vw;
         const maxScrollX = trackW - vw;
-        const scrollProgress = maxScrollX > 0 ? scroll / maxScrollX : 0;
 
         particlesRef.current.forEach((p) => {
           const offscreen = offscreensRef.current[p.imageIndex];
           const ready = offscreenReadyRef.current[p.imageIndex];
           if (!ready || !offscreen || p.totalLen === 0) return;
 
-          // Setiap partikel bergerak di progressnya sendiri:
-          // scrollProgress menentukan seberapa jauh scroll,
-          // progressOffset menentukan posisi relatif partikel di path
-          // Partikel tersebar: ada yang lebih depan, ada yang lebih belakang
+          // Progress berdasarkan scroll (sama dengan paper plane)
+          const scrollProgress = maxScrollX > 0 ? scroll / maxScrollX : 0;
+
+          // Partikel punya progress offset dari posisi awalnya
+          // mereka bergerak mengikuti scrollProgress tapi di titik path masing-masing
           const particleProgress = Math.min(
-            Math.max(scrollProgress + (p.progressOffset - 0.5) * 0.4, 0),
+            Math.max(scrollProgress * 0.9998, 0),
             0.9998,
           );
 
@@ -228,6 +242,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
             p.currentY = lerp(p.currentY, targetY, LERP_SPEED);
           }
 
+          // Fade: invisible saat di kanan viewport, fade out di kiri
           const fadeRange = p.size * 3;
           const targetOpacity =
             p.currentX > vw + p.size
@@ -244,7 +259,11 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
               ? LERP_SPEED * 3
               : LERP_SPEED;
 
-          p.currentOpacity = lerp(p.currentOpacity, targetOpacity, opacitySpeed);
+          p.currentOpacity = lerp(
+            p.currentOpacity,
+            targetOpacity,
+            opacitySpeed,
+          );
 
           if (p.currentOpacity < 0.001) return;
 
@@ -279,6 +298,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
           position: "relative",
         }}
       >
+        {/* SVG tersembunyi untuk kalkulasi path per partikel */}
         <svg
           ref={svgRef}
           style={{
