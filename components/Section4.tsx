@@ -45,7 +45,7 @@ export default function Section4() {
       <style>{`
         .offering-card {
           position: relative;
-          overflow: hidden;
+          overflow: visible;
           border: 0.5px solid rgba(0,0,0,0.1);
           border-radius: 12px;
           padding: 1.1rem 1rem 1rem;
