@@ -46,7 +46,10 @@ export default function Home() {
     ScrollTrigger.config({
       ignoreMobileResize: true,
     });
-    ScrollTrigger.normalizeScroll(true);
+    ScrollTrigger.normalizeScroll({
+      allowNestedScroll: true,
+      lockAxis: true,
+    });
 
     return () => {
       ScrollTrigger.normalizeScroll(false);
