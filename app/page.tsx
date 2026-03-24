@@ -44,17 +44,7 @@ export default function Home() {
     ScrollTrigger.config({
       ignoreMobileResize: true,
     });
-
-    const isMobile = window.innerWidth < 768;
-
-    if (isMobile) {
-      ScrollTrigger.normalizeScroll({
-        allowNestedScroll: true,
-        lockAxis: true,
-      });
-    } else {
-      ScrollTrigger.normalizeScroll(true);
-    }
+    ScrollTrigger.normalizeScroll(true);
 
     return () => {
       ScrollTrigger.normalizeScroll(false);
@@ -70,7 +60,6 @@ export default function Home() {
     planeUpdateRef,
     currentIndex,
     scrollXRef,
-    lenisRef
   );
   useBallSection(ballSectionRef, ballRef, section4Ref, currentIndex);
 
@@ -163,11 +152,10 @@ export default function Home() {
             opacity: 0,
             width: "100%",
             padding: "0 2rem",
-            maxHeight: "none",
-            overflowY: "hidden",
+            maxHeight: "100vh",
+            overflowY: "auto",
             alignSelf: "flex-center",
             paddingTop: "1.5rem",
-            WebkitOverflowScrolling: "touch",
           }}
         >
           <Section4 />
