@@ -1,27 +1,19 @@
 import { useEffect, RefObject } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import Lenis from "lenis";
 
 export function useHorizontalScroll(
   hScrollRef: RefObject<HTMLDivElement | null>,
   hTrackRef: RefObject<HTMLDivElement | null>,
   planeUpdateRef: RefObject<((progress: number) => void) | null>,
   currentIndex: RefObject<number>,
-  scrollXRef: RefObject<number>,
-  lenisRef: RefObject<Lenis | null>,
+  scrollXRef: RefObject<number>, // ← tambah param
 ) {
   useEffect(() => {
     if (!hScrollRef.current || !hTrackRef.current) return;
 
     const track = hTrackRef.current;
-    const isMobile = window.innerWidth < 768;
-
-    const vp: VisualViewport | null =
-      typeof visualViewport !== "undefined" ? visualViewport : null;
-
-    const getVW = () => vp?.width ?? window.innerWidth;
-    const getTotalWidth = () => track.scrollWidth - getVW();
+    const getTotalWidth = () => track.scrollWidth - window.innerWidth;
 
     gsap.to(track, {
       x: () => -getTotalWidth(),
@@ -29,79 +21,48 @@ export function useHorizontalScroll(
       scrollTrigger: {
         trigger: hScrollRef.current,
         start: "top top",
-        end: () => `+=${getTotalWidth() + (isMobile ? 300 : 800)}`,
-        scrub: isMobile ? 0.5 : true,
+        end: () => `+=${getTotalWidth() + 800}`,
+        scrub: true,
         pin: true,
-        anticipatePin: isMobile ? 0 : 1,
+        anticipatePin: 1,
         invalidateOnRefresh: true,
         onEnter: () => {
           currentIndex.current = 2;
           planeUpdateRef.current?.(0);
-          if (isMobile) lenisRef.current?.stop();
         },
         onLeave: () => {
           currentIndex.current = 3;
-          if (isMobile) {
-            lenisRef.current?.start();
-            setTimeout(() => ScrollTrigger.refresh(), 50);
-          }
         },
         onEnterBack: () => {
           currentIndex.current = 2;
           planeUpdateRef.current?.(0);
-          if (isMobile) lenisRef.current?.stop();
         },
         onLeaveBack: () => {
           currentIndex.current = 1;
-          scrollXRef.current = 0;
-          if (isMobile) {
-            lenisRef.current?.start();
-            setTimeout(() => ScrollTrigger.refresh(), 50);
-          }
+          scrollXRef.current = 0; // ← reset saat keluar kiri
         },
         onUpdate: (self) => {
           const progress = Math.min(self.progress, 1);
 
-          const r = Math.round(155 + (189 - 155) * progress);
-          const g = Math.round(142 + (166 - 142) * progress);
-          const b = Math.round(199 + (206 - 199) * progress);
+          // Interpolasi #9B8EC7 → #BDA6CE
+          const r = Math.round(155 + (189 - 155) * progress); // 9B → BD
+          const g = Math.round(142 + (166 - 142) * progress); // 8E → A6
+          const b = Math.round(199 + (206 - 199) * progress); // C7 → CE
 
           if (hScrollRef.current) {
             hScrollRef.current.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
           }
 
-          scrollXRef.current = progress * getTotalWidth(); // ✅ ini yang penting
+          scrollXRef.current = self.progress * getTotalWidth();
           planeUpdateRef.current?.(progress);
-
-          if (isMobile && progress >= 0.98 && lenisRef.current?.isStopped) {
-            lenisRef.current.start();
-          }
         },
       },
     });
 
-    let vpTimeout: ReturnType<typeof setTimeout>;
-    const handleVPResize = () => {
-      clearTimeout(vpTimeout);
-      vpTimeout = setTimeout(() => ScrollTrigger.refresh(), 150);
-    };
-
-    vp?.addEventListener("resize", handleVPResize);
-
     return () => {
-      clearTimeout(vpTimeout);
-      vp?.removeEventListener("resize", handleVPResize);
-      lenisRef.current?.start();
       ScrollTrigger.getAll()
         .filter((t) => t.vars.trigger === hScrollRef.current)
         .forEach((t) => t.kill());
     };
-  }, [
-    hScrollRef,
-    hTrackRef,
-    planeUpdateRef,
-    currentIndex,
-    scrollXRef,
-    lenisRef,
-  ]);
+  }, [hScrollRef, hTrackRef, planeUpdateRef, currentIndex, scrollXRef]);
 }
