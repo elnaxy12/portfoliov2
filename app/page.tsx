@@ -158,7 +158,7 @@ export default function Home() {
         className="section-panel h-screen flex items-start md:items-center justify-center bg-[#BDA6CE]"
         style={{
           position: "relative",
-          overflow: "visible",
+          overflow: "hidden",
         }}
       >
         <div
@@ -179,17 +179,18 @@ export default function Home() {
 
         <div
           ref={section4Ref}
-          data-scroll-allow
+          data-lenis-prevent
           style={{
             position: "relative",
             zIndex: 3,
             opacity: 0,
             width: "100%",
-            height: "100vh",
             padding: "0 2rem",
-            overflowY: "scroll",
+            maxHeight: "100vh",
+            overflowY: "auto",
             alignSelf: "flex-center",
             paddingTop: "1.5rem",
+            WebkitOverflowScrolling: "touch",
           }}
         >
           <Section4 />
