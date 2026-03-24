@@ -158,7 +158,7 @@ export default function Home() {
         className="section-panel h-screen flex items-start md:items-center justify-center bg-[#BDA6CE]"
         style={{
           position: "relative",
-          overflow: "hidden",
+          overflow: "visible",
         }}
       >
         <div
