@@ -15,30 +15,32 @@ const IMAGE_URLS = [
   "/images/particle/913522419108-removebg-preview.png",
   "/images/particle/939383347672-removebg-preview.png",
 ];
-const OFFSCREEN_SIZE = 100;
+const OFFSCREEN_SIZE = 256;
 const LERP_SPEED = 0.06;
 
 // ─────────────────────────────────────────────
 // Particle Config
 // ─────────────────────────────────────────────
-const PARTICLE_CONFIGS_MOBILE = [
-  { size: 60, offsetY: -8 },
-  { size: 30, offsetY: 8 },
-  { size: 50, offsetY: 10 },
-  { size: 25, offsetY: -8 },
-  { size: 40, offsetY: 12 },
-  { size: 35, offsetY: -10 },
-  { size: 20, offsetY: 6 },
+// DESKTOP — naikkan semua size
+const PARTICLE_CONFIGS_DESKTOP = [
+  { size: 220, offsetY: -22 }, // was 160
+  { size: 90, offsetY: 18 }, // was 55
+  { size: 180, offsetY: 20 }, // was 120
+  { size: 75, offsetY: -18 }, // was 45
+  { size: 140, offsetY: 25 }, // was 90
+  { size: 110, offsetY: -25 }, // was 70
+  { size: 65, offsetY: 12 }, // was 40
 ];
 
-const PARTICLE_CONFIGS_DESKTOP = [
-  { size: 160, offsetY: -22 },
-  { size: 55, offsetY: 18 },
-  { size: 120, offsetY: 20 },
-  { size: 45, offsetY: -18 },
-  { size: 90, offsetY: 25 },
-  { size: 70, offsetY: -25 },
-  { size: 40, offsetY: 12 },
+// MOBILE
+const PARTICLE_CONFIGS_MOBILE = [
+  { size: 220, offsetY: -8 }, // was 60
+  { size: 90, offsetY: 8 }, // was 30
+  { size: 180, offsetY: 10 }, // was 50
+  { size: 75, offsetY: -8 }, // was 25
+  { size: 140, offsetY: 12 }, // was 40
+  { size: 110, offsetY: -10 }, // was 35
+  { size: 65, offsetY: 6 }, // was 20
 ];
 
 // ─────────────────────────────────────────────
@@ -182,11 +184,11 @@ export function useHorizontalScrollParticle(
       });
     };
 
-const resize = () => {
-  canvas.width = window.innerWidth;    // ← selalu viewport width
-  canvas.height = window.innerHeight;
-  initParticles();
-};
+    const resize = () => {
+      canvas.width = window.innerWidth; // ← selalu viewport width
+      canvas.height = window.innerHeight;
+      initParticles();
+    };
     resize();
     window.addEventListener("resize", resize);
 
