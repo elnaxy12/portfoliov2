@@ -34,13 +34,13 @@ const PARTICLE_CONFIGS_DESKTOP = [
 
 // MOBILE
 const PARTICLE_CONFIGS_MOBILE = [
-  { size: 300, offsetY: -50 },
-  { size: 200, offsetY: 40 },
-  { size: 280, offsetY: 70 },
-  { size: 160, offsetY: -30 },
-  { size: 240, offsetY: 90 },
-  { size: 200, offsetY: -70 },
-  { size: 140, offsetY: 60 },
+  { size: 300, offsetY: -25 },
+  { size: 200, offsetY: 20 },
+  { size: 280, offsetY: 25 },
+  { size: 160, offsetY: -20 },
+  { size: 240, offsetY: 30 },
+  { size: 200, offsetY: -30 },
+  { size: 140, offsetY: 15 },
 ];
 
 // ─────────────────────────────────────────────
