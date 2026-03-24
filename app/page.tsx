@@ -179,14 +179,15 @@ export default function Home() {
 
         <div
           ref={section4Ref}
+          data-scroll-allow
           style={{
             position: "relative",
             zIndex: 3,
             opacity: 0,
             width: "100%",
+            height: "100vh",
             padding: "0 2rem",
-            maxHeight: "100vh",
-            overflowY: "auto",
+            overflowY: "scroll",
             alignSelf: "flex-center",
             paddingTop: "1.5rem",
           }}
