@@ -182,7 +182,6 @@ export default function Home() {
 
         <div
           ref={section4Ref}
-          data-lenis-prevent
           style={{
             position: "relative",
             zIndex: 3,

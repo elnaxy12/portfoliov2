@@ -15,7 +15,7 @@ const IMAGE_URLS = [
   "/images/particle/913522419108-removebg-preview.png",
   "/images/particle/939383347672-removebg-preview.png",
 ];
-const OFFSCREEN_SIZE = 256;
+const OFFSCREEN_SIZE = 480;
 const LERP_SPEED = 0.06;
 
 // ─────────────────────────────────────────────
@@ -23,24 +23,24 @@ const LERP_SPEED = 0.06;
 // ─────────────────────────────────────────────
 // DESKTOP — naikkan semua size
 const PARTICLE_CONFIGS_DESKTOP = [
-  { size: 220, offsetY: -22 }, // was 160
-  { size: 90, offsetY: 18 }, // was 55
-  { size: 180, offsetY: 20 }, // was 120
-  { size: 75, offsetY: -18 }, // was 45
-  { size: 140, offsetY: 25 }, // was 90
-  { size: 110, offsetY: -25 }, // was 70
-  { size: 65, offsetY: 12 }, // was 40
+  { size: 600, offsetY: -25 },
+  { size: 280, offsetY: 20 },
+  { size: 520, offsetY: 25 },
+  { size: 240, offsetY: -20 },
+  { size: 460, offsetY: 30 },
+  { size: 380, offsetY: -30 },
+  { size: 200, offsetY: 15 },
 ];
 
 // MOBILE
 const PARTICLE_CONFIGS_MOBILE = [
-  { size: 130, offsetY: -18 },
-  { size: 55, offsetY: 12 },
-  { size: 110, offsetY: 20 },
-  { size: 50, offsetY: -14 },
-  { size: 85, offsetY: 24 },
-  { size: 70, offsetY: -20 },
-  { size: 45, offsetY: 10 },
+  { size: 380, offsetY: -80 },
+  { size: 180, offsetY: 60 },
+  { size: 320, offsetY: 100 },
+  { size: 160, offsetY: -70 },
+  { size: 280, offsetY: 120 },
+  { size: 240, offsetY: -110 },
+  { size: 140, offsetY: 80 },
 ];
 
 // ─────────────────────────────────────────────
@@ -52,13 +52,13 @@ function lerp(a: number, b: number, t: number) {
 
 function getWaypoints() {
   return [
-    { x: -3, y: 50 },
-    { x: 15, y: 48 },
-    { x: 30, y: 52 },
-    { x: 50, y: 47 },
-    { x: 70, y: 51 },
-    { x: 85, y: 49 },
-    { x: 103, y: 50 },
+    { x: -20, y: 50 }, // lebih keluar kiri
+    { x: 0, y: 50 },
+    { x: 25, y: 50 },
+    { x: 50, y: 50 },
+    { x: 75, y: 50 },
+    { x: 100, y: 50 },
+    { x: 130, y: 50 }, // lebih keluar kanan
   ];
 }
 

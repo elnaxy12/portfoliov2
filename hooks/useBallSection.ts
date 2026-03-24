@@ -19,14 +19,35 @@ export function useBallSection(
   }, [section4Ref]);
 
   useEffect(() => {
-    if (!ballSectionRef.current) return;
+    if (!ballSectionRef.current || !section4Ref.current) return;
+
+    const updateLenisPrevent = () => {
+      const isMobile = window.innerWidth < 768;
+
+      if (isMobile) {
+        section4Ref.current?.setAttribute("data-lenis-prevent", "true");
+        section4Ref.current!.style.overflowY = "auto";
+        section4Ref.current!.style.maxHeight = "100vh";
+      } else {
+        section4Ref.current?.removeAttribute("data-lenis-prevent");
+        section4Ref.current!.style.overflowY = "visible";
+        section4Ref.current!.style.maxHeight = "none";
+      }
+    };
+
+    // 👇 jalankan pertama kali
+    updateLenisPrevent();
+
+    // 👇 handle resize
+    window.addEventListener("resize", updateLenisPrevent);
+
     const isMobile = window.innerWidth < 768;
 
     ScrollTrigger.create({
       trigger: ballSectionRef.current,
       start: "top top",
       end: "+=1200",
-      scrub: isMobile ? 0.5 : 2,
+      scrub: isMobile ? 0.5 : 1,
       pin: true,
       anticipatePin: 0,
       invalidateOnRefresh: true,
@@ -84,6 +105,8 @@ export function useBallSection(
     });
 
     return () => {
+      window.removeEventListener("resize", updateLenisPrevent);
+
       ScrollTrigger.getAll()
         .filter((t) => t.vars.trigger === ballSectionRef.current)
         .forEach((t) => t.kill());
