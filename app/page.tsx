@@ -16,8 +16,8 @@ import { useBallAnimation } from "../hooks/useBallAnimation";
 import { useLenis } from "../hooks/useLenis";
 import { useSectionAnimations } from "../hooks/useSectionAnimations";
 import { useSection1 } from "../hooks/useSection1";
-import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
 import { useBallSection } from "../hooks/useBallSection";
+import { useHorizontalScrollParticle } from "../hooks/useHorizontalScrollParticle";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,6 +33,8 @@ export default function Home() {
   const hScrollRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const planeUpdateRef = useRef<((progress: number) => void) | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
 
   const { ballRef } = useBallAnimation();
 
@@ -54,9 +56,11 @@ export default function Home() {
   const lenisRef = useLenis((x) => setScrollX(x));
   useSectionAnimations(lenisRef, currentIndex, isAnimating);
   useSection1(section1Ref, waveRef, currentIndex);
-  useHorizontalScroll(
+  useHorizontalScrollParticle(
     hScrollRef,
     trackRef,
+    canvasRef,
+    svgRef,
     planeUpdateRef,
     currentIndex,
     scrollXRef,
@@ -101,7 +105,36 @@ export default function Home() {
         <LowerSvg />
       </div>
 
-      <div ref={hScrollRef} className="section-panel">
+      <div
+        ref={hScrollRef}
+        className="section-panel"
+        style={{ position: "relative" }}
+      >
+        <svg
+          ref={svgRef}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            pointerEvents: "none",
+            visibility: "hidden",
+            zIndex: -1,
+          }}
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+        />
+        <canvas
+          ref={canvasRef}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        />
         <HorizontalScroll trackRef={trackRef} scrollXRef={scrollXRef}>
           <PaperPlaneScene
             trackRef={trackRef}
