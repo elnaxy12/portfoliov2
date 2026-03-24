@@ -9,7 +9,7 @@ export function useHorizontalScroll(
   planeUpdateRef: RefObject<((progress: number) => void) | null>,
   currentIndex: RefObject<number>,
   scrollXRef: RefObject<number>,
-  lenisRef: RefObject<Lenis | null>, // ← tambah param
+  lenisRef: RefObject<Lenis | null>,
 ) {
   useEffect(() => {
     if (!hScrollRef.current || !hTrackRef.current) return;
@@ -37,22 +37,13 @@ export function useHorizontalScroll(
         onEnter: () => {
           currentIndex.current = 2;
           planeUpdateRef.current?.(0);
-
-          // Pause Lenis saat masuk pinned section di mobile
-          // agar tidak konflik dengan ScrollTrigger scrub
           if (isMobile) lenisRef.current?.stop();
         },
         onLeave: () => {
           currentIndex.current = 3;
-
-          // Resume Lenis setelah keluar pinned section
           if (isMobile) {
             lenisRef.current?.start();
-            // Beri jeda singkat lalu refresh agar ScrollTrigger
-            // sections berikutnya terhitung ulang dengan benar
-            setTimeout(() => {
-              ScrollTrigger.refresh();
-            }, 50);
+            setTimeout(() => ScrollTrigger.refresh(), 50);
           }
         },
         onEnterBack: () => {
@@ -65,9 +56,7 @@ export function useHorizontalScroll(
           scrollXRef.current = 0;
           if (isMobile) {
             lenisRef.current?.start();
-            setTimeout(() => {
-              ScrollTrigger.refresh();
-            }, 50);
+            setTimeout(() => ScrollTrigger.refresh(), 50);
           }
         },
         onUpdate: (self) => {
@@ -81,12 +70,9 @@ export function useHorizontalScroll(
             hScrollRef.current.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
           }
 
-          scrollXRef.current = progress * getTotalWidth();
+          scrollXRef.current = progress * getTotalWidth(); // ✅ ini yang penting
           planeUpdateRef.current?.(progress);
 
-          // Di mobile, saat progress hampir selesai, start lagi Lenis
-          // supaya user bisa lanjut scroll ke section berikutnya
-          // tanpa harus tunggu onLeave yang kadang terlambat di mobile
           if (isMobile && progress >= 0.98 && lenisRef.current?.isStopped) {
             lenisRef.current.start();
           }
@@ -97,9 +83,7 @@ export function useHorizontalScroll(
     let vpTimeout: ReturnType<typeof setTimeout>;
     const handleVPResize = () => {
       clearTimeout(vpTimeout);
-      vpTimeout = setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 150);
+      vpTimeout = setTimeout(() => ScrollTrigger.refresh(), 150);
     };
 
     vp?.addEventListener("resize", handleVPResize);
@@ -107,7 +91,6 @@ export function useHorizontalScroll(
     return () => {
       clearTimeout(vpTimeout);
       vp?.removeEventListener("resize", handleVPResize);
-      // Pastikan Lenis tidak tertinggal dalam state stopped
       lenisRef.current?.start();
       ScrollTrigger.getAll()
         .filter((t) => t.vars.trigger === hScrollRef.current)

@@ -54,17 +54,6 @@ export function useBallSection(
         ballRef.current.style.transform = `translate(-50%, -50%) scale(${1 + progress * maxScale})`;
 
         if (section4Ref.current) {
-          // Aktifkan inner scroll hanya setelah animasi selesai
-          if (progress >= 0.99) {
-            section4Ref.current.style.maxHeight = "100vh";
-            section4Ref.current.style.overflowY = "auto";
-            section4Ref.current.setAttribute("data-lenis-prevent", ""); // ← aktifkan
-          } else {
-            section4Ref.current.style.maxHeight = "none";
-            section4Ref.current.style.overflowY = "hidden";
-            section4Ref.current.removeAttribute("data-lenis-prevent"); // ← nonaktifkan
-          }
-
           const contentOpacity = progress > 0.8 ? (progress - 0.8) / 0.2 : 0;
           section4Ref.current.style.opacity = String(contentOpacity);
 
