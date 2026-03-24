@@ -204,7 +204,8 @@ export function useHorizontalScrollParticle(
       const vh = canvas.height;
       const trackW = hTrackRef.current?.scrollWidth ?? vw;
       const maxScrollX = trackW - window.innerWidth;
-      const scrollProgress = maxScrollX > 0 ? scroll / maxScrollX : 0;
+      const totalScroll = maxScrollX + 1600; // HARUS sama dengan GSAP
+      const scrollProgress = scroll / totalScroll;
 
       particles.forEach((p) => {
         const offscreen = offscreens[p.imageIndex];
