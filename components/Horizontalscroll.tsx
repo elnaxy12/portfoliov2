@@ -291,7 +291,7 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
         className={`horizontal-scroll-wrapper ${className}`}
         style={{
           overflow: "hidden",
-          width: "100vw",
+          minWidth: "300vw",
           height: "100vh",
           position: "relative",
         }}
