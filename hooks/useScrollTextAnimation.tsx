@@ -4,22 +4,14 @@ interface UseScrollTextAnimationOptions {
   scrollXRef: RefObject<number>;
   trackRef: RefObject<HTMLDivElement | null>;
   textRef: RefObject<HTMLDivElement | null>;
-  // range kapan text-1 muncul & hilang
-  text1In?: number; // default 0.1
-  text1Full?: number; // default 0.8
-  text1Out?: number; // default 0.9
-  // range kapan text-2 muncul
-  text2In?: number; // default 0.9
-  text2Full?: number; // default 1.0
+  text2In?: number; // default 0.5
+  text2Full?: number; // default 0.65
 }
 
 export function useScrollTextAnimation({
   scrollXRef,
   trackRef,
   textRef,
-  text1In = 0.1,
-  text1Full = 0.8,
-  text1Out = 0.9,
   text2In = 0.5,
   text2Full = 0.65,
 }: UseScrollTextAnimationOptions) {
@@ -41,12 +33,16 @@ export function useScrollTextAnimation({
         (trackRef.current?.scrollWidth ?? 0) - window.innerWidth;
       const progress = maxScroll > 0 ? clamp(scrollX / maxScroll) : 0;
 
-      // Text 1: fade in → full → fade out
-      let op1 = progress <= text1In ? invlerp(0, text1In, progress) : 1;
-
-      // Text 2: fade in di akhir scroll
+      // Text 2: fade in dari text2In → text2Full
       const op2 =
-        progress >= text2Full ? 1 : invlerp(text2In, text2Full, progress);
+        progress <= text2In
+          ? 0
+          : progress >= text2Full
+            ? 1
+            : invlerp(text2In, text2Full, progress);
+
+      // Text 1: fade out bersamaan saat text2 masuk
+      const op1 = 1 - op2;
 
       const t1 = el.querySelector<HTMLElement>(".scroll-text-1");
       const t2 = el.querySelector<HTMLElement>(".scroll-text-2");
@@ -64,14 +60,5 @@ export function useScrollTextAnimation({
 
     raf = requestAnimationFrame(update);
     return () => cancelAnimationFrame(raf);
-  }, [
-    scrollXRef,
-    trackRef,
-    textRef,
-    text1In,
-    text1Full,
-    text1Out,
-    text2In,
-    text2Full,
-  ]);
+  }, [scrollXRef, trackRef, textRef, text2In, text2Full]);
 }

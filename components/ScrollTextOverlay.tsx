@@ -105,14 +105,13 @@ export function ScrollTextOverlay({
         className="scroll-text-1 text-3xl md:text-6xl flex items-center justify-center"
         style={{
           position: "absolute",
-          top: "2rem",
+          bottom: "5rem",
           left: "2rem",
           margin: 0,
           opacity: 0,
           fontWeight: 500,
           color: "white",
           transition: "opacity 0.05s, transform 0.05s",
-          textShadow: "0 1px 12px rgba(0,0,0,0.4)",
         }}
       >
         {headlineText}
@@ -120,17 +119,14 @@ export function ScrollTextOverlay({
 
       {/* 🔹 CODE BLOCK */}
       <div
-        className="scroll-text-2"
+        className="scroll-text-2 top-8 left-8"
         style={{
           position: "absolute",
-          bottom: "2rem",
-          right: "2rem",
           opacity: 0,
 
           background: "rgba(40, 40, 40, 0.85)",
           backdropFilter: "blur(10px)",
           borderRadius: "16px",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
           border: "1px solid rgba(255,255,255,0.08)",
 
           maxWidth: "420px",
