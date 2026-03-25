@@ -10,6 +10,7 @@ export function useHorizontalScroll(
   scrollXRef: RefObject<number>, // ← tambah param
 ) {
   useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger); 
     if (!hScrollRef.current || !hTrackRef.current) return;
 
     const track = hTrackRef.current;
@@ -21,10 +22,10 @@ export function useHorizontalScroll(
       scrollTrigger: {
         trigger: hScrollRef.current,
         start: "top top",
-        end: () => `+=${getTotalWidth() + 800}`,
-        scrub: true,
+        end: () => `+=${getTotalWidth()}`,
+        scrub: 1,
         pin: true,
-        anticipatePin: 1,
+        anticipatePin: 0,
         invalidateOnRefresh: true,
         onEnter: () => {
           currentIndex.current = 2;
@@ -42,7 +43,9 @@ export function useHorizontalScroll(
           scrollXRef.current = 0; // ← reset saat keluar kiri
         },
         onUpdate: (self) => {
-          const progress = Math.min(self.progress, 1);
+          const progress = self.progress >= 0.99 ? 1 : self.progress; // snap ke 1
+          scrollXRef.current = progress * getTotalWidth();
+          planeUpdateRef.current?.(progress);
 
           // Interpolasi #9B8EC7 → #BDA6CE
           const r = Math.round(155 + (189 - 155) * progress); // 9B → BD
@@ -52,9 +55,6 @@ export function useHorizontalScroll(
           if (hScrollRef.current) {
             hScrollRef.current.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
           }
-
-          scrollXRef.current = self.progress * getTotalWidth();
-          planeUpdateRef.current?.(progress);
         },
       },
     });

@@ -6,7 +6,6 @@ interface HorizontalScrollProps {
   children: React.ReactNode;
   className?: string;
   trackRef: React.RefObject<HTMLDivElement | null>;
-  scrollXRef?: React.RefObject<number>;
 }
 
 const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(

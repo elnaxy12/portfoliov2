@@ -228,8 +228,6 @@ export default function PaperPlaneScene({
       trailEl.style.strokeDashoffset = String(totalLen * (1 - progress));
       glowEl.style.strokeDashoffset = String(totalLen * (1 - progress));
 
-      scrollXRef.current = progress * (trackW - window.innerWidth);
-
       SKILL_STOPS.forEach((stop, i) => {
         const el = skillRefsMap.current.get(i);
         if (!el) return;

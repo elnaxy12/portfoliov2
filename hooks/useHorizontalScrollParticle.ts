@@ -204,7 +204,7 @@ export function useHorizontalScrollParticle(
       const vh = canvas.height;
       const trackW = hTrackRef.current?.scrollWidth ?? vw;
       const maxScrollX = trackW - window.innerWidth;
-      const totalScroll = maxScrollX + 1600; // HARUS sama dengan GSAP
+      const totalScroll = maxScrollX; // HARUS sama dengan GSAP
       const scrollProgress = scroll / totalScroll;
 
       particles.forEach((p) => {
@@ -279,54 +279,51 @@ export function useHorizontalScrollParticle(
     const track = hTrackRef.current;
     const getTotalWidth = () => track.scrollWidth - window.innerWidth;
 
-    gsap.to(track, {
-      x: () => -getTotalWidth(),
-      ease: "none",
-      scrollTrigger: {
-        trigger: hScrollRef.current,
-        start: "top top",
-        end: () => `+=${getTotalWidth() + 800}`,
-        scrub: true,
-        pin: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onEnter: () => {
-          currentIndex.current = 2;
-          planeUpdateRef.current?.(0);
-        },
-        onLeave: () => {
-          currentIndex.current = 3;
-        },
-        onEnterBack: () => {
-          currentIndex.current = 2;
-          planeUpdateRef.current?.(0);
-        },
-        onLeaveBack: () => {
-          currentIndex.current = 1;
-          scrollXRef.current = 0;
-        },
-        onUpdate: (self) => {
-          const progress = Math.min(self.progress, 1);
+    const ctx = gsap.context(() => {
+      gsap.to(track, {
+        x: () => -getTotalWidth(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: hScrollRef.current,
+          start: "top top",
+          end: () => `+=${getTotalWidth()}`,
+          scrub: 1,
+          pin: true,
+          anticipatePin: 0,
+          invalidateOnRefresh: true,
+          onEnter: () => {
+            currentIndex.current = 2;
+            planeUpdateRef.current?.(0);
+          },
+          onLeave: () => {
+            currentIndex.current = 3;
+          },
+          onEnterBack: () => {
+            currentIndex.current = 2;
+            planeUpdateRef.current?.(0);
+          },
+          onLeaveBack: () => {
+            currentIndex.current = 1;
+            scrollXRef.current = 0;
+          },
+          onUpdate: (self) => {
+            const progress = Math.min(self.progress, 1);
 
-          // Interpolate background: #9B8EC7 → #BDA6CE
-          const r = Math.round(155 + (189 - 155) * progress);
-          const g = Math.round(142 + (166 - 142) * progress);
-          const b = Math.round(199 + (206 - 199) * progress);
+            const r = Math.round(155 + (189 - 155) * progress);
+            const g = Math.round(142 + (166 - 142) * progress);
+            const b = Math.round(199 + (206 - 199) * progress);
 
-          if (hScrollRef.current) {
-            hScrollRef.current.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-          }
+            if (hScrollRef.current) {
+              hScrollRef.current.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+            }
 
-          scrollXRef.current = self.progress * getTotalWidth();
-          planeUpdateRef.current?.(progress);
+            scrollXRef.current = progress * getTotalWidth();
+            planeUpdateRef.current?.(progress);
+          },
         },
-      },
-    });
+      });
+    }, hScrollRef); // ← scope ke elemen ini
 
-    return () => {
-      ScrollTrigger.getAll()
-        .filter((t) => t.vars.trigger === hScrollRef.current)
-        .forEach((t) => t.kill());
-    };
+    return () => ctx.revert(); // ← cleanup otomatis, ga akan double
   }, [hScrollRef, hTrackRef, planeUpdateRef, currentIndex, scrollXRef]);
 }

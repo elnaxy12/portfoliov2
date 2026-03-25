@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #9B8EC7;
+    --background: #9b8ec7;
     --foreground: #ededed;
   }
 }
@@ -37,4 +37,23 @@ body {
 .wave-absolute {
   position: absolute;
   z-index: 10;
+}
+
+.tok-string {
+  color: #ce9178;
+}
+.tok-keyword {
+  color: #569cd6;
+}
+.tok-boolean {
+  color: #569cd6;
+}
+.tok-number {
+  color: #b5cea8;
+}
+.tok-function {
+  color: #dcdcaa;
+}
+.tok-property {
+  color: #9cdcfe;
 }

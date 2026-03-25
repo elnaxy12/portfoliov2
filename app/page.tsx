@@ -11,6 +11,7 @@ import ParallaxHero from "../components/ParallaxHero";
 import PaperPlaneScene from "../components/Paperplanescene";
 import HorizontalScroll from "../components/Horizontalscroll";
 import Section4 from "../components/Section4";
+import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
 import { useLenis } from "../hooks/useLenis";
@@ -138,7 +139,12 @@ export default function Home() {
             zIndex: 0,
           }}
         />
-        <HorizontalScroll trackRef={trackRef} scrollXRef={scrollXRef}>
+        <ScrollTextOverlay
+          scrollXRef={scrollXRef}
+          trackRef={trackRef}
+          headlineText="Mulai perjalanan ✦"
+        />
+        <HorizontalScroll trackRef={trackRef}>
           <PaperPlaneScene
             trackRef={trackRef}
             onReady={handleReady}
