@@ -52,19 +52,10 @@ const Shape: React.FC<ShapeProps> = ({
 const ShapeCluster: React.FC = () => {
   return (
     <div className="absolute bg-black w-50 h-125 p-6 rounded-t-full overflow-hidden">
-      {/* Circle besar — pojok atas kanan, setengah keluar */}
       <Shape shape="circle" size={128} top={-30} left={60} />
-
-      {/* Diamond medium — kiri, sepertiga atas */}
       <Shape shape="diamond" size={88} top={10} left={-10} />
-
-      {/* Rounded medium — kanan tengah */}
       <Shape shape="rounded" size={76} top={30} left={80} />
-
-      {/* Diamond kecil — kiri bawah */}
       <Shape shape="diamond" size={60} top={30} left={20} />
-
-      {/* Circle kecil — pojok kanan bawah */}
       <Shape shape="circle" size={56} top={20} left={110} />
     </div>
   );
