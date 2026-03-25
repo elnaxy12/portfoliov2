@@ -152,7 +152,7 @@ export function useHorizontalScrollParticle(
       svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
 
       const waypoints = getWaypoints();
-      const rotations = [30, 120, 200, 310, 75, 260, 150];
+      const rotations = [50, 120, 200, 310, 75, 260, 150];
 
       particles = Array.from({ length: PARTICLE_COUNT }, (_, i) => {
         const config = PARTICLE_CONFIGS[i];

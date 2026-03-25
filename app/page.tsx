@@ -12,6 +12,8 @@ import PaperPlaneScene from "../components/Paperplanescene";
 import HorizontalScroll from "../components/Horizontalscroll";
 import Section4 from "../components/Section4";
 import CodeBox from "../components/CodeBox";
+import ShapeCluster from "../components/ShapeCluster";
+import CenteredText from "../components/CenteredText";
 import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
@@ -145,7 +147,8 @@ export default function Home() {
           trackRef={trackRef}
           headlineText={
             <>
-              Start <br />Your Journey <span style={{ color: "#22c55e" }}>✦</span>
+              Start <br />
+              Your Journey <span style={{ color: "#22c55e" }}>✦</span>
             </>
           }
         />
@@ -192,7 +195,9 @@ export default function Home() {
           }}
         />
 
+        <ShapeCluster />
         <CodeBox top="5rem" />
+        <CenteredText text="Let's start" />
 
         {/* 🔹 Section4 */}
         <div
