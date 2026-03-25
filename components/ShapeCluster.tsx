@@ -51,7 +51,7 @@ const Shape: React.FC<ShapeProps> = ({
 
 const ShapeCluster: React.FC = () => {
   return (
-    <div className="absolute bg-black w-[200px] h-[500px] p-6 rounded-t-full overflow-hidden">
+    <div className="absolute bg-black w-50 h-125 p-6 rounded-t-full overflow-hidden">
       {/* Circle besar — pojok atas kanan, setengah keluar */}
       <Shape shape="circle" size={128} top={-30} left={60} />
 
