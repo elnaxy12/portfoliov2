@@ -59,7 +59,7 @@ function highlightCode(code: string) {
 interface ScrollTextOverlayProps {
   scrollXRef: RefObject<number>;
   trackRef: RefObject<HTMLDivElement | null>;
-  headlineText?: string;
+  headlineText?: React.ReactNode;
   text1In?: number;
   text1Full?: number;
   text1Out?: number;
@@ -101,8 +101,8 @@ export function ScrollTextOverlay({
       }}
     >
       {/* 🔹 TEXT 1 */}
-      <p
-        className="scroll-text-1 text-2xl md:text-6xl"
+      <div
+        className="scroll-text-1 text-2xl md:text-6xl flex items-center justify-center"
         style={{
           position: "absolute",
           top: "2rem",
@@ -116,7 +116,7 @@ export function ScrollTextOverlay({
         }}
       >
         {headlineText}
-      </p>
+      </div>
 
       {/* 🔹 CODE BLOCK */}
       <div

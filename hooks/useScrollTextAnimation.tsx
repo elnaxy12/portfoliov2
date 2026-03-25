@@ -42,11 +42,7 @@ export function useScrollTextAnimation({
       const progress = maxScroll > 0 ? clamp(scrollX / maxScroll) : 0;
 
       // Text 1: fade in → full → fade out
-      let op1 = 0;
-      if (progress <= text1In) op1 = invlerp(0, text1In, progress);
-      else if (progress <= text1Full) op1 = 1;
-      else if (progress <= text1Out)
-        op1 = invlerp(text1Out, text1Full, progress);
+      let op1 = progress <= text1In ? invlerp(0, text1In, progress) : 1;
 
       // Text 2: fade in di akhir scroll
       const op2 =

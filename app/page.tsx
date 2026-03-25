@@ -142,7 +142,11 @@ export default function Home() {
         <ScrollTextOverlay
           scrollXRef={scrollXRef}
           trackRef={trackRef}
-          headlineText="Start Your Journey ✦"
+          headlineText={
+            <>
+              Start Your Journey <span style={{ color: "#22c55e" }}>✦</span>
+            </>
+          }
         />
         <HorizontalScroll trackRef={trackRef}>
           <PaperPlaneScene
