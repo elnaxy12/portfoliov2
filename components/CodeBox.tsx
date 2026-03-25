@@ -67,10 +67,10 @@ export default function CodeBox({
   return (
     <div
       className={`
-  absolute top-4 left-1/2 -translate-x-1/2 
+  absolute top-2  
   bg-gray-900/85 backdrop-blur-lg 
   rounded-2xl border border-white/8 
-  overflow-auto pointer-events-none p-2 px-4 w-75
+  overflow-auto pointer-events-none p-4 mx-4 w-5/6 md:w-auto 
   md:top-8 md:right-8 md:left-auto md:translate-x-0 
   md:max-w-100 md:max-h-[60vh]
 `}
