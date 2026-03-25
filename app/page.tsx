@@ -11,6 +11,7 @@ import ParallaxHero from "../components/ParallaxHero";
 import PaperPlaneScene from "../components/Paperplanescene";
 import HorizontalScroll from "../components/Horizontalscroll";
 import Section4 from "../components/Section4";
+import CodeBox from "../components/CodeBox";
 import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
@@ -144,7 +145,7 @@ export default function Home() {
           trackRef={trackRef}
           headlineText={
             <>
-              Start Your Journey <span style={{ color: "#22c55e" }}>✦</span>
+              Start <br />Your Journey <span style={{ color: "#22c55e" }}>✦</span>
             </>
           }
         />
@@ -174,6 +175,7 @@ export default function Home() {
           overflow: "hidden",
         }}
       >
+        {/* 🔹 Ball */}
         <div
           ref={ballRef}
           style={{
@@ -190,6 +192,9 @@ export default function Home() {
           }}
         />
 
+        <CodeBox top="5rem" />
+
+        {/* 🔹 Section4 */}
         <div
           ref={section4Ref}
           style={{
