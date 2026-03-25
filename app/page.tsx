@@ -142,7 +142,7 @@ export default function Home() {
         <ScrollTextOverlay
           scrollXRef={scrollXRef}
           trackRef={trackRef}
-          headlineText="Mulai perjalanan ✦"
+          headlineText="Start Your Journey ✦"
         />
         <HorizontalScroll trackRef={trackRef}>
           <PaperPlaneScene

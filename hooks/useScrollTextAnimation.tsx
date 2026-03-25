@@ -20,8 +20,8 @@ export function useScrollTextAnimation({
   text1In = 0.1,
   text1Full = 0.8,
   text1Out = 0.9,
-  text2In = 0.9,
-  text2Full = 0.95,
+  text2In = 0.5,
+  text2Full = 0.65,
 }: UseScrollTextAnimationOptions) {
   useEffect(() => {
     const el = textRef.current;

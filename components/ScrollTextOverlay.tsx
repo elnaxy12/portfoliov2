@@ -102,14 +102,13 @@ export function ScrollTextOverlay({
     >
       {/* 🔹 TEXT 1 */}
       <p
-        className="scroll-text-1"
+        className="scroll-text-1 text-2xl md:text-6xl"
         style={{
           position: "absolute",
           top: "2rem",
           left: "2rem",
           margin: 0,
           opacity: 0,
-          fontSize: "1.25rem",
           fontWeight: 500,
           color: "white",
           transition: "opacity 0.05s, transform 0.05s",
