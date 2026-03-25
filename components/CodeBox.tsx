@@ -70,9 +70,9 @@ export default function CodeBox({
   absolute top-4 left-1/2 -translate-x-1/2 
   bg-gray-900/85 backdrop-blur-lg 
   rounded-2xl border border-white/8 
-  overflow-auto pointer-events-none p-2 px-4 w-[300px]
+  overflow-auto pointer-events-none p-2 px-4 w-75
   md:top-8 md:right-8 md:left-auto md:translate-x-0 
-  md:max-w-[400px] md:max-h-[60vh]
+  md:max-w-100 md:max-h-[60vh]
 `}
     >
       {/* Header dots */}
@@ -84,7 +84,7 @@ export default function CodeBox({
 
       {/* Code content */}
       <pre
-        className="m-0 text-xs text-gray-300 leading-relaxed whitespace-pre-wrap break-words"
+        className="m-0 text-xs text-gray-300 leading-relaxed whitespace-pre-wrap wrap-break-words"
         dangerouslySetInnerHTML={{ __html: highlightCode(code) }}
       />
     </div>
