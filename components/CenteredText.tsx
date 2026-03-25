@@ -11,8 +11,13 @@ const CenteredText: React.FC<CenteredTextProps> = ({
   className = "",
 }) => {
   return (
-    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-4">
-      <h1 className={`text-2xl md:text-4xl text-white ${className}`}>{text}</h1>
+    <div className="absolute bottom-8 left-8">
+      <h1
+        style={{ lineHeight: "1.5" }}
+        className={`text-sm md:text-xl text-white max-w-lg leading-tight ${className}`}
+      >
+        {text}
+      </h1>
     </div>
   );
 };

@@ -148,7 +148,10 @@ export default function Home() {
           headlineText={
             <>
               Start <br />
-              Your Journey <span style={{ color: "#22c55e" }}>✦</span>
+              Your Journey{" "}
+              <span className="text-[#22c55e] bg-white ml-2 rounded-full">
+                ✦
+              </span>
             </>
           }
         />
@@ -197,7 +200,9 @@ export default function Home() {
 
         <ShapeCluster />
         <CodeBox top="5rem" />
-        <CenteredText text="Let's start" />
+        <CenteredText
+          text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters."
+        />
 
         {/* 🔹 Section4 */}
         <div
