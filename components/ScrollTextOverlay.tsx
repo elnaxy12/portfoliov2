@@ -102,7 +102,7 @@ export function ScrollTextOverlay({
     >
       {/* 🔹 TEXT 1 */}
       <div
-        className="scroll-text-1 text-4xl md:text-6xl flex items-center justify-center"
+        className="scroll-text-1 text-3xl md:text-6xl flex items-center justify-center"
         style={{
           position: "absolute",
           top: "2rem",
