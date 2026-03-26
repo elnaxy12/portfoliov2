@@ -183,7 +183,7 @@ export default function Home() {
       >
         {/* 🔹 Ball */}
         <div
-          className="md:left-[calc(50%+80px)] left-[calc(50%+60px)]"
+          className="md:left-[calc(50%+80px)] left-[calc(50%+75px)]"
           ref={ballRef}
           style={{
             position: "absolute",
