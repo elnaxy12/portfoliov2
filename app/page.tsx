@@ -198,7 +198,7 @@ export default function Home() {
           }}
         />
 
-        <div className="absolute md:left-[calc(50%+51px)] md:-translate-y-15 -translate-y-15 left-[calc(50%+48px)] top-1/2 flex flex-col items-center gap-1 z-2">
+        <div className="absolute md:left-[calc(50%+51px)] md:-translate-y-15 -translate-y-15 left-[calc(50%+47px)] top-1/2 flex flex-col items-center gap-1 z-2">
           <span className="text-sm tracking-widest uppercase">Scroll</span>
           <div className="animate-bounce text-lg">↓</div>
         </div>
