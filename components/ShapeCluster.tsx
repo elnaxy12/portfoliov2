@@ -53,9 +53,9 @@ const ShapeCluster: React.FC = () => {
   return (
     <div
       className="
-  fixed left-1/2 -translate-x-1/2 bottom-48
-  md:absolute md:left-auto md:translate-x-0 md:bottom-auto
-  bg-black w-50 h-125 p-6 rounded-t-full overflow-hidden"
+    fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 mt-5
+    md:absolute md:left-auto md:translate-x-0 md:top-auto md:translate-y-0 md:mt-0
+    bg-black w-50 h-125 p-6 rounded-t-full overflow-hidden"
     >
       <Shape shape="circle" size={128} top={-30} left={60} />
       <Shape shape="diamond" size={88} top={10} left={-10} />

@@ -182,17 +182,17 @@ export default function Home() {
         }}
       >
         {/* 🔹 Ball */}
-        <div className="translate-x-20"
+        <div
           ref={ballRef}
           style={{
             position: "absolute",
             top: "50%",
-            left: "50%",
+            left: "calc(50% + 80px)",
             width: "20px",
             height: "20px",
             borderRadius: "50%",
             background: "#ffffff",
-            transform: "scale(1)",
+            transform: "translateY(-50%)", // biar vertikal center juga
             zIndex: 2,
             pointerEvents: "none",
           }}
@@ -200,9 +200,7 @@ export default function Home() {
 
         <ShapeCluster />
         <CodeBox top="5rem" />
-        <CenteredText
-          text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters."
-        />
+        <CenteredText text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters." />
 
         {/* 🔹 Section4 */}
         <div
