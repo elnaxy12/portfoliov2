@@ -182,7 +182,7 @@ export default function Home() {
         }}
       >
         {/* 🔹 Ball */}
-        <div
+        <div className="translate-x-20"
           ref={ballRef}
           style={{
             position: "absolute",
@@ -192,7 +192,7 @@ export default function Home() {
             height: "20px",
             borderRadius: "50%",
             background: "#ffffff",
-            transform: "translate(-50%, -50%) scale(1)",
+            transform: "scale(1)",
             zIndex: 2,
             pointerEvents: "none",
           }}

@@ -51,7 +51,11 @@ const Shape: React.FC<ShapeProps> = ({
 
 const ShapeCluster: React.FC = () => {
   return (
-    <div className="absolute bg-black w-50 h-125 p-6 rounded-t-full overflow-hidden">
+    <div
+      className="absolute bg-black w-50 h-125 p-6 rounded-t-full overflow-hidden md:static-no md:absolute
+  left-1/2 -translate-x-1/2 bottom-48
+  md:left-auto md:translate-x-0 md:bottom-auto"
+    >
       <Shape shape="circle" size={128} top={-30} left={60} />
       <Shape shape="diamond" size={88} top={10} left={-10} />
       <Shape shape="rounded" size={76} top={30} left={80} />
