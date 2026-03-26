@@ -149,7 +149,7 @@ export default function Home() {
             <>
               Start <br />
               Your Journey{" "}
-              <span className="inline-flex items-center justify-center text-[#22c55e] bg-white ml-2 rounded-full">
+              <span className="inline-flex items-center w-13 h-15 text-center justify-center text-[#22c55e] bg-white ml-2 rounded-full leading-none">
                 ✦
               </span>
             </>
