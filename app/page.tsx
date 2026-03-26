@@ -13,7 +13,7 @@ import HorizontalScroll from "../components/Horizontalscroll";
 import Section4 from "../components/Section4";
 import CodeBox from "../components/CodeBox";
 import ShapeCluster from "../components/ShapeCluster";
-import CenteredText from "../components/CenteredText";
+import ValuePropositon from "../components/ValueProposition";
 import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
@@ -149,7 +149,7 @@ export default function Home() {
             <>
               Start <br />
               Your Journey{" "}
-              <span className="text-[#22c55e] bg-white ml-2 rounded-full">
+              <span className="inline-flex items-center justify-center text-[#22c55e] bg-white ml-2 rounded-full">
                 ✦
               </span>
             </>
@@ -200,7 +200,7 @@ export default function Home() {
 
         <ShapeCluster />
         <CodeBox top="5rem" />
-        <CenteredText text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters." />
+        <ValuePropositon text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters." />
 
         {/* 🔹 Section4 */}
         <div

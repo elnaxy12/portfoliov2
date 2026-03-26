@@ -1,4 +1,3 @@
-// app/components/CenteredText.tsx
 import React from "react";
 
 interface CenteredTextProps {
