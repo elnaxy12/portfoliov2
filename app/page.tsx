@@ -149,7 +149,7 @@ export default function Home() {
             <>
               Start <br />
               Your Journey{" "}
-              <span className="inline-flex items-center w-13 h-15 text-center justify-center text-[#22c55e] bg-white ml-2 rounded-full leading-none">
+              <span className="inline-flex items-center md:w-13 md:h-15 w-19 h-20 text-center justify-center text-[#22c55e] bg-white ml-2 rounded-full leading-none">
                 ✦
               </span>
             </>
@@ -183,7 +183,7 @@ export default function Home() {
       >
         {/* 🔹 Ball */}
         <div
-          className="md:left-[calc(50%+80px)] left-[calc(50%+75px)]"
+          className="left-1/2 md:translate-x-20 translate-x-19"
           ref={ballRef}
           style={{
             position: "absolute",
@@ -192,13 +192,13 @@ export default function Home() {
             height: "20px",
             borderRadius: "50%",
             background: "#ffffff",
-            transform: "translateY(-50%)", // biar vertikal center juga
+            transform: "translate(-50%, -50%)",
             zIndex: 3,
             pointerEvents: "none",
           }}
         />
 
-        <div className="absolute left-1/2 translate-x-[47px] md:left-[calc(50%+51px)] md:translate-x-0 -translate-y-15 top-1/2 flex flex-col items-center gap-1 z-2">
+        <div className="absolute left-1/2 translate-x-11.75 md:left-[calc(50%+51px)] md:translate-x-0 -translate-y-15 top-1/2 flex flex-col items-center gap-1 z-2">
           <span className="text-sm tracking-widest uppercase">Scroll</span>
           <div className="animate-bounce text-lg">↓</div>
         </div>
