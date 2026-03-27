@@ -366,11 +366,11 @@ export default function PaperPlaneScene({
           />
 
           <div
+            className="bg-gray-900/85"
             style={{
               padding: "8px 14px",
               border: "1px solid rgba(255,255,255,0.15)",
               borderRadius: "4px",
-              background: "rgba(0,0,0,0.4)",
               backdropFilter: "blur(8px)",
               display: "flex",
               flexDirection: "column",
