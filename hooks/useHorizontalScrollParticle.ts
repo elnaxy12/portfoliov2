@@ -106,6 +106,7 @@ export function useHorizontalScrollParticle(
   planeUpdateRef: RefObject<((progress: number) => void) | null>,
   currentIndex: RefObject<number>,
   scrollXRef: RefObject<number>,
+  setWindProgress: (p: number) => void,
 ) {
   // ── Particle canvas animation ────────────────
   useEffect(() => {
@@ -319,6 +320,7 @@ export function useHorizontalScrollParticle(
 
             scrollXRef.current = progress * getTotalWidth();
             planeUpdateRef.current?.(progress);
+            setWindProgress(progress);
           },
         },
       });

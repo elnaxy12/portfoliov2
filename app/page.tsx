@@ -14,6 +14,7 @@ import Section4 from "../components/Section4";
 import CodeBox from "../components/CodeBox";
 import ShapeCluster from "../components/ShapeCluster";
 import ValuePropositon from "../components/ValueProposition";
+import WindLines from "../components/Windlines";
 import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
@@ -28,6 +29,7 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Home() {
   const scrollXRef = useRef<number>(0);
   const [scrollX, setScrollX] = useState(0);
+  const [windProgress, setWindProgress] = useState(0);
   const isAnimating = useRef(false);
   const currentIndex = useRef(0);
   const section1Ref = useRef<HTMLDivElement>(null);
@@ -45,6 +47,7 @@ export default function Home() {
   const handleReady = useCallback((update: (progress: number) => void) => {
     planeUpdateRef.current = update;
   }, []);
+
 
   useEffect(() => {
     ScrollTrigger.config({
@@ -71,6 +74,7 @@ export default function Home() {
     planeUpdateRef,
     currentIndex,
     scrollXRef,
+    setWindProgress,
   );
   useBallSection(ballSectionRef, ballRef, section4Ref, currentIndex);
 
@@ -141,6 +145,10 @@ export default function Home() {
             pointerEvents: "none",
             zIndex: 0,
           }}
+        />
+        <WindLines
+          scrollProgress={windProgress}
+          style={{ position: "fixed", top: 0, left: 0, zIndex: -1 }}
         />
         <ScrollTextOverlay
           scrollXRef={scrollXRef}
