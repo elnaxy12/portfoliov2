@@ -10,7 +10,7 @@ import LowerSvg from "../components/svg/LowerSvg";
 import ParallaxHero from "../components/ParallaxHero";
 import PaperPlaneScene from "../components/Paperplanescene";
 import HorizontalScroll from "../components/Horizontalscroll";
-import Section4 from "../components/Section4";
+import Offerings from "../components/Offerings";
 import CodeBox from "../components/CodeBox";
 import ShapeCluster from "../components/ShapeCluster";
 import ValuePropositon from "../components/ValueProposition";
@@ -230,7 +230,7 @@ export default function Home() {
             WebkitOverflowScrolling: "touch",
           }}
         >
-          <Section4 />
+          <Offerings />
         </div>
       </div>
     </div>

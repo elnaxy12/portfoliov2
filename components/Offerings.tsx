@@ -31,7 +31,7 @@ const offerings = [
   },
 ];
 
-export default function Section4() {
+export default function Offerings() {
   return (
     <section
       style={{
