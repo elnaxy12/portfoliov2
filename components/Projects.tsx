@@ -1,3 +1,6 @@
+import { useRef } from "react";
+import { useSectionReveal } from "../hooks/useSectionReveal";
+
 interface Project {
   id: string;
   name: string;
@@ -138,8 +141,14 @@ const PreviewIcon = () => (
 );
 
 export default function Projects() {
+  const sectionRef = useRef<HTMLElement>(null);
+  useSectionReveal(sectionRef, {
+    selector: ".project-card",
+    start: "top bottom",
+  });
   return (
     <section
+      ref={sectionRef}
       style={{
         padding: "2rem 1rem 1rem",
         maxWidth: 1280,
@@ -360,7 +369,7 @@ export default function Projects() {
             Projects
           </em>
         </h2>
-        <div className="count">02 Projects</div>
+        <div className="count">Projects</div>
       </div>
 
       {/* Bento grid */}

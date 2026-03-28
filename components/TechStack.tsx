@@ -1,3 +1,6 @@
+import { useRef } from "react";
+import { useSectionReveal } from "../hooks/useSectionReveal";
+
 interface TechCategory {
   category: string;
   items: string[];
@@ -266,8 +269,11 @@ const categoryIcons: Record<string, React.ReactElement> = {
 };
 
 export default function TechStack() {
+  const sectionRef = useRef<HTMLElement>(null);
+  useSectionReveal(sectionRef, { selector: ".tech-card", start: "top bottom" });
   return (
     <section
+      ref={sectionRef}
       style={{
         padding: "5rem 1rem 1rem",
         maxWidth: 1280,

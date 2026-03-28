@@ -188,7 +188,7 @@ export default function Home() {
         className="section-panel h-screen flex items-start md:items-center justify-center bg-[#BDA6CE]"
         style={{
           position: "relative",
-          overflow: "hidden",
+          overflow: "clip",
         }}
       >
         {/* 🔹 Ball */}
@@ -226,8 +226,8 @@ export default function Home() {
             opacity: 0,
             width: "100%",
             padding: "0 2rem",
-            maxHeight: "100vh",
             overflowY: "auto",
+            maxHeight: "100vh",
             alignSelf: "flex-center",
             paddingTop: "1.5rem",
             WebkitOverflowScrolling: "touch",
@@ -237,37 +237,12 @@ export default function Home() {
         </div>
       </div>
 
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          padding: "0 2rem",
-          maxHeight: "100vh",
-          overflowY: "auto",
-          alignSelf: "flex-center",
-          paddingTop: "1.5rem",
-          WebkitOverflowScrolling: "touch",
-        }}
-        className="section-panel h-screen bg-white"
-      >
+      <div className="bg-white w-full flex items-center justify-center">
         <TechStack />
       </div>
 
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          padding: "0 2rem",
-          maxHeight: "100vh",
-          overflowY: "auto",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          alignSelf: "flex-center",
-          paddingTop: "1.5rem",
-          WebkitOverflowScrolling: "touch",
-        }}
-        className="section-panel h-screen bg-white"
-      >
+      {/* Projects — section normal */}
+      <div className="bg-white w-full pt-10">
         <Projects />
       </div>
     </div>
