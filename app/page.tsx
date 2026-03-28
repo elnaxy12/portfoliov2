@@ -15,6 +15,8 @@ import CodeBox from "../components/CodeBox";
 import ShapeCluster from "../components/ShapeCluster";
 import ValuePropositon from "../components/ValueProposition";
 import WindLines from "../components/Windlines";
+import TechStack from "../components/TechStack";
+import Projects from "../components/Projects";
 import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
@@ -115,9 +117,10 @@ export default function Home() {
         <LowerSvg />
       </div>
 
+      {/* Section HorizontallScroll */}
       <div
         ref={hScrollRef}
-        className="section-panel"
+        className="section-panel bg-[#9B8EC7]"
         style={{ position: "relative" }}
       >
         <svg
@@ -232,6 +235,40 @@ export default function Home() {
         >
           <Offerings />
         </div>
+      </div>
+
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          padding: "0 2rem",
+          maxHeight: "100vh",
+          overflowY: "auto",
+          alignSelf: "flex-center",
+          paddingTop: "1.5rem",
+          WebkitOverflowScrolling: "touch",
+        }}
+        className="section-panel h-screen bg-white"
+      >
+        <TechStack />
+      </div>
+
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          padding: "0 2rem",
+          maxHeight: "100vh",
+          overflowY: "auto",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          alignSelf: "flex-center",
+          paddingTop: "1.5rem",
+          WebkitOverflowScrolling: "touch",
+        }}
+        className="section-panel h-screen bg-white"
+      >
+        <Projects />
       </div>
     </div>
   );

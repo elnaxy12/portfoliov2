@@ -172,7 +172,7 @@ export default function Offerings() {
             Full-Stack Developer
           </em>
         </h2>
-        <div className="count">06 Offerings</div>
+        <div className="count">Offerings</div>
       </div>
 
       {/* Grid */}
