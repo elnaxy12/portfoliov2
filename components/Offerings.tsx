@@ -1,6 +1,3 @@
-import { useRef } from "react";
-import { useSectionReveal } from "../hooks/useSectionReveal";
-
 const offerings = [
   {
     num: "01",
@@ -35,13 +32,8 @@ const offerings = [
 ];
 
 export default function Offerings() {
-    const sectionRef = useRef<HTMLElement>(null);
-    useSectionReveal(sectionRef, {
-      selector: ".offering-card",
-      start: "top bottom",
-    });
   return (
-    <section ref={sectionRef}
+    <section
       style={{
         padding: "2rem 1rem 1rem",
         maxWidth: 1280,

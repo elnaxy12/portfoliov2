@@ -226,7 +226,6 @@ export default function Home() {
             opacity: 0,
             width: "100%",
             padding: "0 2rem",
-            overflowY: "auto",
             maxHeight: "100vh",
             alignSelf: "flex-center",
             paddingTop: "1.5rem",
@@ -237,12 +236,15 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="bg-white w-full flex items-center justify-center">
+      <div
+        className="bg-white w-full flex items-center justify-center"
+        style={{ padding: "0 2rem" }}
+      >
         <TechStack />
       </div>
 
       {/* Projects — section normal */}
-      <div className="bg-white w-full pt-10">
+      <div className="bg-white w-full pt-10" style={{ padding: "0 2rem" }}>
         <Projects />
       </div>
     </div>
