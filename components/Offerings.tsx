@@ -37,7 +37,7 @@ const offerings = [
 export default function Offerings() {
     const sectionRef = useRef<HTMLElement>(null);
     useSectionReveal(sectionRef, {
-      selector: ".tech-card",
+      selector: ".offering-card",
       start: "top bottom",
     });
   return (
