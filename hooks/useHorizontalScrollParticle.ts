@@ -171,7 +171,7 @@ export function useHorizontalScrollParticle(
         const pt = pathEl.getPointAtLength(0);
 
         return {
-          spawnDelay: i * 0.04,
+          spawnDelay: i * 0.08,
           offsetY: config.offsetY,
           size: config.size,
           rotation: rotations[i] ?? 0,

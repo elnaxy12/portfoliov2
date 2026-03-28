@@ -48,7 +48,6 @@ export default function Home() {
     planeUpdateRef.current = update;
   }, []);
 
-
   useEffect(() => {
     ScrollTrigger.config({
       ignoreMobileResize: true,
@@ -98,16 +97,16 @@ export default function Home() {
           className="sesi-title text-base md:text-base text-justify px-10 md:px-50 leading-loose"
           style={{ color: "#ffffff" }}
         >
-          "Hello everyone, my name is Gilang Arya. I am a Full Stack Developer
-          who is passionate about building modern web applications. I have
-          experience working with technologies such as JavaScript, React,
-          Next.js, and backend development, allowing me to develop both frontend
-          interfaces and backend systems. I enjoy creating interactive user
-          experiences and building scalable web systems. One of the projects
-          I've worked on is an online shop website with product filtering,
-          category systems, and shopping cart features. I'm always excited to
-          learn new technologies and improve my skills in full stack
-          development."
+          I’m a full stack developer who enjoys turning ideas into real,
+          functional products. As a fresh graduate, I’ve built a strong
+          foundation in both frontend and backend development, along with
+          valuable experience from organizational work that shaped my discipline
+          and teamwork. I focus on creating engaging user interfaces with React
+          while also handling backend logic, APIs, and databases to ensure
+          everything runs smoothly behind the scenes. I love solving problems,
+          improving performance, and building things that are not just visually
+          appealing, but also efficient and impactful. For me, development is
+          not just about code — it’s about crafting experiences.
         </h1>
       </div>
 
