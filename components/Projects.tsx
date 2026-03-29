@@ -150,11 +150,15 @@ export default function Projects() {
     <section
       ref={sectionRef}
       style={{
-        padding: "2rem 1rem 1rem",
         maxWidth: 1280,
         margin: "0 auto",
         width: "100%",
+        marginTop: "5rem",
+        paddingBottom: "5rem",
         boxSizing: "border-box",
+        display:"flex",
+        justifyContent:"center",
+        flexDirection:"column"
       }}
     >
       <style>{`
