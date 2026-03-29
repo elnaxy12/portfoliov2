@@ -226,6 +226,7 @@ export default function Home() {
             opacity: 0,
             width: "100%",
             padding: "0 2rem",
+            maxHeight: "100vh",
             overflowY: "auto",
             alignSelf: "flex-center",
             paddingTop: "1.5rem",
