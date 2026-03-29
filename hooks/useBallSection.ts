@@ -27,7 +27,6 @@ export function useBallSection(
       if (isMobile) {
         section4Ref.current?.setAttribute("data-lenis-prevent", "true");
         section4Ref.current!.style.overflowY = "auto";
-        section4Ref.current!.style.maxHeight = "200vh";
       } else {
         section4Ref.current?.removeAttribute("data-lenis-prevent");
         section4Ref.current!.style.overflowY = "visible";
