@@ -124,8 +124,14 @@ export default function Offerings() {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
           gap: 10px;
+        } 
+       .offering-card:nth-child(4) {
+          grid-column: 1;
         }
-
+        .offering-card:nth-child(5) {
+          grid-column: 3;
+        }
+   
         @media (max-width: 768px) {
           .offerings-header h2 {
             font-size: 22px;
@@ -153,6 +159,14 @@ export default function Offerings() {
           }
           .offering-card .card-text {
             font-size: 11px;
+          }
+          .offerings-grid {
+            grid-template-columns: 1fr;
+          }
+          .offering-card:nth-child(4),
+          .offering-card:nth-child(5),
+          .offering-card:last-child {
+            grid-column: auto;
           }
         }
       `}</style>
