@@ -61,12 +61,25 @@ export function useBallSection(
         if (!ballRef.current) return;
 
         const progress = self.progress;
-        const maxScale =
-          Math.ceil(
-            Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 20,
-          ) + 5;
 
-        ballRef.current.style.transform = `translate(-50%, -50%) scale(${1 + progress * maxScale})`;
+        // Hitung jarak dari posisi ball ke pojok terjauh
+        const ballX = window.innerWidth / 2;
+        const ballY = window.innerHeight * 0.75; // bottom 25% = top 75%
+
+        const distToCorner = Math.max(
+          Math.sqrt(ballX ** 2 + ballY ** 2), // pojok kiri atas
+          Math.sqrt((window.innerWidth - ballX) ** 2 + ballY ** 2), // pojok kanan atas
+          Math.sqrt(ballX ** 2 + (window.innerHeight - ballY) ** 2), // pojok kiri bawah
+          Math.sqrt(
+            (window.innerWidth - ballX) ** 2 +
+              (window.innerHeight - ballY) ** 2,
+          ), // pojok kanan bawah
+        );
+
+        const ballRadius = 10; // setengah dari width/height ball (20px)
+        const maxScale = Math.ceil(distToCorner / ballRadius) + 2;
+
+        ballRef.current.style.transform = `translate(-50%, 50%) scale(${1 + progress * maxScale})`;
 
         if (section4Ref.current) {
           const contentOpacity = progress > 0.8 ? (progress - 0.8) / 0.2 : 0;
