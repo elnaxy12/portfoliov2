@@ -159,7 +159,7 @@ export default function Home() {
             <>
               Start <br />
               Your Journey{" "}
-              <span className="inline-flex items-center md:w-13 md:h-15 w-19 h-17 text-center justify-center text-[#22c55e] bg-white ml-2 rounded-full leading-none">
+              <span className="text-amber-400 ml-2 rotate-20">
                 ✦
               </span>
             </>
@@ -226,11 +226,8 @@ export default function Home() {
             opacity: 0,
             width: "100%",
             padding: "0 2rem",
-            maxHeight: "100vh",
-            overflowY: "auto",
             alignSelf: "flex-center",
             paddingTop: "1.5rem",
-            WebkitOverflowScrolling: "touch",
           }}
         >
           <Offerings />
