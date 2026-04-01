@@ -63,11 +63,10 @@ export function useBallSection(
         const progress = self.progress;
         const maxScale =
           Math.ceil(
-            Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 10,
-          ) + 5;
-
-        ballRef.current.style.transform = `translate(-50%, -50%) scale(${1 + progress * maxScale})`;
-
+            Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 8,
+          ) + 10;
+        ballRef.current.style.opacity = String(progress);
+        ballRef.current.style.transform = `translate(-50%, -50%) scale(${progress * maxScale})`;
         if (section4Ref.current) {
           const contentOpacity = progress > 0.8 ? (progress - 0.8) / 0.2 : 0;
           section4Ref.current.style.opacity = String(contentOpacity);

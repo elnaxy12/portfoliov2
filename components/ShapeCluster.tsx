@@ -62,6 +62,15 @@ const ShapeCluster: React.FC = () => {
       <Shape shape="rounded" size={76} top={30} left={80} />
       <Shape shape="diamond" size={60} top={30} left={20} />
       <Shape shape="circle" size={56} top={20} left={110} />
+      {/* 🔹 bola kecil putih */}
+      <Shape
+        shape="circle"
+        size={20}
+        top={-190}
+        left={150}
+        colorStart="#ffffff"
+        colorEnd="#ffffff"
+      />
     </div>
   );
 };
