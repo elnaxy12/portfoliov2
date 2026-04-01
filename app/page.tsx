@@ -185,10 +185,11 @@ export default function Home() {
       {/* Section 3+4: Ball membesar → Section4 muncul */}
       <div
         ref={ballSectionRef}
-        className="section-panel h-screen flex items-start md:items-center justify-center bg-[#BDA6CE]"
+        className="section-panel flex items-start md:items-center justify-center bg-[#BDA6CE]"
         style={{
           position: "relative",
           overflow: "clip",
+          minHeight: "100vh",
         }}
       >
         {/* 🔹 Ball */}
