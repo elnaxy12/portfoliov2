@@ -53,7 +53,7 @@ const ShapeCluster: React.FC = () => {
   return (
     <div
       className="
-    fixed left-1/2 -translate-x-1/2 top-1/2 bottom-0 
+    fixed left-1/2 -translate-x-1/2 bottom-0
     md:absolute md:left-auto md:translate-x-0 md:top-auto md:translate-y-0 md:mt-0
     bg-gray-950 w-50 h-125 p-6 rounded-t-full overflow-hidden"
     >
