@@ -22,17 +22,10 @@ export function useBallSection(
     if (!ballSectionRef.current || !section4Ref.current) return;
 
     const updateLenisPrevent = () => {
-      const isMobile = window.innerWidth < 768;
-
-      if (isMobile) {
-        section4Ref.current?.removeAttribute("data-lenis-prevent");
-        section4Ref.current!.style.overflowY = "visible";
-        section4Ref.current!.style.maxHeight = "100vh";
-      } else {
-        section4Ref.current?.removeAttribute("data-lenis-prevent");
-        section4Ref.current!.style.overflowY = "visible";
-        section4Ref.current!.style.maxHeight = "none";
-      }
+      // Tidak perlu bedain mobile/desktop, biarkan Lenis handle semua
+      section4Ref.current?.removeAttribute("data-lenis-prevent");
+      section4Ref.current!.style.overflowY = "visible";
+      section4Ref.current!.style.maxHeight = "none";
     };
 
     // 👇 jalankan pertama kali
@@ -46,9 +39,10 @@ export function useBallSection(
     ScrollTrigger.create({
       trigger: ballSectionRef.current,
       start: "top top",
-      end: "+=1200",
-      scrub: isMobile ? false : 1,
+      end: isMobile ? "+=800" : "+=1200",
+      scrub: isMobile ? 0.3 : 1,
       pin: true,
+      pinSpacing: true,
       anticipatePin: 0,
       invalidateOnRefresh: true,
       onEnter: () => {

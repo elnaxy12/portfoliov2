@@ -189,6 +189,7 @@ export default function Home() {
         style={{
           position: "relative",
           overflow: "clip",
+          minHeight: "100vh",
         }}
       >
         {/* 🔹 Ball */}
