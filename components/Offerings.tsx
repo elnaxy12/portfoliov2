@@ -2,17 +2,27 @@ const offerings = [
   {
     num: "01",
     title: "Full-Stack Development",
-    text: "Building complete web solutions with clean, maintainable code from frontend to backend.",
+    text: "Building end-to-end web solutions from frontend to backend.",
   },
   {
     num: "02",
-    title: "Communication & Collaboration",
-    text: "Delivering clear communication and working effectively within teams to meet goals.",
+    title: "Clean Code",
+    text: "Writing structured and maintainable code following best practices.",
   },
   {
     num: "03",
-    title: "Problem Solving & Growth",
-    text: "Solving challenges efficiently while continuously learning and adapting to new technologies.",
+    title: "Communication",
+    text: "Explaining technical concepts clearly to any audience.",
+  },
+  {
+    num: "04",
+    title: "Collaboration",
+    text: "Working effectively in teams and meeting deadlines.",
+  },
+  {
+    num: "05",
+    title: "Problem Solving",
+    text: "Delivering efficient solutions while continuously learning.",
   },
 ];
 
