@@ -2,32 +2,32 @@ const offerings = [
   {
     num: "01",
     title: "End-to-End Web Development",
-    text: "Delivering complete web solutions from frontend UI to backend logic and database architecture, ensuring consistency and quality across the full stack.",
+    text: "Building complete web solutions from frontend to backend.",
   },
   {
     num: "02",
-    title: "Clean & Maintainable Code",
-    text: "Writing structured, well-documented code following industry best practices to ensure long-term maintainability and ease of collaboration within development teams.",
+    title: "Clean Code",
+    text: "Writing structured, maintainable, and well-documented code.",
   },
   {
     num: "03",
-    title: "Effective Communication",
-    text: "Translating technical concepts into clear, understandable language for both technical and non-technical stakeholders, ensuring alignment across teams.",
+    title: "Clear Communication",
+    text: "Explaining technical ideas in a simple, understandable way.",
   },
   {
     num: "04",
-    title: "Collaborative Team Player",
-    text: "Experienced working within cross-functional teams, respecting deadlines, providing constructive feedback, and contributing to a positive and productive work environment.",
+    title: "Team Collaboration",
+    text: "Working effectively in teams and meeting deadlines.",
   },
   {
     num: "05",
-    title: "Problem-Solving Mindset",
-    text: "Approaching challenges analytically and systematically, identifying root causes and delivering efficient, scalable solutions under real-world constraints.",
+    title: "Problem Solving",
+    text: "Finding efficient and scalable solutions to challenges.",
   },
   {
     num: "06",
     title: "Continuous Learning",
-    text: "Committed to staying up-to-date with evolving technologies and best practices, proactively improving offerings to deliver higher value in every project.",
+    text: "Always improving and adapting to new technologies.",
   },
 ];
 
@@ -46,29 +46,28 @@ export default function Offerings() {
         .offering-card {
           position: relative;
           overflow: hidden;
-          border: 0.5px solid rgba(0,0,0,0.1);
           border-radius: 12px;
           padding: 1.1rem 1rem 1rem;
-          background: rgba(0,0,0,0.04);
           cursor: default;
           transition: border-color 0.4s ease;
+          text-align: center;
         }
-        .offering-card::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: #111111;
-          transform: translateY(100%);
-          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          border-radius: 12px;
-          z-index: 0;
-        }
-        .offering-card:hover::after {
-          transform: translateY(0%);
-        }
-        .offering-card:hover {
-          border-color: transparent;
-        }
+        // .offering-card::after {
+        //   content: '';
+        //   position: absolute;
+        //   inset: 0;
+        //   background: #111111;
+        //   transform: translateY(100%);
+        //   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        //   border-radius: 12px;
+        //   z-index: 0;
+        // }
+        // .offering-card:hover::after {
+        //   transform: translateY(0%);
+        // }
+        // .offering-card:hover {
+        //   border-color: transparent;
+        // }
         .card-content {
           position: relative;
           z-index: 1;
@@ -81,9 +80,9 @@ export default function Offerings() {
           color: rgba(0,0,0,0.35);
           transition: color 0.4s ease;
         }
-        .offering-card:hover .card-num {
-          color: rgba(255,255,255,0.35);
-        }
+        // .offering-card:hover .card-num {
+        //   color: rgba(255,255,255,0.35);
+        // }
         .offering-card .card-title {
           font-size: 15px;
           font-weight: 500;
@@ -92,18 +91,18 @@ export default function Offerings() {
           color: #000000;
           transition: color 0.4s ease;
         }
-        .offering-card:hover .card-title {
-          color: #ffffff;
-        }
+        // .offering-card:hover .card-title {
+        //   color: #ffffff;
+        // }
         .offering-card .card-text {
           font-size: 12px;
           line-height: 1.6;
           color: rgba(0,0,0,0.55);
           transition: color 0.4s ease;
         }
-        .offering-card:hover .card-text {
-          color: rgba(255,255,255,0.55);
-        }
+        // .offering-card:hover .card-text {
+        //   color: rgba(255,255,255,0.55);
+        // }
 
         .offerings-header {
           display: flex;
@@ -149,7 +148,7 @@ export default function Offerings() {
             font-size: 11px;
           }
           .offerings-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: 1fr;
           }
           .offering-card {
             padding: 1rem;
