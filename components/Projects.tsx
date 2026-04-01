@@ -153,7 +153,7 @@ export default function Projects() {
         maxWidth: 1280,
         margin: "0 auto",
         width: "100%",
-        marginTop: "5rem",
+        marginTop: "15rem",
         paddingBottom: "5rem",
         boxSizing: "border-box",
         display:"flex",
