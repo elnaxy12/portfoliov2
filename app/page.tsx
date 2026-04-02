@@ -153,7 +153,7 @@ export default function Home() {
             <>
               Start <br />
               Your Journey{" "}
-              <span className="animate-pulse delay-[0.8s] rotate-20 scale-[0.8]">
+              <span className="animate-pulse delay-[0.8s] rotate-20 md:scale-[0.8]">
                 <span className="text-amber-400">✦</span>
               </span>
             </>

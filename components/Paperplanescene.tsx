@@ -14,9 +14,9 @@ function getWaypoints() {
     { x: 50, y: 25 },
     { x: 62, y: 50 },
     { x: 72, y: 22 },
-    { x: 82, y: 48 },
-    { x: 92, y: 28 },
-    { x: 103, y: 42 },
+    { x: 82, y: 55 }, // mulai turun ke bawah
+    { x: 90, y: 80 }, // meluncur ke kanan bawah
+    { x: 96, y: 80 }, // titik akhir — kanan bawah, masih dalam viewport
   ];
   const centerY = 42;
   return base.map((pt) => ({ x: pt.x, y: centerY + (pt.y - centerY) * amp }));
