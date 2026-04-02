@@ -166,7 +166,7 @@ export default function Home() {
             scrollXRef={scrollXRef}
           />
           <div
-            className="flex min-w-[600vw] md:min-w-[300vw]"
+            className="flex min-w-[400vw] md:min-w-[300vw]"
             style={{
               height: "100vh",
               paddingBottom: "120px",
