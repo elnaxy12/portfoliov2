@@ -5,19 +5,36 @@ import { useEffect, useRef, useCallback } from "react";
 function getWaypoints() {
   const aspect = window.innerWidth / window.innerHeight;
   const amp = Math.min(aspect / 1.78, 1);
-  const base = [
-    { x: -3, y: 55 },
-    { x: 8, y: 45 },
-    { x: 18, y: 62 },
-    { x: 28, y: 30 },
-    { x: 38, y: 58 },
-    { x: 50, y: 25 },
-    { x: 62, y: 50 },
-    { x: 72, y: 22 },
-    { x: 82, y: 55 }, // mulai turun ke bawah
-    { x: 90, y: 80 }, // meluncur ke kanan bawah
-    { x: 96, y: 80 }, // titik akhir — kanan bawah, masih dalam viewport
-  ];
+  const isMobile = window.innerWidth < 768;
+
+  const base = isMobile
+    ? [
+        { x: -3, y: 55 },
+        { x: 18, y: 45 }, // lebih cepat ke kanan
+        { x: 35, y: 62 }, // dari x:18 → x:35
+        { x: 48, y: 30 }, // dari x:28 → x:48
+        { x: 58, y: 58 },
+        { x: 68, y: 25 },
+        { x: 76, y: 50 },
+        { x: 82, y: 22 },
+        { x: 87, y: 55 },
+        { x: 91, y: 85 },
+        { x: 95, y: 85 },
+      ]
+    : [
+        { x: -3, y: 55 },
+        { x: 8, y: 45 },
+        { x: 18, y: 62 },
+        { x: 28, y: 30 },
+        { x: 38, y: 58 },
+        { x: 50, y: 25 },
+        { x: 62, y: 50 },
+        { x: 72, y: 22 },
+        { x: 82, y: 55 },
+        { x: 90, y: 85 },
+        { x: 95, y: 85 },
+      ];
+
   const centerY = 42;
   return base.map((pt) => ({ x: pt.x, y: centerY + (pt.y - centerY) * amp }));
 }
