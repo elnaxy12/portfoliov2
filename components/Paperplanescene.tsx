@@ -5,20 +5,45 @@ import { useEffect, useRef, useCallback } from "react";
 function getWaypoints() {
   const aspect = window.innerWidth / window.innerHeight;
   const amp = Math.min(aspect / 1.78, 1);
+  const isMobile = window.innerWidth < 768;
 
-  const base = [
-    { x: -3, y: 55 },
-    { x: 8, y: 45 },
-    { x: 18, y: 62 },
-    { x: 28, y: 30 },
-    { x: 38, y: 58 },
-    { x: 50, y: 25 },
-    { x: 62, y: 50 },
-    { x: 72, y: 22 },
-    { x: 82, y: 55 },
-    { x: 72, y: 73 },
-    { x: 86, y: 90 },
-  ];
+const base = isMobile
+  ? [
+      { x: -3, y: 55 },
+      { x: 10, y: 50 },
+      { x: 18, y: 45 },
+      { x: 26, y: 55 },
+      { x: 35, y: 62 },
+      { x: 42, y: 48 },
+      { x: 48, y: 30 },
+      { x: 54, y: 45 },
+      { x: 58, y: 58 },
+      { x: 63, y: 40 },
+      { x: 68, y: 25 },
+      { x: 72, y: 38 },
+      { x: 76, y: 50 },
+      { x: 79, y: 35 },
+      { x: 82, y: 22 },
+      { x: 85, y: 40 },
+      { x: 87, y: 55 },
+      { x: 89, y: 70 },
+      { x: 91, y: 85 },
+      { x: 93, y: 85 },
+      { x: 95, y: 85 },
+    ]
+  : [
+      { x: -3, y: 55 },
+      { x: 8, y: 45 },
+      { x: 18, y: 62 },
+      { x: 28, y: 30 },
+      { x: 38, y: 58 },
+      { x: 50, y: 25 },
+      { x: 62, y: 50 },
+      { x: 72, y: 22 },
+      { x: 82, y: 55 },
+      { x: 72, y: 73 },
+      { x: 86, y: 90 },
+    ];
 
   const centerY = 42;
   return base.map((pt) => ({ x: pt.x, y: centerY + (pt.y - centerY) * amp }));
@@ -194,16 +219,12 @@ export default function PaperPlaneScene({
       const pt = measureEl.getPointAtLength(len);
       const el = skillRefsMap.current.get(i);
       if (!el) return;
-      const baseLeft = (pt.x / 100) * trackW;
-      el.dataset.baseLeft = String(baseLeft); // simpan posisi asli
-      el.style.left = `${baseLeft}px`;
+      el.style.left = `${(pt.x / 100) * trackW}px`;
       el.style.top = `${(pt.y / 100) * trackH + stop.offsetY}px`;
       el.style.opacity = "0";
       el.style.transform = "translate(-50%, 0px)";
     });
   }, [trackRef]);
-
-  // ... SEMUA KODE SAMA (tidak berubah) ...
 
   const update = useCallback(
     (progress: number) => {
@@ -212,59 +233,24 @@ export default function PaperPlaneScene({
       const measureEl = measureRef.current;
       const trailEl = trailRef.current;
       const glowEl = glowRef.current;
-      const svg = svgRef.current;
-      if (!plane || !track || !measureEl || !trailEl || !glowEl || !svg) return;
+      if (!plane || !track || !measureEl || !trailEl || !glowEl) return;
       const totalLen = totalLenRef.current;
       if (totalLen === 0) return;
-
-      const isMobile = window.innerWidth < 768;
 
       const len = Math.min(totalLen * progress, totalLen * 0.9998);
       const pt = measureEl.getPointAtLength(len);
       const pt2 = measureEl.getPointAtLength(
         Math.min(len + 0.3, totalLen * 0.9998),
       );
-
       const trackW = track.scrollWidth;
       const trackH = track.clientHeight;
-
       const dx = (pt2.x - pt.x) * (trackW / 100);
       const dy = (pt2.y - pt.y) * (trackH / 100);
       const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
 
-      const planeX = (pt.x / 100) * trackW;
-      const planeY = (pt.y / 100) * trackH;
-
-      if (isMobile) {
-        const viewportCenterX = window.innerWidth / 2;
-        const fixedX = viewportCenterX + scrollXRef.current;
-
-        const offsetX = fixedX - planeX;
-
-        // ✅ Pesawat DIAM di tengah
-        plane.style.left = `${fixedX}px`;
-        plane.style.top = `${planeY}px`;
-
-        // ✅ Trail tetap bergerak (ekor efek)
-        svg.style.transform = `translateX(${offsetX}px)`;
-
-        // ✅ Label ikut offset
-        skillRefsMap.current.forEach((el) => {
-          const currentLeft = parseFloat(el.dataset.baseLeft ?? "0");
-          el.style.left = `${currentLeft + offsetX}px`;
-        });
-
-        // ❌ NO ROTATION (INI YANG DIUBAH)
-        plane.style.transform = `translate(-50%, -50%)`;
-      } else {
-        // Desktop normal
-        plane.style.left = `${planeX}px`;
-        plane.style.top = `${planeY}px`;
-        svg.style.transform = `translateX(0px)`;
-
-        // ✅ rotate hanya di desktop
-        plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-      }
+      plane.style.left = `${(pt.x / 100) * trackW}px`;
+      plane.style.top = `${(pt.y / 100) * trackH}px`;
+      plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
 
       trailEl.style.strokeDashoffset = String(totalLen * (1 - progress));
       glowEl.style.strokeDashoffset = String(totalLen * (1 - progress));
@@ -272,10 +258,8 @@ export default function PaperPlaneScene({
       SKILL_STOPS.forEach((stop, i) => {
         const el = skillRefsMap.current.get(i);
         if (!el) return;
-
         const arrived = progress >= stop.progress - 0.01;
         const passed = progress >= stop.progress + 0.15;
-
         if (arrived && !passed) {
           el.style.opacity = "1";
           el.style.transform = "translate(-50%, 0px)";
@@ -288,7 +272,7 @@ export default function PaperPlaneScene({
         }
       });
     },
-    [trackRef, scrollXRef],
+    [trackRef],
   );
 
   useEffect(() => {
@@ -338,9 +322,6 @@ export default function PaperPlaneScene({
       }
       positionSkillLabels();
     };
-
-    // ❌ handleScrollSync dihapus — sudah tidak diperlukan,
-    // offsetX sekarang dihitung langsung di dalam update()
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
