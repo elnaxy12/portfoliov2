@@ -363,6 +363,7 @@ export default function PaperPlaneScene({
             left: 0,
             top: 0,
             opacity: 0,
+            display: "none",
             transform: "translate(-50%, 0px)",
             transition: "opacity 0.5s ease, transform 0.5s ease",
             pointerEvents: "none",
