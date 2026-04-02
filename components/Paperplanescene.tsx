@@ -341,16 +341,8 @@ export default function PaperPlaneScene({
       positionSkillLabels();
     };
 
-    const handleScrollSync = () => {
-      if (!svg || !track) return;
-      const isMobile = window.innerWidth < 768;
-      if (isMobile) {
-        const viewportCenterX = window.innerWidth / 2;
-        const planeProgress = /* progress saat ini */ 0;
-        // Offset SVG sehingga titik progress saat ini ada di tengah viewport
-        svg.style.transform = `translateX(${window.innerWidth / 2 - scrollXRef.current * 0}px)`;
-      }
-    };
+    // ❌ handleScrollSync dihapus — sudah tidak diperlukan,
+    // offsetX sekarang dihitung langsung di dalam update()
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
