@@ -227,6 +227,7 @@ export default function PaperPlaneScene({
       const totalLen = totalLenRef.current;
       if (totalLen === 0) return;
 
+      const isMobile = window.innerWidth < 768;
       const len = Math.min(totalLen * progress, totalLen * 0.9998);
       const pt = measureEl.getPointAtLength(len);
       const pt2 = measureEl.getPointAtLength(
@@ -238,8 +239,19 @@ export default function PaperPlaneScene({
       const dy = (pt2.y - pt.y) * (trackH / 100);
       const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
 
-      plane.style.left = `${(pt.x / 100) * trackW}px`;
-      plane.style.top = `${(pt.y / 100) * trackH}px`;
+      const planeX = (pt.x / 100) * trackW;
+      const planeY = (pt.y / 100) * trackH;
+
+      if (isMobile) {
+        // Pesawat selalu di tengah viewport secara horizontal
+        const viewportCenterX = window.innerWidth / 2;
+        plane.style.left = `${viewportCenterX + scrollXRef.current}px`;
+        plane.style.top = `${planeY}px`;
+      } else {
+        plane.style.left = `${planeX}px`;
+        plane.style.top = `${planeY}px`;
+      }
+
       plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
 
       trailEl.style.strokeDashoffset = String(totalLen * (1 - progress));
@@ -262,7 +274,7 @@ export default function PaperPlaneScene({
         }
       });
     },
-    [trackRef],
+    [trackRef, scrollXRef],
   );
 
   useEffect(() => {
