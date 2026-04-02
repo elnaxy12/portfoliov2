@@ -194,6 +194,12 @@ export function useHorizontalScrollParticle(
     window.addEventListener("resize", resize);
 
     const tick = () => {
+      if (currentIndex.current !== 2) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const scroll = scrollXRef.current ?? 0;
@@ -294,14 +300,14 @@ export function useHorizontalScrollParticle(
           invalidateOnRefresh: true,
           onEnter: () => {
             currentIndex.current = 2;
-            planeUpdateRef.current?.(0);
+            planeUpdateRef.current?.(0); // ✅ reset hanya dari atas
           },
           onLeave: () => {
             currentIndex.current = 3;
           },
           onEnterBack: () => {
             currentIndex.current = 2;
-            planeUpdateRef.current?.(0);
+            // ✅ tidak reset ke 0 — onUpdate sudah handle posisi via self.progress
           },
           onLeaveBack: () => {
             currentIndex.current = 1;
@@ -319,7 +325,7 @@ export function useHorizontalScrollParticle(
             }
 
             scrollXRef.current = progress * getTotalWidth();
-            planeUpdateRef.current?.(progress);
+            planeUpdateRef.current?.(progress); // ✅ ini yang handle posisi pesawat saat scroll balik
             setWindProgress(progress);
           },
         },

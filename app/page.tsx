@@ -54,14 +54,8 @@ export default function Home() {
     ScrollTrigger.config({
       ignoreMobileResize: true,
     });
-    ScrollTrigger.normalizeScroll({
-      allowNestedScroll: true,
-      lockAxis: true,
-    });
 
-    return () => {
-      ScrollTrigger.normalizeScroll(false);
-    };
+  return () => {};
   }, []);
 
   const lenisRef = useLenis((x) => setScrollX(x));
@@ -159,8 +153,8 @@ export default function Home() {
             <>
               Start <br />
               Your Journey{" "}
-              <span className="text-amber-400 ml-2 rotate-20">
-                ✦
+              <span className="animate-pulse delay-[0.8s] rotate-20 scale-[0.8]">
+                <span className="text-amber-400">✦</span>
               </span>
             </>
           }
@@ -191,18 +185,59 @@ export default function Home() {
           overflow: "clip",
         }}
       >
-        {/* 🔹 Ball */}
+        {/* 🔹 Ball 1 — muncul pertama */}
         <div
-          className="left-1/2 bottom-1/3"
+          data-ball="1"
           ref={ballRef}
           style={{
             position: "absolute",
+            left: "50%",
+            bottom: "33%",
             width: "20px",
             height: "20px",
             opacity: 0,
             borderRadius: "50%",
             background: "#ffffff",
-            transform: "translate(-50%, -50%)",
+            transform: "translate(-50%, -50%) scale(0)",
+            transformOrigin: "center",
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* 🔹 Ball 2 — muncul kedua, warna lebih gelap */}
+        <div
+          data-ball="2"
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: "33%",
+            width: "20px",
+            height: "20px",
+            opacity: 0,
+            borderRadius: "50%",
+            background: "#ffffff",
+            transform: "translate(-50%, -50%) scale(0)",
+            transformOrigin: "center",
+            zIndex: 2,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* 🔹 Ball 3 — muncul terakhir, jadi background section4 */}
+        <div
+          data-ball="3"
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: "33%",
+            width: "20px",
+            height: "20px",
+            opacity: 0,
+            borderRadius: "50%",
+            background: "#ffffff",
+            transform: "translate(-50%, -50%) scale(0)",
+            transformOrigin: "center",
             zIndex: 3,
             pointerEvents: "none",
           }}
@@ -217,7 +252,7 @@ export default function Home() {
           ref={section4Ref}
           style={{
             position: "relative",
-            zIndex: 3,
+            zIndex: 4,
             opacity: 0,
             width: "100%",
             padding: "0 2rem",

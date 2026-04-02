@@ -22,25 +22,42 @@ export function useBallSection(
     if (!ballSectionRef.current || !section4Ref.current) return;
 
     const updateLenisPrevent = () => {
-      // Tidak perlu bedain mobile/desktop, biarkan Lenis handle semua
       section4Ref.current?.removeAttribute("data-lenis-prevent");
       section4Ref.current!.style.overflowY = "visible";
       section4Ref.current!.style.maxHeight = "none";
     };
 
-    // 👇 jalankan pertama kali
     updateLenisPrevent();
-
-    // 👇 handle resize
     window.addEventListener("resize", updateLenisPrevent);
 
     const isMobile = window.innerWidth < 768;
+
+    // ✅ Hitung maxScale sekali, bukan tiap frame
+    let maxScale =
+      Math.ceil(
+        Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 8,
+      ) + 10;
+
+    const handleResize = () => {
+      maxScale =
+        Math.ceil(
+          Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 8,
+        ) + 10;
+    };
+    window.addEventListener("resize", handleResize);
+
+    const ballConfigs = [
+      { selector: '[data-ball="1"]', start: 0, peak: 0.4 },
+      { selector: '[data-ball="2"]', start: 0.3, peak: 0.65 },
+      { selector: '[data-ball="3"]', start: 0.55, peak: 0.9 },
+    ];
+    const maxOpacity = [0.2, 0.5, 1];
 
     ScrollTrigger.create({
       trigger: ballSectionRef.current,
       start: "top top",
       end: isMobile ? "+=800" : "+=1200",
-      scrub: isMobile ? 0.3 : 1,
+      scrub: isMobile ? 0.8 : 1, // ✅ 0.3 → 0.8 di mobile, kurangi frekuensi update
       pin: true,
       pinSpacing: true,
       anticipatePin: 0,
@@ -58,16 +75,29 @@ export function useBallSection(
         currentIndex.current = 2;
       },
       onUpdate: (self) => {
-        if (!ballRef.current) return;
-
         const progress = self.progress;
-        const maxScale =
-          Math.ceil(
-            Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 8,
-          ) + 10;
-        const opacityProgress = progress < 0.3 ? progress / 0.3 : 1;
-        ballRef.current.style.opacity = String(opacityProgress);
-        ballRef.current.style.transform = `translate(-50%, -50%) scale(${progress * maxScale})`;
+
+        ballConfigs.forEach(({ selector, start, peak }, i) => {
+          const el =
+            ballSectionRef.current?.querySelector<HTMLElement>(selector);
+          if (!el) return;
+
+          const localP = Math.max(
+            0,
+            Math.min(1, (progress - start) / (peak - start)),
+          );
+
+          // ✅ Aktifkan will-change hanya saat animasi berlangsung
+          if (localP > 0 && localP < 1) {
+            el.style.willChange = "transform, opacity";
+          } else {
+            el.style.willChange = "auto";
+          }
+
+          el.style.opacity = String(localP * maxOpacity[i]);
+          el.style.transform = `translate(-50%, -50%) translateZ(0) scale(${localP * maxScale})`;
+        });
+
         if (section4Ref.current) {
           const contentOpacity = progress > 0.8 ? (progress - 0.8) / 0.2 : 0;
           section4Ref.current.style.opacity = String(contentOpacity);
@@ -100,6 +130,7 @@ export function useBallSection(
 
     return () => {
       window.removeEventListener("resize", updateLenisPrevent);
+      window.removeEventListener("resize", handleResize);
 
       ScrollTrigger.getAll()
         .filter((t) => t.vars.trigger === ballSectionRef.current)
@@ -107,3 +138,4 @@ export function useBallSection(
     };
   }, [ballSectionRef, ballRef, section4Ref, currentIndex]);
 }
+

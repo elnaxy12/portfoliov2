@@ -245,7 +245,7 @@ export default function PaperPlaneScene({
         }
       });
     },
-    [trackRef, scrollXRef],
+    [trackRef],
   );
 
   useEffect(() => {
@@ -376,27 +376,38 @@ export default function PaperPlaneScene({
               flexDirection: "column",
               alignItems: "center",
               gap: "6px",
+              maxWidth: "100px",
             }}
           >
             {/* Icon SVG */}
             <div style={{ color: "white", opacity: 0.85 }}>{stop.icon}</div>
             <div
+              className="truncate px-2"
               style={{
                 fontSize: "clamp(0.7rem, 1.2vw, 0.95rem)",
                 fontWeight: 600,
                 color: "white",
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "100px",
               }}
             >
               {stop.label}
             </div>
             <div
+              className="truncate px-2"
               style={{
                 fontSize: "clamp(0.55rem, 0.9vw, 0.65rem)",
                 color: "rgba(255,255,255,0.45)",
                 letterSpacing: "0.12em",
                 marginTop: "-2px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: "100px",
               }}
             >
               {stop.sub}

@@ -27,7 +27,6 @@ const HorizontalScroll = forwardRef<HTMLDivElement, HorizontalScrollProps>(
             display: "flex",
             flexWrap: "nowrap",
             height: "100%",
-            willChange: "transform",
             position: "relative",
           }}
         >
