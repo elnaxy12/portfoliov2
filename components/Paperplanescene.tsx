@@ -339,7 +339,7 @@ export default function PaperPlaneScene({
           id="pp-glow"
           fill="none"
           stroke="rgba(255,255,255,0.06)"
-          strokeWidth="1.5"
+          strokeWidth="3"
           strokeLinecap="round"
         />
         <path
