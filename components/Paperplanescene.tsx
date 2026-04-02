@@ -16,8 +16,8 @@ function getWaypoints() {
     { x: 62, y: 50 },
     { x: 72, y: 22 },
     { x: 82, y: 55 },
-    { x: 90, y: 85 },
-    { x: 95, y: 85 },
+    { x: 72, y: 73 },
+    { x: 86, y: 90 },
   ];
 
   const centerY = 42;
@@ -42,7 +42,7 @@ function buildCatmullRom(pts: { x: number; y: number }[]) {
 
 const SKILL_STOPS = [
   {
-    progress: 0.12,
+    progress: 0.2,
     label: "React",
     sub: "UI Library",
     offsetY: -115,
@@ -59,7 +59,7 @@ const SKILL_STOPS = [
     ),
   },
   {
-    progress: 0.25,
+    progress: 0.3,
     label: "Next.js",
     sub: "Full Stack Framework",
     offsetY: 0,
@@ -76,7 +76,7 @@ const SKILL_STOPS = [
     ),
   },
   {
-    progress: 0.38,
+    progress: 0.4,
     label: "TypeScript",
     sub: "Type Safety",
     offsetY: -115,
@@ -93,7 +93,7 @@ const SKILL_STOPS = [
     ),
   },
   {
-    progress: 0.52,
+    progress: 0.5,
     label: "Laravel",
     sub: "Backend Framework",
     offsetY: 0,
@@ -110,7 +110,7 @@ const SKILL_STOPS = [
     ),
   },
   {
-    progress: 0.65,
+    progress: 0.6,
     label: "Tailwind CSS",
     sub: "Styling",
     offsetY: -115,
@@ -127,7 +127,7 @@ const SKILL_STOPS = [
     ),
   },
   {
-    progress: 0.78,
+    progress: 0.7,
     label: "MySQL",
     sub: "Database",
     offsetY: 0,
@@ -144,7 +144,7 @@ const SKILL_STOPS = [
     ),
   },
   {
-    progress: 0.9,
+    progress: 0.8,
     label: "Vercel",
     sub: "DevOps",
     offsetY: -115,
