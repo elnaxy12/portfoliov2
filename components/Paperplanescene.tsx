@@ -209,7 +209,9 @@ export default function PaperPlaneScene({
       const pt = measureEl.getPointAtLength(len);
       const el = skillRefsMap.current.get(i);
       if (!el) return;
-      el.style.left = `${(pt.x / 100) * trackW}px`;
+      const baseLeft = (pt.x / 100) * trackW;
+      el.dataset.baseLeft = String(baseLeft); // simpan posisi asli
+      el.style.left = `${baseLeft}px`;
       el.style.top = `${(pt.y / 100) * trackH + stop.offsetY}px`;
       el.style.opacity = "0";
       el.style.transform = "translate(-50%, 0px)";
@@ -223,7 +225,8 @@ export default function PaperPlaneScene({
       const measureEl = measureRef.current;
       const trailEl = trailRef.current;
       const glowEl = glowRef.current;
-      if (!plane || !track || !measureEl || !trailEl || !glowEl) return;
+      const svg = svgRef.current;
+      if (!plane || !track || !measureEl || !trailEl || !glowEl || !svg) return;
       const totalLen = totalLenRef.current;
       if (totalLen === 0) return;
 
@@ -243,13 +246,26 @@ export default function PaperPlaneScene({
       const planeY = (pt.y / 100) * trackH;
 
       if (isMobile) {
-        // Pesawat selalu di tengah viewport secara horizontal
         const viewportCenterX = window.innerWidth / 2;
-        plane.style.left = `${viewportCenterX + scrollXRef.current}px`;
+        const fixedX = viewportCenterX + scrollXRef.current;
+        // Selisih antara posisi fix pesawat vs posisi asli di track
+        const offsetX = fixedX - planeX;
+
+        plane.style.left = `${fixedX}px`;
         plane.style.top = `${planeY}px`;
+
+        // SVG trail ikut bergeser supaya ekor nempel di pesawat
+        svg.style.transform = `translateX(${offsetX}px)`;
+
+        // Label juga ikut offset supaya muncul di posisi yang benar
+        skillRefsMap.current.forEach((el) => {
+          const currentLeft = parseFloat(el.dataset.baseLeft ?? "0");
+          el.style.left = `${currentLeft + offsetX}px`;
+        });
       } else {
         plane.style.left = `${planeX}px`;
         plane.style.top = `${planeY}px`;
+        svg.style.transform = `translateX(0px)`;
       }
 
       plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
@@ -323,6 +339,17 @@ export default function PaperPlaneScene({
         glowRef.current.style.strokeDasharray = String(total);
       }
       positionSkillLabels();
+    };
+
+    const handleScrollSync = () => {
+      if (!svg || !track) return;
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        const viewportCenterX = window.innerWidth / 2;
+        const planeProgress = /* progress saat ini */ 0;
+        // Offset SVG sehingga titik progress saat ini ada di tengah viewport
+        svg.style.transform = `translateX(${window.innerWidth / 2 - scrollXRef.current * 0}px)`;
+      }
     };
 
     window.addEventListener("resize", handleResize);
