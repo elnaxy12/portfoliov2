@@ -17,7 +17,7 @@ function getWaypoints() {
         { x: 50, y: 25 },
         { x: 62, y: 50 },
         { x: 72, y: 22 },
-        { x: 92, y: 200 },
+        { x: 95, y: 200 },
       ]
     : [
         { x: -3, y: 55 },
@@ -155,7 +155,7 @@ const SKILL_STOPS = [
     ),
   },
   {
-    progress: 0.8,
+    progress: 0.9,
     label: "Vercel",
     sub: "DevOps",
     offsetY: -115,
