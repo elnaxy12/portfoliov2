@@ -338,14 +338,14 @@ export default function PaperPlaneScene({
         <path
           id="pp-glow"
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(255,255,255,0.1)"
           strokeWidth="3"
           strokeLinecap="round"
         />
         <path
           id="pp-trail"
           fill="none"
-          stroke="rgba(255,255,255,0.3)"
+          stroke="rgba(255,255,255,1)"
           strokeWidth="0.18"
           strokeDasharray="1 1.8"
           strokeLinecap="round"
