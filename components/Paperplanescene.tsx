@@ -203,6 +203,8 @@ export default function PaperPlaneScene({
     });
   }, [trackRef]);
 
+  // ... SEMUA KODE SAMA (tidak berubah) ...
+
   const update = useCallback(
     (progress: number) => {
       const plane = planeRef.current;
@@ -216,13 +218,16 @@ export default function PaperPlaneScene({
       if (totalLen === 0) return;
 
       const isMobile = window.innerWidth < 768;
+
       const len = Math.min(totalLen * progress, totalLen * 0.9998);
       const pt = measureEl.getPointAtLength(len);
       const pt2 = measureEl.getPointAtLength(
         Math.min(len + 0.3, totalLen * 0.9998),
       );
+
       const trackW = track.scrollWidth;
       const trackH = track.clientHeight;
+
       const dx = (pt2.x - pt.x) * (trackW / 100);
       const dy = (pt2.y - pt.y) * (trackH / 100);
       const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
@@ -233,27 +238,33 @@ export default function PaperPlaneScene({
       if (isMobile) {
         const viewportCenterX = window.innerWidth / 2;
         const fixedX = viewportCenterX + scrollXRef.current;
-        // Selisih antara posisi fix pesawat vs posisi asli di track
+
         const offsetX = fixedX - planeX;
 
+        // ✅ Pesawat DIAM di tengah
         plane.style.left = `${fixedX}px`;
         plane.style.top = `${planeY}px`;
 
-        // SVG trail ikut bergeser supaya ekor nempel di pesawat
+        // ✅ Trail tetap bergerak (ekor efek)
         svg.style.transform = `translateX(${offsetX}px)`;
 
-        // Label juga ikut offset supaya muncul di posisi yang benar
+        // ✅ Label ikut offset
         skillRefsMap.current.forEach((el) => {
           const currentLeft = parseFloat(el.dataset.baseLeft ?? "0");
           el.style.left = `${currentLeft + offsetX}px`;
         });
+
+        // ❌ NO ROTATION (INI YANG DIUBAH)
+        plane.style.transform = `translate(-50%, -50%)`;
       } else {
+        // Desktop normal
         plane.style.left = `${planeX}px`;
         plane.style.top = `${planeY}px`;
         svg.style.transform = `translateX(0px)`;
-      }
 
-      plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+        // ✅ rotate hanya di desktop
+        plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+      }
 
       trailEl.style.strokeDashoffset = String(totalLen * (1 - progress));
       glowEl.style.strokeDashoffset = String(totalLen * (1 - progress));
@@ -261,8 +272,10 @@ export default function PaperPlaneScene({
       SKILL_STOPS.forEach((stop, i) => {
         const el = skillRefsMap.current.get(i);
         if (!el) return;
+
         const arrived = progress >= stop.progress - 0.01;
         const passed = progress >= stop.progress + 0.15;
+
         if (arrived && !passed) {
           el.style.opacity = "1";
           el.style.transform = "translate(-50%, 0px)";
