@@ -173,7 +173,7 @@ export default function PaperPlaneScene({
           height: "100%",
           pointerEvents: "none",
           overflow: "visible",
-          zIndex: 10,
+          zIndex: 1,
         }}
         viewBox="0 0 100 100"
         preserveAspectRatio="none"

@@ -20,7 +20,7 @@ const LERP_SPEED = 0.06;
 
 // Jeda tambahan setelah horizontal scroll selesai (dalam pixel scroll vertikal)
 // Naikkan nilai ini untuk jeda lebih lama, turunkan untuk lebih cepat
-const PAUSE_AFTER_SCROLL = 100;
+const PAUSE_AFTER_SCROLL = 600;
 
 // ─────────────────────────────────────────────
 // Particle Config
@@ -31,7 +31,7 @@ const PARTICLE_CONFIGS_DESKTOP = [
   { size: 280, offsetY: 20 },
   { size: 520, offsetY: 25 },
   { size: 240, offsetY: -20 },
-  { size: 460, offsetY: 30 },
+  { size: 460, offsetY: 10 },
   { size: 380, offsetY: -30 },
   { size: 200, offsetY: 15 },
 ];
@@ -56,12 +56,7 @@ function lerp(a: number, b: number, t: number) {
 
 function getWaypoints() {
   return [
-    { x: -20, y: 50 }, // lebih keluar kiri
-    { x: 0, y: 50 },
-    { x: 10, y: 50 },
-    { x: 20, y: 50 },
-    { x: 30, y: 50 },
-    { x: 40, y: 50 },
+    { x: -50, y: 50 }, // lebih keluar kiri
     { x: 50, y: 50 },
   ];
 }
@@ -157,7 +152,7 @@ export function useHorizontalScrollParticle(
       svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
 
       const waypoints = getWaypoints();
-      const rotations = [50, 120, 200, 310, 75, 260, 150];
+      const rotations = [50, 120, 200, 310, 10, 0, 150];
 
       particles = Array.from({ length: PARTICLE_COUNT }, (_, i) => {
         const config = PARTICLE_CONFIGS[i];

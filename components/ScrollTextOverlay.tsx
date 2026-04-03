@@ -35,7 +35,7 @@ export function ScrollTextOverlay({
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 0,
+        zIndex: 2,
         pointerEvents: "none",
       }}
     >
