@@ -54,12 +54,12 @@ export function useBallSection(
       { selector: '[data-ball="5"]', start: 0.15, peak: 0.65 },
       { selector: '[data-ball="6"]', start: 0.16, peak: 0.65 },
     ];
-    const maxOpacity = [0.8, 0.9, 1];
+    const maxOpacity = [0.2, 0.4, 0.9, 1];
 
     ScrollTrigger.create({
       trigger: ballSectionRef.current,
       start: "top top",
-      end: isMobile ? "+=800" : "+=1200",
+      end: isMobile ? "+=600" : "+=500",
       scrub: isMobile ? 0.8 : 1, // ✅ 0.3 → 0.8 di mobile, kurangi frekuensi update
       pin: true,
       pinSpacing: true,
