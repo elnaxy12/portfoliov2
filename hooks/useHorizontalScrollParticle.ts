@@ -18,6 +18,10 @@ const IMAGE_URLS = [
 const OFFSCREEN_SIZE = 480;
 const LERP_SPEED = 0.06;
 
+// Jeda tambahan setelah horizontal scroll selesai (dalam pixel scroll vertikal)
+// Naikkan nilai ini untuk jeda lebih lama, turunkan untuk lebih cepat
+const PAUSE_AFTER_SCROLL = 400;
+
 // ─────────────────────────────────────────────
 // Particle Config
 // ─────────────────────────────────────────────
@@ -186,7 +190,7 @@ export function useHorizontalScrollParticle(
     };
 
     const resize = () => {
-      canvas.width = window.innerWidth; // ← selalu viewport width
+      canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       initParticles();
     };
@@ -211,7 +215,7 @@ export function useHorizontalScrollParticle(
       const vh = canvas.height;
       const trackW = hTrackRef.current?.scrollWidth ?? vw;
       const maxScrollX = trackW - window.innerWidth;
-      const totalScroll = maxScrollX; // HARUS sama dengan GSAP
+      const totalScroll = maxScrollX;
       const scrollProgress = scroll / totalScroll;
 
       particles.forEach((p) => {
@@ -284,54 +288,82 @@ export function useHorizontalScrollParticle(
     if (!hScrollRef.current || !hTrackRef.current) return;
 
     const track = hTrackRef.current;
-    const getTotalWidth = () => track.scrollWidth - window.innerWidth;
+
+    // Total jarak horizontal yang perlu di-scroll
+    const getHorizontalWidth = () => track.scrollWidth - window.innerWidth;
+
+    // Total end ScrollTrigger = horizontal + jeda tambahan
+    const getTotalEnd = () => getHorizontalWidth() + PAUSE_AFTER_SCROLL;
 
     const ctx = gsap.context(() => {
-      gsap.to(track, {
-        x: () => -getTotalWidth(),
-        ease: "none",
+      const tl = gsap.timeline({
         scrollTrigger: {
           trigger: hScrollRef.current,
           start: "top top",
-          end: () => `+=${getTotalWidth()}`,
+          // end diperpanjang sebesar PAUSE_AFTER_SCROLL agar pin menahan lebih lama
+          end: () => `+=${getTotalEnd()}`,
           scrub: 1,
           pin: true,
           anticipatePin: 0,
           invalidateOnRefresh: true,
           onEnter: () => {
             currentIndex.current = 2;
-            planeUpdateRef.current?.(0); // ✅ reset hanya dari atas
+            planeUpdateRef.current?.(0);
           },
           onLeave: () => {
             currentIndex.current = 3;
           },
           onEnterBack: () => {
             currentIndex.current = 2;
-            // ✅ tidak reset ke 0 — onUpdate sudah handle posisi via self.progress
           },
           onLeaveBack: () => {
             currentIndex.current = 1;
             scrollXRef.current = 0;
           },
           onUpdate: (self) => {
-            const progress = Math.min(self.progress, 1);
+            const totalEnd = getTotalEnd();
+            const horizontalWidth = getHorizontalWidth();
 
-            const r = Math.round(155 + (189 - 155) * progress);
-            const g = Math.round(142 + (166 - 142) * progress);
-            const b = Math.round(199 + (206 - 199) * progress);
+            // progress horizontal: 0 → 1, berhenti di 1 saat jeda
+            const horizontalProgress = Math.min(
+              self.progress * (totalEnd / horizontalWidth),
+              1,
+            );
 
+            // Gerakkan track hanya sampai habis, tidak lebih
+            gsap.set(track, { x: -horizontalWidth * horizontalProgress });
+
+            // Warna background
+            const r = Math.round(155 + (189 - 155) * horizontalProgress);
+            const g = Math.round(142 + (166 - 142) * horizontalProgress);
+            const b = Math.round(199 + (206 - 199) * horizontalProgress);
             if (hScrollRef.current) {
               hScrollRef.current.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
             }
 
-            scrollXRef.current = progress * getTotalWidth();
-            planeUpdateRef.current?.(progress); // ✅ ini yang handle posisi pesawat saat scroll balik
-            setWindProgress(progress);
+            // Update paper plane & particles dengan progress horizontal
+            scrollXRef.current = horizontalProgress * horizontalWidth;
+            planeUpdateRef.current?.(horizontalProgress);
+            setWindProgress(horizontalProgress);
           },
         },
       });
-    }, hScrollRef); // ← scope ke elemen ini
 
-    return () => ctx.revert(); // ← cleanup otomatis, ga akan double
+      // Animasi track horizontal (0 → -horizontalWidth)
+      // Durasi relatif: hanya porsi horizontal dari total end
+      tl.to(track, {
+        x: () => -getHorizontalWidth(),
+        ease: "none",
+        duration: getHorizontalWidth() / getTotalEnd(), // proporsi waktu
+      })
+        // Jeda: track diam di posisi akhir selama sisa durasi
+        .to(track, {
+          x: () => -getHorizontalWidth(), // tetap di tempat
+          ease: "none",
+          duration: PAUSE_AFTER_SCROLL / getTotalEnd(),
+        });
+    }, hScrollRef);
+
+    return () => ctx.revert();
   }, [hScrollRef, hTrackRef, planeUpdateRef, currentIndex, scrollXRef]);
 }
