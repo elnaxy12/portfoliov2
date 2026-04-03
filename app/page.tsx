@@ -242,6 +242,60 @@ export default function Home() {
           }}
         />
 
+        <div
+          data-ball="4"
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: "33%",
+            width: "20px",
+            height: "20px",
+            opacity: 0,
+            borderRadius: "50%",
+            background: "#ffffff",
+            transform: "translate(-50%, -50%) scale(0)",
+            transformOrigin: "center",
+            zIndex: 4,
+            pointerEvents: "none",
+          }}
+        />
+
+        <div
+          data-ball="5"
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: "33%",
+            width: "20px",
+            height: "20px",
+            opacity: 0,
+            borderRadius: "50%",
+            background: "#ffffff",
+            transform: "translate(-50%, -50%) scale(0)",
+            transformOrigin: "center",
+            zIndex: 5,
+            pointerEvents: "none",
+          }}
+        />
+
+        <div
+          data-ball="6"
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: "33%",
+            width: "20px",
+            height: "20px",
+            opacity: 0,
+            borderRadius: "50%",
+            background: "#ffffff",
+            transform: "translate(-50%, -50%) scale(0)",
+            transformOrigin: "center",
+            zIndex: 6,
+            pointerEvents: "none",
+          }}
+        />
+
         <ShapeCluster />
         <CodeBox top="5rem" />
         <ValuePropositon text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters." />

@@ -47,11 +47,14 @@ export function useBallSection(
     window.addEventListener("resize", handleResize);
 
     const ballConfigs = [
-      { selector: '[data-ball="1"]', start: 0, peak: 0.4 },
-      { selector: '[data-ball="2"]', start: 0.3, peak: 0.65 },
-      { selector: '[data-ball="3"]', start: 0.55, peak: 0.9 },
+      { selector: '[data-ball="1"]', start: 0.1, peak: 0.25 },
+      { selector: '[data-ball="2"]', start: 0.12, peak: 0.45 },
+      { selector: '[data-ball="3"]', start: 0.13, peak: 0.65 },
+      { selector: '[data-ball="4"]', start: 0.14, peak: 0.65 },
+      { selector: '[data-ball="5"]', start: 0.15, peak: 0.65 },
+      { selector: '[data-ball="6"]', start: 0.16, peak: 0.65 },
     ];
-    const maxOpacity = [0.2, 0.5, 1];
+    const maxOpacity = [0.8, 0.9, 1];
 
     ScrollTrigger.create({
       trigger: ballSectionRef.current,
@@ -138,4 +141,3 @@ export function useBallSection(
     };
   }, [ballSectionRef, ballRef, section4Ref, currentIndex]);
 }
-
