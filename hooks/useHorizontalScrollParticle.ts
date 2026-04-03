@@ -21,6 +21,7 @@ const LERP_SPEED = 0.06;
 // Jeda tambahan setelah horizontal scroll selesai (dalam pixel scroll vertikal)
 // Naikkan nilai ini untuk jeda lebih lama, turunkan untuk lebih cepat
 const PAUSE_AFTER_SCROLL = 200;
+const MOBILE_PAUSE = 1500;
 
 // ─────────────────────────────────────────────
 // Particle Config
@@ -302,14 +303,17 @@ export function useHorizontalScrollParticle(
       isMobile ? 0 : track.scrollWidth - window.innerWidth;
 
     const getTotalEnd = () =>
-      isMobile ? PAUSE_AFTER_SCROLL : getHorizontalWidth() + PAUSE_AFTER_SCROLL;
+      isMobile ? MOBILE_PAUSE : getHorizontalWidth() + PAUSE_AFTER_SCROLL;
 
     const ctx = gsap.context(() => {
       gsap.timeline({
         scrollTrigger: {
           trigger: hScrollRef.current,
           start: "top top",
-          end: () => `+=${getTotalEnd()}`,
+          end: () =>
+            isMobile
+              ? `+=${MOBILE_PAUSE}`
+              : `+=${getHorizontalWidth() + PAUSE_AFTER_SCROLL}`,
           scrub: 1,
           pin: true,
           anticipatePin: 0,
