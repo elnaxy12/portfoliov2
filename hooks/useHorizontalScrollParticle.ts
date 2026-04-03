@@ -58,11 +58,11 @@ function getWaypoints() {
   return [
     { x: -20, y: 50 }, // lebih keluar kiri
     { x: 0, y: 50 },
-    { x: 25, y: 50 },
+    { x: 10, y: 50 },
+    { x: 20, y: 50 },
+    { x: 30, y: 50 },
+    { x: 40, y: 50 },
     { x: 50, y: 50 },
-    { x: 75, y: 50 },
-    { x: 80, y: 50 },
-    
   ];
 }
 
