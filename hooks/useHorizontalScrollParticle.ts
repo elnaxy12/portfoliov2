@@ -302,7 +302,7 @@ export function useHorizontalScrollParticle(
       isMobile ? 0 : track.scrollWidth - window.innerWidth;
 
     const getTotalEnd = () =>
-      isMobile ? 200: getHorizontalWidth() + PAUSE_AFTER_SCROLL;
+      isMobile ? PAUSE_AFTER_SCROLL : getHorizontalWidth() + PAUSE_AFTER_SCROLL;
 
     const ctx = gsap.context(() => {
       gsap.timeline({
