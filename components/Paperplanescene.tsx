@@ -32,7 +32,7 @@ function getWaypoints() {
         { x: 72, y: 22 },
         { x: 90, y: 55 },
         { x: 80, y: 73 },
-        { x: 96, y: 82 },
+        { x: 95, y: 83 },
       ];
 
   const centerY = 42;
@@ -77,13 +77,15 @@ export default function PaperPlaneScene({
     (progress: number) => {
       const plane = planeRef.current;
       const track = trackRef.current;
+      const svg = svgRef.current;
       const measureEl = measureRef.current;
       const trailEl = trailRef.current;
       const glowEl = glowRef.current;
-      if (!plane || !track || !measureEl || !trailEl || !glowEl) return;
+      if (!plane || !track || !svg || !measureEl || !trailEl || !glowEl) return;
       const totalLen = totalLenRef.current;
       if (totalLen === 0) return;
 
+      const scrollX = scrollXRef.current;
       const len = Math.min(totalLen * progress, totalLen * 0.9998);
       const pt = measureEl.getPointAtLength(len);
       const pt2 = measureEl.getPointAtLength(
@@ -95,14 +97,18 @@ export default function PaperPlaneScene({
       const dy = (pt2.y - pt.y) * (trackH / 100);
       const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
 
-      plane.style.left = `${(pt.x / 100) * trackW}px`;
+      // Counter GSAP translateX: kurangi posisi plane dengan scrollX
+      plane.style.left = `${(pt.x / 100) * trackW - scrollX}px`;
       plane.style.top = `${(pt.y / 100) * trackH}px`;
       plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+
+      // Counter translateX pada SVG trail agar tidak ikut bergeser
+      svg.style.transform = `translateX(${-scrollX}px)`;
 
       trailEl.style.strokeDashoffset = String(totalLen * (1 - progress));
       glowEl.style.strokeDashoffset = String(totalLen * (1 - progress));
     },
-    [trackRef],
+    [trackRef, scrollXRef],
   );
 
   useEffect(() => {
@@ -126,6 +132,7 @@ export default function PaperPlaneScene({
       if (!measureEl || !trailEl || !glowEl || !track || !svg) return;
 
       svg.style.width = `${track.scrollWidth}px`;
+      svg.style.transform = `translateX(${-scrollXRef.current}px)`;
       const total = measureEl.getTotalLength();
       totalLenRef.current = total;
       trailEl.style.strokeDasharray = String(total);
@@ -153,10 +160,10 @@ export default function PaperPlaneScene({
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [update, onReady, trackRef]);
+  }, [update, onReady, trackRef, scrollXRef]);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+    <div style={{ position: "fixed", width: "100%", height: "100vh" }}>
       <svg
         ref={svgRef}
         style={{

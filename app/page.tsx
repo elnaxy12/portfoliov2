@@ -55,7 +55,7 @@ export default function Home() {
       ignoreMobileResize: true,
     });
 
-  return () => {};
+    return () => {};
   }, []);
 
   const lenisRef = useLenis((x) => setScrollX(x));
@@ -159,12 +159,12 @@ export default function Home() {
             </>
           }
         />
+        <PaperPlaneScene
+          trackRef={trackRef}
+          onReady={handleReady}
+          scrollXRef={scrollXRef}
+        />
         <HorizontalScroll trackRef={trackRef}>
-          <PaperPlaneScene
-            trackRef={trackRef}
-            onReady={handleReady}
-            scrollXRef={scrollXRef}
-          />
           <div
             className="flex min-w-[140vw] md:min-w-[200vw]"
             style={{

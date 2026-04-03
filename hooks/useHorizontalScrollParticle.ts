@@ -20,7 +20,7 @@ const LERP_SPEED = 0.06;
 
 // Jeda tambahan setelah horizontal scroll selesai (dalam pixel scroll vertikal)
 // Naikkan nilai ini untuk jeda lebih lama, turunkan untuk lebih cepat
-const PAUSE_AFTER_SCROLL = 400;
+const PAUSE_AFTER_SCROLL = 100;
 
 // ─────────────────────────────────────────────
 // Particle Config
@@ -61,8 +61,7 @@ function getWaypoints() {
     { x: 25, y: 50 },
     { x: 50, y: 50 },
     { x: 75, y: 50 },
-    { x: 100, y: 50 },
-    { x: 130, y: 50 }, // lebih keluar kanan
+    { x: 80, y: 50 },
   ];
 }
 
@@ -198,7 +197,7 @@ export function useHorizontalScrollParticle(
     window.addEventListener("resize", resize);
 
     const tick = () => {
-      if (currentIndex.current !== 2) {
+      if (currentIndex.current < 1 || currentIndex.current > 3) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         rafId = requestAnimationFrame(tick);
         return;
