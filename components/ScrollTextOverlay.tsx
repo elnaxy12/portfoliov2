@@ -47,10 +47,8 @@ export function ScrollTextOverlay({
           bottom: "2rem",
           right: "2rem",
           margin: 0,
-          opacity: 0,
           fontWeight: 500,
           color: "white",
-          transition: "opacity 0.05s, transform 0.05s",
         }}
       >
         {headlineText}

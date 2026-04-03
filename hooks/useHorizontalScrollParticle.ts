@@ -314,7 +314,7 @@ export function useHorizontalScrollParticle(
             isMobile
               ? `+=${MOBILE_PAUSE}`
               : `+=${getHorizontalWidth() + PAUSE_AFTER_SCROLL}`,
-          scrub: 1,
+          scrub: 3,
           pin: true,
           anticipatePin: 0,
           invalidateOnRefresh: true,
