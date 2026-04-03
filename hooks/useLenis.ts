@@ -8,9 +8,9 @@ export function useLenis(onScroll?: (scrollX: number) => void) {
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1,
       lerp: 0.05,
-      wheelMultiplier: 0.6,
+      wheelMultiplier: 0.5,
+      touchMultiplier: 0.5,
       easing: (t) => 1 - Math.pow(1 - t, 3),
       smoothWheel: true,
       eventsTarget: window,
