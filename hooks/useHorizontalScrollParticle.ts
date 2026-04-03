@@ -20,7 +20,7 @@ const LERP_SPEED = 0.06;
 
 // Jeda tambahan setelah horizontal scroll selesai (dalam pixel scroll vertikal)
 // Naikkan nilai ini untuk jeda lebih lama, turunkan untuk lebih cepat
-const PAUSE_AFTER_SCROLL = 600;
+const PAUSE_AFTER_SCROLL = 200;
 
 // ─────────────────────────────────────────────
 // Particle Config
@@ -139,7 +139,9 @@ export function useHorizontalScrollParticle(
       const trackW = hTrackRef.current?.scrollWidth ?? 0;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      if (trackW <= vw) {
+
+      // FIX: Guard — track belum siap, retry
+      if (trackW === 0) {
         requestAnimationFrame(initParticles);
         return;
       }
@@ -167,7 +169,9 @@ export function useHorizontalScrollParticle(
         svg.appendChild(pathEl);
 
         const totalLen = pathEl.getTotalLength();
-        const pt = pathEl.getPointAtLength(0);
+
+        // FIX: Guard — jangan panggil getPointAtLength kalau totalLen 0
+        const pt = totalLen > 0 ? pathEl.getPointAtLength(0) : { x: 0, y: 50 };
 
         return {
           spawnDelay: i * 0.08,
@@ -211,7 +215,11 @@ export function useHorizontalScrollParticle(
       const trackW = hTrackRef.current?.scrollWidth ?? vw;
       const maxScrollX = trackW - window.innerWidth;
       const totalScroll = maxScrollX;
-      const scrollProgress = scroll / totalScroll;
+
+      // FIX: Guard — kalau track tidak bisa di-scroll (mobile width = vw),
+      // skip particle rendering untuk menghindari bagi 0 → NaN
+
+      const scrollProgress = totalScroll > 0 ? scroll / totalScroll : 0;
 
       particles.forEach((p) => {
         const offscreen = offscreens[p.imageIndex];
@@ -223,7 +231,12 @@ export function useHorizontalScrollParticle(
           0.9998,
         );
         const len = p.totalLen * particleProgress;
-        const pt = p.pathEl.getPointAtLength(len);
+
+        // FIX: Guard — pastikan len finite sebelum getPointAtLength
+        if (!isFinite(len) || len < 0) return;
+
+        const clampedLen = Math.min(len, p.totalLen);
+        const pt = p.pathEl.getPointAtLength(clampedLen);
 
         const targetX = (pt.x / 100) * trackW;
         const targetY = (pt.y / 100) * vh;
@@ -283,19 +296,19 @@ export function useHorizontalScrollParticle(
     if (!hScrollRef.current || !hTrackRef.current) return;
 
     const track = hTrackRef.current;
+    const isMobile = window.innerWidth < 768;
 
-    // Total jarak horizontal yang perlu di-scroll
-    const getHorizontalWidth = () => track.scrollWidth - window.innerWidth;
+    const getHorizontalWidth = () =>
+      isMobile ? 0 : track.scrollWidth - window.innerWidth;
 
-    // Total end ScrollTrigger = horizontal + jeda tambahan
-    const getTotalEnd = () => getHorizontalWidth() + PAUSE_AFTER_SCROLL;
+    const getTotalEnd = () =>
+      isMobile ? PAUSE_AFTER_SCROLL : getHorizontalWidth() + PAUSE_AFTER_SCROLL;
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
+      gsap.timeline({
         scrollTrigger: {
           trigger: hScrollRef.current,
           start: "top top",
-          // end diperpanjang sebesar PAUSE_AFTER_SCROLL agar pin menahan lebih lama
           end: () => `+=${getTotalEnd()}`,
           scrub: 1,
           pin: true,
@@ -316,19 +329,19 @@ export function useHorizontalScrollParticle(
             scrollXRef.current = 0;
           },
           onUpdate: (self) => {
-            const totalEnd = getTotalEnd();
             const horizontalWidth = getHorizontalWidth();
+            const totalEnd = getTotalEnd();
 
-            // progress horizontal: 0 → 1, berhenti di 1 saat jeda
-            const horizontalProgress = Math.min(
-              self.progress * (totalEnd / horizontalWidth),
-              1,
-            );
+            // Mobile: tidak ada horizontal scroll, progress langsung dari pin
+            const horizontalProgress =
+              horizontalWidth > 0
+                ? Math.min(self.progress * (totalEnd / horizontalWidth), 1)
+                : self.progress; // ← di mobile pakai progress pin langsung
 
-            // Gerakkan track hanya sampai habis, tidak lebih
-            gsap.set(track, { x: -horizontalWidth * horizontalProgress });
+            if (horizontalWidth > 0) {
+              gsap.set(track, { x: -horizontalWidth * horizontalProgress });
+            }
 
-            // Warna background
             const r = Math.round(155 + (189 - 155) * horizontalProgress);
             const g = Math.round(142 + (166 - 142) * horizontalProgress);
             const b = Math.round(199 + (206 - 199) * horizontalProgress);
@@ -336,27 +349,13 @@ export function useHorizontalScrollParticle(
               hScrollRef.current.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
             }
 
-            // Update paper plane & particles dengan progress horizontal
-            scrollXRef.current = horizontalProgress * horizontalWidth;
+            scrollXRef.current =
+              horizontalProgress * (horizontalWidth || window.innerWidth);
             planeUpdateRef.current?.(horizontalProgress);
             setWindProgress(horizontalProgress);
           },
         },
       });
-
-      // Animasi track horizontal (0 → -horizontalWidth)
-      // Durasi relatif: hanya porsi horizontal dari total end
-      tl.to(track, {
-        x: () => -getHorizontalWidth(),
-        ease: "none",
-        duration: getHorizontalWidth() / getTotalEnd(), // proporsi waktu
-      })
-        // Jeda: track diam di posisi akhir selama sisa durasi
-        .to(track, {
-          x: () => -getHorizontalWidth(), // tetap di tempat
-          ease: "none",
-          duration: PAUSE_AFTER_SCROLL / getTotalEnd(),
-        });
     }, hScrollRef);
 
     return () => ctx.revert();
