@@ -5,10 +5,11 @@ import Lenis from "lenis";
 
 export function useLenis(onScroll?: (scrollX: number) => void) {
   const lenisRef = useRef<Lenis | null>(null);
-
+  
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
     const lenis = new Lenis({
-      duration: 0.6,
+      duration: isMobile ? 4 : 1,
       easing: (t) => 1 - Math.pow(1 - t, 3),
       smoothWheel: true,
       eventsTarget: window,
