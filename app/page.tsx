@@ -18,6 +18,7 @@ import WindLines from "../components/Windlines";
 import TechStack from "../components/TechStack";
 import Projects from "../components/Projects";
 import { CloudCluster } from "../components/CloudCluster";
+import { CloudClusterDoor } from "../components/CloudClusterDoor";
 import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
@@ -189,7 +190,7 @@ export default function Home() {
             "radial-gradient(circle at bottom center, rgba(255, 255, 255, 255) 0%, rgba(189, 166, 206, 1) 25%)",
         }}
       >
-        <CloudCluster />
+        <CloudClusterDoor />
         {/* 🔹 Ball 1 — muncul pertama */}
         <div
           data-ball="1"

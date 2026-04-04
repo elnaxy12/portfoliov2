@@ -63,8 +63,15 @@ export function useBallSection(
       scrub: isMobile ? 0.8 : 1, // ✅ 0.3 → 0.8 di mobile, kurangi frekuensi update
       pin: true,
       pinSpacing: true,
-      anticipatePin: 0,
+      anticipatePin: 1,
       invalidateOnRefresh: true,
+      snap: {
+        snapTo: [0, 1],
+        duration: { min: 0.4, max: 0.9 },
+        delay: 0.1,
+        ease: "power2.inOut",
+        directional: true,
+      },
       onEnter: () => {
         currentIndex.current = 3;
       },
