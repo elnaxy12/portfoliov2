@@ -35,14 +35,14 @@ export function Cloud({
 }
 
 const clouds = [
-  { top: "15%", left: "-5%", width: "180px", opacity: 1, flip: false },
-  { top: "25%", right: "-3%", width: "140px", opacity: 1, flip: true },
-  { top: "8%", left: "30%", width: "160px", opacity: 1, flip: false },
-  { top: "55%", left: "10%", width: "120px", opacity: 1, flip: true },
-  { top: "40%", right: "15%", width: "200px", opacity: 1, flip: false },
-  { top: "70%", left: "50%", width: "150px", opacity: 1, flip: true },
-  { top: "60%", right: "-2%", width: "130px", opacity: 1, flip: false },
-  { top: "80%", left: "20%", width: "110px", opacity: 1, flip: false },
+  { top: "15%", left: "-5%", width: "180px", opacity: 0.3, flip: false },
+  { top: "25%", right: "-3%", width: "140px", opacity: 0.3, flip: true },
+  { top: "8%", left: "30%", width: "160px", opacity: 0.3, flip: false },
+  { top: "55%", left: "10%", width: "120px", opacity: 0.3, flip: true },
+  { top: "40%", right: "15%", width: "200px", opacity: 0.3, flip: false },
+  { top: "70%", left: "50%", width: "150px", opacity: 0.3, flip: true },
+  { top: "60%", right: "-2%", width: "130px", opacity: 0.3, flip: false },
+  { top: "80%", left: "20%", width: "110px", opacity: 0.3, flip: false },
 ];
 
 export function CloudCluster() {
