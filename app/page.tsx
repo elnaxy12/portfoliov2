@@ -17,6 +17,7 @@ import ValuePropositon from "../components/ValueProposition";
 import WindLines from "../components/Windlines";
 import TechStack from "../components/TechStack";
 import Projects from "../components/Projects";
+import { CloudCluster } from "../components/CloudCluster";
 import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
 
 import { useBallAnimation } from "../hooks/useBallAnimation";
@@ -117,6 +118,8 @@ export default function Home() {
         className="section-panel bg-[#9B8EC7]"
         style={{ position: "relative" }}
       >
+        <CloudCluster />
+
         <svg
           ref={svgRef}
           style={{
@@ -186,6 +189,7 @@ export default function Home() {
             "radial-gradient(circle at bottom center, rgba(255, 255, 255, 255) 0%, rgba(189, 166, 206, 1) 25%)",
         }}
       >
+        <CloudCluster />
         {/* 🔹 Ball 1 — muncul pertama */}
         <div
           data-ball="1"
