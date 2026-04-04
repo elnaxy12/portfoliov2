@@ -178,10 +178,12 @@ export default function Home() {
       {/* Section 3+4: Ball membesar → Section4 muncul */}
       <div
         ref={ballSectionRef}
-        className="section-panel h-screen flex items-start md:items-center justify-center bg-[#BDA6CE]"
+        className="section-panel h-screen flex items-start md:items-center justify-center"
         style={{
           position: "relative",
           overflow: "clip",
+          background:
+            "radial-gradient(circle at bottom center, rgba(255, 255, 255, 255) 0%, rgba(189, 166, 206, 1) 25%)",
         }}
       >
         {/* 🔹 Ball 1 — muncul pertama */}
