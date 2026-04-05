@@ -56,9 +56,10 @@ function lerp(a: number, b: number, t: number) {
 }
 
 function getWaypoints() {
+  const isMobile = window.innerWidth < 768;
   return [
-    { x: -50, y: 50 }, // lebih keluar kiri
-    { x: 50, y: 50 },
+    { x: -50, y: 50 },
+    { x: isMobile ? 80 : 50, y: 50 },
   ];
 }
 
@@ -217,7 +218,6 @@ export function useHorizontalScrollParticle(
       const effectiveWidth = isMobile ? vw : trackW;
       const maxScrollX = isMobile ? vw : trackW > vw ? trackW - vw : vw;
       const scrollProgress = maxScrollX > 0 ? scroll / maxScrollX : 0;
-
 
       particles.forEach((p) => {
         const offscreen = offscreens[p.imageIndex];
