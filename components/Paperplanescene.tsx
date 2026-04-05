@@ -86,23 +86,31 @@ export default function PaperPlaneScene({
       if (totalLen === 0) return;
 
       const scrollX = scrollXRef.current;
-      const len = Math.min(totalLen * progress, totalLen * 0.9998);
-      const pt = measureEl.getPointAtLength(len);
-      const pt2 = measureEl.getPointAtLength(
-        Math.min(len + 0.3, totalLen * 0.9998),
-      );
-      const trackW = track.scrollWidth;
-      const trackH = track.clientHeight;
-      const dx = (pt2.x - pt.x) * (trackW / 100);
-      const dy = (pt2.y - pt.y) * (trackH / 100);
+      const trackW = track.scrollWidth; // ← pindah ke sini
+      const trackH = track.clientHeight; // ← pindah ke sini
+
+      const clampedLen = Math.min(totalLen * progress, totalLen * 0.9998);
+      const lookAhead = 0.3;
+      const isNearEnd = clampedLen + lookAhead >= totalLen * 0.9998;
+
+      const pt = measureEl.getPointAtLength(clampedLen);
+      const pt2 = isNearEnd
+        ? measureEl.getPointAtLength(clampedLen - lookAhead)
+        : measureEl.getPointAtLength(clampedLen + lookAhead);
+
+      const dx = isNearEnd
+        ? (pt.x - pt2.x) * (trackW / 100)
+        : (pt2.x - pt.x) * (trackW / 100);
+      const dy = isNearEnd
+        ? (pt.y - pt2.y) * (trackH / 100)
+        : (pt2.y - pt.y) * (trackH / 100);
+
       const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
 
-      // Counter GSAP translateX: kurangi posisi plane dengan scrollX
       plane.style.left = `${(pt.x / 100) * trackW - scrollX}px`;
       plane.style.top = `${(pt.y / 100) * trackH}px`;
       plane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
 
-      // Counter translateX pada SVG trail agar tidak ikut bergeser
       svg.style.transform = `translateX(${-scrollX}px)`;
 
       trailEl.style.strokeDashoffset = String(totalLen * (1 - progress));
