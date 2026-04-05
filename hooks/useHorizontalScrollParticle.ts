@@ -295,6 +295,8 @@ export function useHorizontalScrollParticle(
 
       rafId = requestAnimationFrame(tick); 
     };
+    
+    rafId = requestAnimationFrame(tick); 
 
     return () => {
       cancelAnimationFrame(rafId);
