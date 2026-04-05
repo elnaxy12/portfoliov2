@@ -155,7 +155,7 @@ export default function Home() {
           trackRef={trackRef}
           headlineText={
             <>
-              Start <br />
+              Start <br className="hidden md:inline" />
               Your Journey{" "}
               <span className="animate-pulse delay-[0.8s] rotate-20 md:scale-[0.8]">
                 <span className="text-amber-400">✦</span>
