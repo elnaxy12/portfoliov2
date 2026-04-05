@@ -189,10 +189,23 @@ export function useHorizontalScrollParticle(
       });
     };
 
+    let lastWidth = window.innerWidth;
+
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initParticles();
+      const currentWidth = window.innerWidth;
+      const currentHeight = window.innerHeight;
+
+      // Hanya jalankan ulang initParticles JIKA lebar layar berubah (orientasi ganti)
+      if (currentWidth !== lastWidth) {
+        lastWidth = currentWidth;
+        canvas.width = currentWidth;
+        canvas.height = currentHeight;
+        initParticles();
+      } else {
+        // Kalau cuma tinggi yang berubah (address bar HP sembunyi),
+        // cukup update tinggi canvasnya aja tanpa mereset ulang partikel.
+        canvas.height = currentHeight;
+      }
     };
     resize();
     window.addEventListener("resize", resize);
@@ -214,7 +227,7 @@ export function useHorizontalScrollParticle(
       const vw = canvas.width;
       const vh = canvas.height;
       const trackW = hTrackRef.current?.scrollWidth ?? vw;
-      const maxScrollX = trackW - window.innerWidth;
+      const maxScrollX = trackW > vw ? trackW - vw : vw;
       const totalScroll = maxScrollX;
 
       // FIX: Guard — kalau track tidak bisa di-scroll (mobile width = vw),
