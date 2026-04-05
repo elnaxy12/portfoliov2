@@ -212,15 +212,13 @@ export function useHorizontalScrollParticle(
       const vh = canvas.height;
       const isMobile = vw < 768;
 
-      // Desktop: hanya render di section 1-3
-      // Mobile: render selama belum lewat section 3
       const shouldRender = isMobile
         ? currentIndex.current <= 3
         : currentIndex.current >= 1 && currentIndex.current <= 3;
 
       if (!shouldRender) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        rafId = requestAnimationFrame(tick);
+        rafId = requestAnimationFrame(tick); // ← jangan lupa ini
         return;
       }
 
@@ -232,6 +230,8 @@ export function useHorizontalScrollParticle(
       const isScrollingBack = scrollDelta < -1;
 
       const trackW = hTrackRef.current?.scrollWidth ?? vw;
+      // Mobile: gunakan vw sebagai lebar referensi, bukan trackW
+      const effectiveWidth = isMobile ? vw : trackW;
       const maxScrollX = isMobile ? vw : trackW > vw ? trackW - vw : vw;
       const scrollProgress = maxScrollX > 0 ? scroll / maxScrollX : 0;
 
@@ -239,25 +239,25 @@ export function useHorizontalScrollParticle(
         const offscreen = offscreens[p.imageIndex];
         const ready = offscreenReady[p.imageIndex];
         if (!ready || !offscreen || p.totalLen === 0) return;
-  
+
         const particleProgress = Math.min(
           Math.max(scrollProgress - p.spawnDelay, 0),
           0.9998,
         );
         const len = p.totalLen * particleProgress;
-  
-        // FIX: Guard — pastikan len finite sebelum getPointAtLength
+
         if (!isFinite(len) || len < 0) return;
-  
+
         const clampedLen = Math.min(len, p.totalLen);
         const pt = p.pathEl.getPointAtLength(clampedLen);
-  
-        const targetX = (pt.x / 100) * trackW;
+
+        // ← pakai effectiveWidth, bukan trackW
+        const targetX = (pt.x / 100) * effectiveWidth;
         const targetY = (pt.y / 100) * vh;
-  
+
         const diffX = targetX - p.currentX;
         const isSnapBack = isScrollingBack && diffX > p.size * 3;
-  
+
         if (isSnapBack) {
           p.currentX = targetX;
           p.currentY = targetY;
@@ -265,7 +265,7 @@ export function useHorizontalScrollParticle(
           p.currentX = lerp(p.currentX, targetX, LERP_SPEED);
           p.currentY = lerp(p.currentY, targetY, LERP_SPEED);
         }
-  
+
         const fadeRange = p.size * 3;
         const targetOpacity =
           p.currentX > vw + p.size
@@ -275,16 +275,16 @@ export function useHorizontalScrollParticle(
               : p.currentX < -p.size
                 ? Math.max((p.currentX + p.size + fadeRange) / fadeRange, 0)
                 : 1;
-  
+
         const opacitySpeed = isSnapBack
           ? 1
           : targetOpacity > p.currentOpacity
             ? LERP_SPEED * 3
             : LERP_SPEED;
-  
+
         p.currentOpacity = lerp(p.currentOpacity, targetOpacity, opacitySpeed);
         if (p.currentOpacity < 0.001) return;
-  
+
         ctx.save();
         ctx.globalAlpha = p.currentOpacity;
         ctx.translate(p.currentX, p.currentY);
@@ -292,9 +292,9 @@ export function useHorizontalScrollParticle(
         ctx.drawImage(offscreen, -p.size / 2, -p.size / 2, p.size, p.size);
         ctx.restore();
       });
-      rafId = requestAnimationFrame(tick);
-    };
 
+      rafId = requestAnimationFrame(tick); 
+    };
 
     return () => {
       cancelAnimationFrame(rafId);
