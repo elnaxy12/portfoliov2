@@ -107,9 +107,7 @@ export default function WindLines({
     let W = 0,
       H = 0;
 
-    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
-    const BASE = dark ? "255,255,255" : "20,20,20";
-
+    const BASE = "255,255,255";
     function resize() {
       W = window.innerWidth;
       H = window.innerHeight;
