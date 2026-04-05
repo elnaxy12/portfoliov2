@@ -292,9 +292,9 @@ export function useHorizontalScrollParticle(
         ctx.drawImage(offscreen, -p.size / 2, -p.size / 2, p.size, p.size);
         ctx.restore();
       });
+      rafId = requestAnimationFrame(tick);
     };
 
-    rafId = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(rafId);
