@@ -60,7 +60,7 @@ export function useBallSection(
       trigger: ballSectionRef.current,
       start: "top top",
       end: isMobile ? "+=600" : "+=500",
-      scrub: isMobile ? 0.8 : 1, // ✅ 0.3 → 0.8 di mobile, kurangi frekuensi update
+      scrub: isMobile ? 0.8 : 1,
       pin: true,
       pinSpacing: true,
       anticipatePin: 1,
