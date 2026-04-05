@@ -17,6 +17,8 @@ const IMAGE_URLS = [
 ];
 const OFFSCREEN_SIZE = 480;
 const LERP_SPEED = 0.06;
+const SPAWN_DELAY_DESKTOP = 0.08;
+const SPAWN_DELAY_MOBILE = 0.12;
 
 // Jeda tambahan setelah horizontal scroll selesai (dalam pixel scroll vertikal)
 // Naikkan nilai ini untuk jeda lebih lama, turunkan untuk lebih cepat
@@ -59,7 +61,7 @@ function getWaypoints() {
   const isMobile = window.innerWidth < 768;
   return [
     { x: -50, y: 50 },
-    { x: isMobile ? 80 : 50, y: 50 },
+    { x: isMobile ? 100 : 50, y: 50 },
   ];
 }
 
@@ -175,7 +177,7 @@ export function useHorizontalScrollParticle(
         const pt = totalLen > 0 ? pathEl.getPointAtLength(0) : { x: 0, y: 50 };
 
         return {
-          spawnDelay: i * 0.08,
+          spawnDelay: i * (isMobile ? SPAWN_DELAY_MOBILE : SPAWN_DELAY_DESKTOP),
           offsetY: config.offsetY,
           size: config.size,
           rotation: rotations[i] ?? 0,
