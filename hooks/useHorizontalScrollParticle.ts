@@ -1,6 +1,10 @@
 import { useEffect, RefObject } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
+// ─────────────────────────────────────────────
+// Particle Constants
+// ─────────────────────────────────────────────
 const PARTICLE_COUNT = 7;
 const IMAGE_URLS = [
   "/images/particle/052742596094-removebg-preview.png",
@@ -12,9 +16,17 @@ const IMAGE_URLS = [
   "/images/particle/939383347672-removebg-preview.png",
 ];
 const OFFSCREEN_SIZE = 480;
+const LERP_SPEED = 0.06;
+
+// Jeda tambahan setelah horizontal scroll selesai (dalam pixel scroll vertikal)
+// Naikkan nilai ini untuk jeda lebih lama, turunkan untuk lebih cepat
 const PAUSE_AFTER_SCROLL = 200;
 const MOBILE_PAUSE = 1500;
 
+// ─────────────────────────────────────────────
+// Particle Config
+// ─────────────────────────────────────────────
+// DESKTOP — naikkan semua size
 const PARTICLE_CONFIGS_DESKTOP = [
   { size: 600, offsetY: -25 },
   { size: 280, offsetY: 20 },
@@ -25,6 +37,7 @@ const PARTICLE_CONFIGS_DESKTOP = [
   { size: 200, offsetY: 15 },
 ];
 
+// MOBILE
 const PARTICLE_CONFIGS_MOBILE = [
   { size: 300, offsetY: -25 },
   { size: 200, offsetY: 20 },
@@ -34,6 +47,20 @@ const PARTICLE_CONFIGS_MOBILE = [
   { size: 200, offsetY: -30 },
   { size: 140, offsetY: 15 },
 ];
+
+// ─────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
+}
+
+function getWaypoints() {
+  return [
+    { x: -50, y: 50 }, // lebih keluar kiri
+    { x: 50, y: 50 },
+  ];
+}
 
 function buildCatmullRom(pts: { x: number; y: number }[], offsetY = 0) {
   const shifted = pts.map((p) => ({ x: p.x, y: p.y + offsetY }));
@@ -52,15 +79,25 @@ function buildCatmullRom(pts: { x: number; y: number }[], offsetY = 0) {
   return d;
 }
 
+// ─────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────
 interface Particle {
   spawnDelay: number;
+  offsetY: number;
   size: number;
   rotation: number;
+  currentX: number;
+  currentY: number;
+  currentOpacity: number;
   imageIndex: number;
   pathEl: SVGPathElement;
   totalLen: number;
 }
 
+// ─────────────────────────────────────────────
+// Hook
+// ─────────────────────────────────────────────
 export function useHorizontalScrollParticle(
   hScrollRef: RefObject<HTMLDivElement | null>,
   hTrackRef: RefObject<HTMLDivElement | null>,
@@ -71,6 +108,7 @@ export function useHorizontalScrollParticle(
   scrollXRef: RefObject<number>,
   setWindProgress: (p: number) => void,
 ) {
+  // ── Particle canvas animation ────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     const svg = svgRef.current;
@@ -78,7 +116,7 @@ export function useHorizontalScrollParticle(
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Preload images
+    // Preload offscreen canvases
     const offscreens: HTMLCanvasElement[] = IMAGE_URLS.map((url, i) => {
       const offscreen = document.createElement("canvas");
       offscreen.width = OFFSCREEN_SIZE;
@@ -95,30 +133,32 @@ export function useHorizontalScrollParticle(
     const offscreenReady: boolean[] = Array(IMAGE_URLS.length).fill(false);
 
     let particles: Particle[] = [];
+    let rafId: number;
+    const prevScrollRef = { current: 0 };
 
     const initParticles = () => {
+      const trackW = hTrackRef.current?.scrollWidth ?? 0;
       const vw = window.innerWidth;
-      const isMobile = vw < 768;
-      const rawTrackW = hTrackRef.current?.scrollWidth ?? 0;
+      const vh = window.innerHeight;
 
-      if (!isMobile && rawTrackW === 0) {
+      // FIX: Guard — track belum siap, retry
+      if (trackW === 0) {
         requestAnimationFrame(initParticles);
         return;
       }
 
-      const CONFIGS = isMobile
+      const isMobile = vw < 768;
+      const PARTICLE_CONFIGS = isMobile
         ? PARTICLE_CONFIGS_MOBILE
         : PARTICLE_CONFIGS_DESKTOP;
-      const rotations = [50, 120, 200, 310, 10, 0, 150];
-      const waypoints = [
-        { x: -50, y: 50 },
-        { x: 50, y: 50 },
-      ];
 
       svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
 
+      const waypoints = getWaypoints();
+      const rotations = [50, 120, 200, 310, 10, 0, 150];
+
       particles = Array.from({ length: PARTICLE_COUNT }, (_, i) => {
-        const config = CONFIGS[i];
+        const config = PARTICLE_CONFIGS[i];
         const pathEl = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "path",
@@ -129,100 +169,134 @@ export function useHorizontalScrollParticle(
         pathEl.setAttribute("d", buildCatmullRom(waypoints, config.offsetY));
         svg.appendChild(pathEl);
 
+        const totalLen = pathEl.getTotalLength();
+
+        // FIX: Guard — jangan panggil getPointAtLength kalau totalLen 0
+        const pt = totalLen > 0 ? pathEl.getPointAtLength(0) : { x: 0, y: 50 };
+
         return {
           spawnDelay: i * 0.08,
+          offsetY: config.offsetY,
           size: config.size,
           rotation: rotations[i] ?? 0,
+          currentX: -config.size,
+          currentY: (pt.y / 100) * vh,
+          currentOpacity: 0,
           imageIndex: i % IMAGE_URLS.length,
           pathEl,
-          totalLen: pathEl.getTotalLength(),
+          totalLen,
         };
       });
     };
 
-    // Canvas resize
     const resize = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      canvas.width = w;
-      canvas.height = h;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
     };
     resize();
     window.addEventListener("resize", resize);
 
-    // Draw dipanggil langsung dari onUpdate GSAP — tidak ada RAF loop
-    const draw = (progress: number) => {
+    const tick = () => {
+      if (currentIndex.current < 1 || currentIndex.current > 3) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const scroll = scrollXRef.current ?? 0;
+      const scrollDelta = scroll - prevScrollRef.current;
+      prevScrollRef.current = scroll;
+      const isScrollingBack = scrollDelta < -1;
+
       const vw = canvas.width;
       const vh = canvas.height;
-      const isMobile = vw < 768;
       const trackW = hTrackRef.current?.scrollWidth ?? vw;
-      const effectiveWidth = isMobile ? vw : trackW;
-      const scroll = progress * effectiveWidth;
+      const maxScrollX = trackW - window.innerWidth;
+      const totalScroll = maxScrollX;
 
-      ctx.clearRect(0, 0, vw, vh);
+      // FIX: Guard — kalau track tidak bisa di-scroll (mobile width = vw),
+      // skip particle rendering untuk menghindari bagi 0 → NaN
+
+      const scrollProgress = totalScroll > 0 ? scroll / totalScroll : 0;
 
       particles.forEach((p) => {
-        if (!offscreenReady[p.imageIndex] || p.totalLen === 0) return;
+        const offscreen = offscreens[p.imageIndex];
+        const ready = offscreenReady[p.imageIndex];
+        if (!ready || !offscreen || p.totalLen === 0) return;
 
         const particleProgress = Math.min(
-          Math.max(progress - p.spawnDelay, 0),
+          Math.max(scrollProgress - p.spawnDelay, 0),
           0.9998,
         );
-        const pt = p.pathEl.getPointAtLength(p.totalLen * particleProgress);
+        const len = p.totalLen * particleProgress;
 
-        const x = (pt.x / 100) * effectiveWidth;
-        const y = (pt.y / 100) * vh;
+        // FIX: Guard — pastikan len finite sebelum getPointAtLength
+        if (!isFinite(len) || len < 0) return;
 
-        // Fade in saat masuk dari kiri
+        const clampedLen = Math.min(len, p.totalLen);
+        const pt = p.pathEl.getPointAtLength(clampedLen);
+
+        const targetX = (pt.x / 100) * trackW;
+        const targetY = (pt.y / 100) * vh;
+
+        const diffX = targetX - p.currentX;
+        const isSnapBack = isScrollingBack && diffX > p.size * 3;
+
+        if (isSnapBack) {
+          p.currentX = targetX;
+          p.currentY = targetY;
+        } else {
+          p.currentX = lerp(p.currentX, targetX, LERP_SPEED);
+          p.currentY = lerp(p.currentY, targetY, LERP_SPEED);
+        }
+
         const fadeRange = p.size * 3;
-        const opacity =
-          x > vw + p.size
+        const targetOpacity =
+          p.currentX > vw + p.size
             ? 0
-            : x < -p.size - fadeRange
+            : p.currentX < -p.size - fadeRange
               ? 0
-              : x < -p.size
-                ? Math.max((x + p.size + fadeRange) / fadeRange, 0)
+              : p.currentX < -p.size
+                ? Math.max((p.currentX + p.size + fadeRange) / fadeRange, 0)
                 : 1;
 
-        if (opacity < 0.001) return;
+        const opacitySpeed = isSnapBack
+          ? 1
+          : targetOpacity > p.currentOpacity
+            ? LERP_SPEED * 3
+            : LERP_SPEED;
+
+        p.currentOpacity = lerp(p.currentOpacity, targetOpacity, opacitySpeed);
+        if (p.currentOpacity < 0.001) return;
 
         ctx.save();
-        ctx.globalAlpha = opacity;
-        ctx.translate(x, y);
+        ctx.globalAlpha = p.currentOpacity;
+        ctx.translate(p.currentX, p.currentY);
         ctx.rotate(((p.rotation + scroll * 0.02) * Math.PI) / 180);
-        ctx.drawImage(
-          offscreens[p.imageIndex],
-          -p.size / 2,
-          -p.size / 2,
-          p.size,
-          p.size,
-        );
+        ctx.drawImage(offscreen, -p.size / 2, -p.size / 2, p.size, p.size);
         ctx.restore();
       });
+
+      rafId = requestAnimationFrame(tick);
     };
 
-    const clearCanvas = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    initParticles();
-
-    // Expose draw ke luar supaya bisa dipanggil dari GSAP effect
-    (canvas as any).__drawParticles = draw;
-    (canvas as any).__clearParticles = clearCanvas;
+    rafId = requestAnimationFrame(tick);
 
     return () => {
+      cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
       svg.querySelectorAll(".particle-path").forEach((el) => el.remove());
-      delete (canvas as any).__drawParticles;
-      delete (canvas as any).__clearParticles;
     };
-  }, [canvasRef, svgRef, hTrackRef]);
+  }, [canvasRef, svgRef, hTrackRef, scrollXRef]);
 
   // ── GSAP horizontal scroll ───────────────────
   useEffect(() => {
     if (!hScrollRef.current || !hTrackRef.current) return;
 
     const track = hTrackRef.current;
-    const canvas = canvasRef.current;
     const isMobile = window.innerWidth < 768;
 
     const getHorizontalWidth = () =>
@@ -262,10 +336,11 @@ export function useHorizontalScrollParticle(
             const horizontalWidth = getHorizontalWidth();
             const totalEnd = getTotalEnd();
 
+            // Mobile: tidak ada horizontal scroll, progress langsung dari pin
             const horizontalProgress =
               horizontalWidth > 0
                 ? Math.min(self.progress * (totalEnd / horizontalWidth), 1)
-                : self.progress;
+                : self.progress; // ← di mobile pakai progress pin langsung
 
             if (horizontalWidth > 0) {
               gsap.set(track, { x: -horizontalWidth * horizontalProgress });
@@ -279,12 +354,7 @@ export function useHorizontalScrollParticle(
             }
 
             scrollXRef.current =
-              horizontalProgress *
-              (horizontalWidth > 0 ? horizontalWidth : window.innerWidth);
-
-            // Panggil draw langsung — tidak ada RAF, tidak ada tick
-            (canvas as any)?.__drawParticles?.(horizontalProgress);
-
+              horizontalProgress * (horizontalWidth || window.innerWidth);
             planeUpdateRef.current?.(horizontalProgress);
             setWindProgress(horizontalProgress);
           },
@@ -293,12 +363,5 @@ export function useHorizontalScrollParticle(
     }, hScrollRef);
 
     return () => ctx.revert();
-  }, [
-    hScrollRef,
-    hTrackRef,
-    canvasRef,
-    planeUpdateRef,
-    currentIndex,
-    scrollXRef,
-  ]);
+  }, [hScrollRef, hTrackRef, planeUpdateRef, currentIndex, scrollXRef]);
 }
