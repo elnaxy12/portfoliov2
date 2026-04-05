@@ -137,17 +137,16 @@ export function useHorizontalScrollParticle(
     const prevScrollRef = { current: 0 };
 
     const initParticles = () => {
-      const trackW = hTrackRef.current?.scrollWidth ?? 0;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
+      const isMobile = vw < 768;
+      const rawTrackW = hTrackRef.current?.scrollWidth ?? 0;
 
-      // FIX: Guard — track belum siap, retry
-      if (trackW === 0) {
+      if (!isMobile && rawTrackW === 0) {
         requestAnimationFrame(initParticles);
         return;
       }
 
-      const isMobile = vw < 768;
       const PARTICLE_CONFIGS = isMobile
         ? PARTICLE_CONFIGS_MOBILE
         : PARTICLE_CONFIGS_DESKTOP;
@@ -210,17 +209,15 @@ export function useHorizontalScrollParticle(
       const scrollDelta = scroll - prevScrollRef.current;
       prevScrollRef.current = scroll;
       const isScrollingBack = scrollDelta < -1;
-
+      // tick — fix maxScrollX dan scrollProgress untuk mobile
       const vw = canvas.width;
       const vh = canvas.height;
+      const isMobile = vw < 768;
       const trackW = hTrackRef.current?.scrollWidth ?? vw;
-      const maxScrollX = trackW - window.innerWidth;
-      const totalScroll = maxScrollX;
+      const effectiveWidth = isMobile ? vw : trackW;
+      const maxScrollX = isMobile ? vw : trackW > vw ? trackW - vw : vw;
+      const scrollProgress = maxScrollX > 0 ? scroll / maxScrollX : 0;
 
-      // FIX: Guard — kalau track tidak bisa di-scroll (mobile width = vw),
-      // skip particle rendering untuk menghindari bagi 0 → NaN
-
-      const scrollProgress = totalScroll > 0 ? scroll / totalScroll : 0;
 
       particles.forEach((p) => {
         const offscreen = offscreens[p.imageIndex];
@@ -239,7 +236,7 @@ export function useHorizontalScrollParticle(
         const clampedLen = Math.min(len, p.totalLen);
         const pt = p.pathEl.getPointAtLength(clampedLen);
 
-        const targetX = (pt.x / 100) * trackW;
+        const targetX = (pt.x / 100) * effectiveWidth; // ← baru dipakai
         const targetY = (pt.y / 100) * vh;
 
         const diffX = targetX - p.currentX;
