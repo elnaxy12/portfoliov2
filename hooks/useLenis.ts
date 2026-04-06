@@ -7,12 +7,14 @@ export function useLenis(onScroll?: (scrollX: number) => void) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    const isMobile = window.matchMedia("(pointer: coarse)").matches;
+
     const lenis = new Lenis({
-      lerp: 0.05,
+      lerp: isMobile ? 0.12 : 0.05,
       wheelMultiplier: 0.6,
-      touchMultiplier: 0.1,
+      touchMultiplier: isMobile ? 1.5 : 1,
       easing: (t) => 1 - Math.pow(1 - t, 3),
-      smoothWheel: true,
+      smoothWheel: !isMobile,
       eventsTarget: window,
     });
     lenisRef.current = lenis;
