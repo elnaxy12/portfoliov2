@@ -5,6 +5,11 @@ import Lenis from "lenis";
 
 export function useLenis(onScroll?: (scrollX: number) => void) {
   const lenisRef = useRef<Lenis | null>(null);
+  const onScrollRef = useRef(onScroll); 
+
+  useEffect(() => {
+    onScrollRef.current = onScroll;
+  }, [onScroll]);
 
   useEffect(() => {
     const isMobile = window.matchMedia("(pointer: coarse)").matches;
@@ -20,14 +25,17 @@ export function useLenis(onScroll?: (scrollX: number) => void) {
     lenisRef.current = lenis;
 
     lenis.on("scroll", () => ScrollTrigger.update());
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
-    gsap.ticker.lagSmoothing(0);
 
     lenis.on("scroll", (e: any) => {
-      onScroll?.(e.scroll);
+      onScrollRef.current?.(e.scroll); 
     });
 
+    const ticker = (time: number) => lenis.raf(time * 1000);
+    gsap.ticker.add(ticker);
+    gsap.ticker.lagSmoothing(0);
+
     return () => {
+      gsap.ticker.remove(ticker); 
       lenis.destroy();
     };
   }, []);
