@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 
 function getWaypoints() {
   const aspect = window.innerWidth / window.innerHeight;
@@ -9,17 +9,17 @@ function getWaypoints() {
 
   const base = isMobile
     ? [
-        { x: -10, y: 55 },
+        { x: -10, y: 50 },
         { x: 8, y: 45 },
-        { x: 18, y: 62 },
-        { x: 28, y: 30 },
-        { x: 38, y: 58 },
-        { x: 50, y: 25 },
+        { x: 18, y: 55 },
+        { x: 28, y: 42 },
+        { x: 38, y: 52 },
+        { x: 50, y: 40 },
         { x: 62, y: 50 },
         { x: 72, y: 22 },
         { x: 82, y: 100 },
         { x: 72, y: 150 },
-        { x: 92, y: 200 },
+        { x: 95, y: 200 },
       ]
     : [
         { x: -3, y: 55 },
@@ -60,6 +60,7 @@ interface PaperPlaneSceneProps {
   onReady: (update: (progress: number) => void) => void;
   scrollXRef: React.MutableRefObject<number>;
 }
+
 
 export default function PaperPlaneScene({
   trackRef,
@@ -119,7 +120,9 @@ export default function PaperPlaneScene({
     [trackRef, scrollXRef],
   );
 
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
     const svg = svgRef.current;
     const track = trackRef.current;
     if (!svg || !track) return;
@@ -192,7 +195,7 @@ export default function PaperPlaneScene({
           id="pp-glow"
           fill="none"
           stroke="rgba(255,255,255,0.1)"
-          strokeWidth="3"
+          strokeWidth={isMobile ? "2" : "3"}
           strokeLinecap="round"
         />
         <path
@@ -211,8 +214,8 @@ export default function PaperPlaneScene({
           position: "absolute",
           top: 0,
           left: 0,
-          width: "clamp(120px, 12vw, 160px)",
-          height: "clamp(120px, 12vw, 160px)",
+          width: "clamp(80px, 12vw, 160px)",
+          height: "clamp(80px, 12vw, 160px)",
           transform: "translate(-50%, -50%)",
           willChange: "left, top, transform",
           pointerEvents: "none",

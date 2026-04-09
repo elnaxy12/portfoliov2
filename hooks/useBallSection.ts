@@ -47,11 +47,13 @@ export function useBallSection(
     window.addEventListener("resize", handleResize);
 
     const ballConfigs = [
-      { selector: '[data-ball="1"]', start: 0.0, peak: 0.2 },
-      { selector: '[data-ball="2"]', start: 0.1, peak: 0.3 },
+      { selector: '[data-ball="1"]', start: 0.0, peak: 0.1 },
+      { selector: '[data-ball="2"]', start: 0.04, peak: 0.14 },
+      { selector: '[data-ball="3"]', start: 0.08, peak: 0.18 },
+      { selector: '[data-ball="4"]', start: 0.12, peak: 0.22 },
     ];
 
-    const maxOpacity = [0.9, 1];
+    const maxOpacity = [0.5, 0.55, 0.9, 1];
 
     ScrollTrigger.create({
       trigger: ballSectionRef.current,

@@ -40,8 +40,8 @@ const PARTICLE_CONFIGS_MOBILE = [
   { size: 200, offsetY: 20 },
   { size: 280, offsetY: 25 },
   { size: 160, offsetY: -20 },
-  { size: 240, offsetY: 30 },
-  { size: 200, offsetY: -30 },
+  { size: 200, offsetY: 0 },
+  { size: 200, offsetY: -40 },
   { size: 140, offsetY: 15 },
 ];
 

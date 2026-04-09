@@ -163,16 +163,15 @@ export default function Home() {
             </>
           }
         />
-          <PaperPlaneScene
-            trackRef={trackRef}
-            onReady={handleReady}
-            scrollXRef={scrollXRef}
-          />
+        <PaperPlaneScene
+          trackRef={trackRef}
+          onReady={handleReady}
+          scrollXRef={scrollXRef}
+        />
         <HorizontalScroll trackRef={trackRef}>
           <div
-            className="flex"
+            className="flex md:min-w-[200vw] min-w-[280vw]"
             style={{
-              minWidth: "300vw",
               height: "100vh",
               paddingBottom: "120px",
             }}
@@ -192,44 +191,27 @@ export default function Home() {
         }}
       >
         <CloudClusterDoor />
-        {/* 🔹 Ball 1 — muncul pertama */}
-        <div
-          data-ball="1"
-          ref={ballRef}
-          style={{
-            position: "absolute",
-            left: "50%",
-            bottom: "33%",
-            width: "20px",
-            height: "20px",
-            opacity: 0,
-            borderRadius: "50%",
-            background: "#ffffff",
-            transform: "translate(-50%, -50%) scale(0)",
-            transformOrigin: "center",
-            zIndex: 1,
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* 🔹 Ball 2 — muncul kedua, warna lebih gelap */}
-        <div
-          data-ball="2"
-          style={{
-            position: "absolute",
-            left: "50%",
-            bottom: "33%",
-            width: "20px",
-            height: "20px",
-            opacity: 0,
-            borderRadius: "50%",
-            background: "#ffffff",
-            transform: "translate(-50%, -50%) scale(0)",
-            transformOrigin: "center",
-            zIndex: 2,
-            pointerEvents: "none",
-          }}
-        />
+        {[1, 2, 3, 4].map((n) => (
+          <div
+            key={n}
+            data-ball={String(n)}
+            ref={n === 1 ? ballRef : undefined}
+            style={{
+              position: "absolute",
+              left: "50%",
+              bottom: "33%",
+              width: "20px",
+              height: "20px",
+              opacity: 0,
+              borderRadius: "50%",
+              background: "#ffffff",
+              transform: "translate(-50%, -50%) scale(0)",
+              transformOrigin: "center",
+              zIndex: n,
+              pointerEvents: "none",
+            }}
+          />
+        ))}
 
         <ShapeCluster />
         <CodeBox top="5rem" />
