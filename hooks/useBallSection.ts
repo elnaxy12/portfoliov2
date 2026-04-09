@@ -49,13 +49,9 @@ export function useBallSection(
     const ballConfigs = [
       { selector: '[data-ball="1"]', start: 0.0, peak: 0.2 },
       { selector: '[data-ball="2"]', start: 0.1, peak: 0.3 },
-      { selector: '[data-ball="3"]', start: 0.2, peak: 0.4 },
-      { selector: '[data-ball="4"]', start: 0.3, peak: 0.5 },
-      { selector: '[data-ball="5"]', start: 0.4, peak: 0.6 },
-      { selector: '[data-ball="6"]', start: 0.5, peak: 0.7 },
     ];
 
-    const maxOpacity = [0.2, 0.4, 0.9, 1];
+    const maxOpacity = [0.9, 1];
 
     ScrollTrigger.create({
       trigger: ballSectionRef.current,
