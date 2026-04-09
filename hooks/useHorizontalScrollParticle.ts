@@ -212,7 +212,7 @@ export function useHorizontalScrollParticle(
       const isMobile = vw < 768;
       const trackW = hTrackRef.current?.scrollWidth ?? vw;
       const effectiveWidth = isMobile ? vw : trackW;
-      const maxScrollX = isMobile ? vw : trackW > vw ? trackW - vw : vw;
+      const maxScrollX = trackW > vw ? trackW - vw : vw;
       const scrollProgress = maxScrollX > 0 ? scroll / maxScrollX : 0;
 
       particles.forEach((p) => {
@@ -291,8 +291,7 @@ export function useHorizontalScrollParticle(
     const track = hTrackRef.current;
     const isMobile = window.innerWidth < 768;
 
-    const getHorizontalWidth = () =>
-      isMobile ? window.innerWidth : track.scrollWidth - window.innerWidth;
+    const getHorizontalWidth = () => track.scrollWidth - window.innerWidth;
 
     const ctx = gsap.context(() => {
       gsap.timeline({
@@ -334,9 +333,7 @@ export function useHorizontalScrollParticle(
             if (hScrollRef.current) {
               hScrollRef.current.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
             }
-            scrollXRef.current = isMobile
-              ? self.progress * window.innerWidth
-              : horizontalProgress * horizontalWidth;
+            scrollXRef.current = horizontalProgress * horizontalWidth;
             planeUpdateRef.current?.(horizontalProgress);
             setWindProgress(horizontalProgress);
           },
