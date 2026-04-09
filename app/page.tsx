@@ -163,15 +163,16 @@ export default function Home() {
             </>
           }
         />
-        <PaperPlaneScene
-          trackRef={trackRef}
-          onReady={handleReady}
-          scrollXRef={scrollXRef}
-        />
+          <PaperPlaneScene
+            trackRef={trackRef}
+            onReady={handleReady}
+            scrollXRef={scrollXRef}
+          />
         <HorizontalScroll trackRef={trackRef}>
           <div
-            className="flex min-w-[300vw] md:min-w-[200vw]"
+            className="flex"
             style={{
+              minWidth: "300vw",
               height: "100vh",
               paddingBottom: "120px",
             }}
