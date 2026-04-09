@@ -170,7 +170,7 @@ export default function Home() {
         />
         <HorizontalScroll trackRef={trackRef}>
           <div
-            className="flex min-w-[200vw]"
+            className="flex min-w-[300vw] md:min-w-[200vw]"
             style={{
               height: "100vh",
               paddingBottom: "120px",

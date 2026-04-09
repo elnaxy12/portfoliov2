@@ -32,7 +32,7 @@ function getWaypoints() {
         { x: 72, y: 22 },
         { x: 90, y: 55 },
         { x: 80, y: 73 },
-        { x: 95, y: 83 },
+        { x: 95, y: 82 },
       ];
 
   const centerY = 42;

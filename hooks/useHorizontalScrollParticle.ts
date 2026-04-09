@@ -20,15 +20,10 @@ const LERP_SPEED = 0.06;
 const SPAWN_DELAY_DESKTOP = 0.08;
 const SPAWN_DELAY_MOBILE = 0.12;
 
-// Jeda tambahan setelah horizontal scroll selesai (dalam pixel scroll vertikal)
-// Naikkan nilai ini untuk jeda lebih lama, turunkan untuk lebih cepat
-const PAUSE_AFTER_SCROLL = 200;
-const MOBILE_PAUSE = 1500;
-
 // ─────────────────────────────────────────────
 // Particle Config
 // ─────────────────────────────────────────────
-// DESKTOP — naikkan semua size
+// DESKTOP
 const PARTICLE_CONFIGS_DESKTOP = [
   { size: 600, offsetY: -25 },
   { size: 280, offsetY: 20 },
@@ -173,7 +168,6 @@ export function useHorizontalScrollParticle(
 
         const totalLen = pathEl.getTotalLength();
 
-        // FIX: Guard — jangan panggil getPointAtLength kalau totalLen 0
         const pt = totalLen > 0 ? pathEl.getPointAtLength(0) : { x: 0, y: 50 };
 
         return {
@@ -212,7 +206,7 @@ export function useHorizontalScrollParticle(
       const scrollDelta = scroll - prevScrollRef.current;
       prevScrollRef.current = scroll;
       const isScrollingBack = scrollDelta < -1;
-      // tick — fix maxScrollX dan scrollProgress untuk mobile
+
       const vw = canvas.width;
       const vh = canvas.height;
       const isMobile = vw < 768;
@@ -232,13 +226,12 @@ export function useHorizontalScrollParticle(
         );
         const len = p.totalLen * particleProgress;
 
-        // FIX: Guard — pastikan len finite sebelum getPointAtLength
         if (!isFinite(len) || len < 0) return;
 
         const clampedLen = Math.min(len, p.totalLen);
         const pt = p.pathEl.getPointAtLength(clampedLen);
 
-        const targetX = (pt.x / 100) * effectiveWidth; // ← baru dipakai
+        const targetX = (pt.x / 100) * effectiveWidth;
         const targetY = (pt.y / 100) * vh;
 
         const diffX = targetX - p.currentX;
@@ -301,18 +294,12 @@ export function useHorizontalScrollParticle(
     const getHorizontalWidth = () =>
       isMobile ? 0 : track.scrollWidth - window.innerWidth;
 
-    const getTotalEnd = () =>
-      isMobile ? MOBILE_PAUSE : getHorizontalWidth() + PAUSE_AFTER_SCROLL;
-
     const ctx = gsap.context(() => {
       gsap.timeline({
         scrollTrigger: {
           trigger: hScrollRef.current,
           start: "top top",
-          end: () =>
-            isMobile
-              ? `+=${MOBILE_PAUSE}`
-              : `+=${getHorizontalWidth() + PAUSE_AFTER_SCROLL}`,
+          end: () => `+=${getHorizontalWidth()}`,
           scrub: 3,
           pin: true,
           anticipatePin: 0,
@@ -323,6 +310,7 @@ export function useHorizontalScrollParticle(
           },
           onLeave: () => {
             currentIndex.current = 3;
+            gsap.set(track, { x: -getHorizontalWidth() });
           },
           onEnterBack: () => {
             currentIndex.current = 2;
@@ -333,13 +321,8 @@ export function useHorizontalScrollParticle(
           },
           onUpdate: (self) => {
             const horizontalWidth = getHorizontalWidth();
-            const totalEnd = getTotalEnd();
 
-            // Mobile: tidak ada horizontal scroll, progress langsung dari pin
-            const horizontalProgress =
-              horizontalWidth > 0
-                ? Math.min(self.progress * (totalEnd / horizontalWidth), 1)
-                : self.progress; // ← di mobile pakai progress pin langsung
+            const horizontalProgress = Math.min(self.progress, 1);
 
             if (horizontalWidth > 0) {
               gsap.set(track, { x: -horizontalWidth * horizontalProgress });
