@@ -53,10 +53,10 @@ export function useBallSection(
     window.addEventListener("resize", handleResize);
 
     const ballConfigs = [
-      { selector: '[data-ball="1"]', start: 0.0, peak: 0.1 },
-      { selector: '[data-ball="2"]', start: 0.04, peak: 0.14 },
-      { selector: '[data-ball="3"]', start: 0.08, peak: 0.18 },
-      { selector: '[data-ball="4"]', start: 0.12, peak: 0.22 },
+      { selector: '[data-ball="1"]', start: 0.0, peak: 0.2 },
+      { selector: '[data-ball="2"]', start: 0.1, peak: 0.3 },
+      { selector: '[data-ball="3"]', start: 0.2, peak: 0.4 },
+      { selector: '[data-ball="4"]', start: 0.3, peak: 0.5 },
     ];
 
     const maxOpacity = [0.1, 0.12, 0.13, 1];
@@ -64,7 +64,7 @@ export function useBallSection(
     ScrollTrigger.create({
       trigger: ballSectionRef.current,
       start: "top top",
-      end: isMobile ? "+=600" : "+=500",
+      end: isMobile ? "+=1400" : "+=1200",
       scrub: isMobile ? 0.8 : 1,
       pin: true,
       pinSpacing: true,
@@ -72,7 +72,7 @@ export function useBallSection(
       invalidateOnRefresh: true,
       snap: {
         snapTo: [0, 1],
-        duration: { min: 0.4, max: 0.9 },
+        duration: { min: 1.2, max: 2 },
         delay: 0.1,
         ease: "power2.inOut",
         directional: true,
@@ -97,10 +97,13 @@ export function useBallSection(
             ballSectionRef.current?.querySelector<HTMLElement>(selector);
           if (!el) return;
 
-          const localP = Math.max(
+          const rawP = Math.max(
             0,
             Math.min(1, (progress - start) / (peak - start)),
           );
+
+          // bikin lambat di awal (smooth berat)
+          const localP = rawP * rawP;
 
           // ✅ Aktifkan will-change hanya saat animasi berlangsung
           if (localP > 0 && localP < 1) {
