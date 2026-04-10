@@ -74,7 +74,7 @@ export function useBallSection(
         snapTo: [0, 1],
         duration: { min: 1.2, max: 2 },
         delay: 0.1,
-        ease: "power3.inOut",
+        ease: "power2.inOut",
         directional: false,
       },
       onEnter: () => {
