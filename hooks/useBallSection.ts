@@ -73,7 +73,7 @@ export function useBallSection(
       snap: {
         snapTo: (value, self) => {
           const threshold = 0.1;
-          const direction = self?.direction ?? 1; // default ke scroll down
+          const direction = self?.direction ?? 1; 
 
           if (direction === 1) {
             return value < threshold ? 0 : 1;

@@ -1,5 +1,6 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useSectionReveal } from "../hooks/useSectionReveal";
+import TextReveal, { TextRevealHandle } from "./TextReveal";
 
 interface Project {
   id: string;
@@ -141,11 +142,45 @@ const PreviewIcon = () => (
 );
 
 export default function Projects() {
+  const headerRefs = useRef<(TextRevealHandle | null)[]>([]);
+  const revealRefs = useRef<Record<number, (TextRevealHandle | null)[]>>({});
   const sectionRef = useRef<HTMLElement>(null);
+  const base = 2;
   useSectionReveal(sectionRef, {
     selector: ".project-card",
     start: "top bottom",
   });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Header
+            headerRefs.current.forEach((ref, i) => {
+              setTimeout(() => ref?.play(), i * 150);
+            });
+            // Cards
+            Object.values(revealRefs.current).forEach((cardRefs) => {
+              cardRefs.forEach((ref, fieldIdx) => {
+                setTimeout(() => ref?.play(), fieldIdx * 80);
+              });
+            });
+          } else {
+            headerRefs.current.forEach((ref) => ref?.reset());
+            Object.values(revealRefs.current).forEach((cardRefs) => {
+              cardRefs.forEach((ref) => ref?.reset());
+            });
+          }
+        });
+      },
+      { threshold: 0.1 },
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
       ref={sectionRef}
@@ -156,9 +191,9 @@ export default function Projects() {
         marginTop: "5rem",
         paddingBottom: "5rem",
         boxSizing: "border-box",
-        display:"flex",
-        justifyContent:"center",
-        flexDirection:"column"
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
       }}
     >
       <style>{`
@@ -361,8 +396,13 @@ export default function Projects() {
       {/* Header */}
       <div className="projects-header">
         <h2>
-          Selected
-          <br />
+          <TextReveal
+            ref={(el) => {
+              headerRefs.current[0] = el;
+            }}
+            lines={["Selected"]}
+            bgColor="#C0DD97"
+          />
           <em
             style={{
               fontStyle: "italic",
@@ -370,7 +410,13 @@ export default function Projects() {
               whiteSpace: "nowrap",
             }}
           >
-            Projects
+            <TextReveal
+              ref={(el) => {
+                headerRefs.current[1] = el;
+              }}
+              lines={["Projects"]}
+              bgColor="#C0DD97"
+            />
           </em>
         </h2>
         <div className="count">Projects</div>
@@ -378,77 +424,181 @@ export default function Projects() {
 
       {/* Bento grid */}
       <div className="projects-bento">
-        {projects.map((project) => (
-          <div key={project.id} className="project-card">
-            {/* Preview placeholder */}
-            <div
-              className="project-preview"
-              style={{ background: project.accent }}
-            >
-              <div className="project-preview-icon">
-                <PreviewIcon />
+        {projects.map((project, cardIdx) => {
+          // pastikan array per card sudah ada
+          if (!revealRefs.current[cardIdx]) {
+            revealRefs.current[cardIdx] = [];
+          }
+          const setRef =
+            (fieldIdx: number) => (el: TextRevealHandle | null) => {
+              revealRefs.current[cardIdx][fieldIdx] = el;
+            };
+
+          let idx = 0;
+
+          const nameIdx = idx++;
+          const descIdx = idx++;
+
+          const techStart = idx;
+          idx += project.tech.length;
+
+          const problemLabelIdx = idx++;
+          const problemValueIdx = idx++;
+
+          const solutionLabelIdx = idx++;
+          const solutionValueIdx = idx++;
+
+          const impactLabelIdx = idx++;
+          const impactValueIdx = idx++;
+
+          return (
+            <div key={project.id} className="project-card">
+              {/* Preview placeholder */}
+              <div
+                className="project-preview"
+                style={{ background: project.accent }}
+              >
+                <div className="project-preview-icon">
+                  <PreviewIcon />
+                </div>
+                <span className="project-preview-label">No preview</span>
               </div>
-              <span className="project-preview-label">No preview</span>
+
+              {/* Body */}
+              <div className="project-body">
+                {/* Top row */}
+                <div className="project-top">
+                  <span className="project-id">{project.id}</span>
+                  {/* fieldIdx 0 — project name */}
+                  <div className="project-name flex flex-start">
+                    <TextReveal
+                      ref={setRef(nameIdx)}
+                      lines={[project.name]}
+                      bgColor="#C0DD97"
+                    />
+                  </div>
+                  <div className="project-links">
+                    <a
+                      href={project.liveUrl}
+                      className="project-link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <TextReveal
+                        ref={setRef(idx++)}
+                        lines={["Live"]}
+                        bgColor="#C0DD97"
+                        stagger={0.04}
+                      />
+                      <ExternalLinkIcon />
+                    </a>
+
+                    <a
+                      href={project.githubUrl}
+                      className="project-link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <GithubIcon />
+                      <TextReveal
+                        ref={setRef(idx++)}
+                        lines={["GitHub"]}
+                        bgColor="#C0DD97"
+                        stagger={0.04}
+                      />
+                    </a>
+                  </div>
+                </div>
+
+                {/* fieldIdx 1 — description */}
+                <div className="project-desc flex flex-start">
+                  <TextReveal
+                    ref={setRef(descIdx)}
+                    lines={[project.description]}
+                    bgColor="#C0DD97"
+                    stagger={0.08}
+                  />
+                </div>
+
+                {/* Tech pills — fieldIdx 2 */}
+                <div className="project-tech">
+                  {project.tech.map((t, techIdx) => (
+                    <span key={t} className="tech-pill">
+                      <TextReveal
+                        ref={setRef(base + techIdx)}
+                        lines={[t]}
+                        bgColor="#C0DD97"
+                        stagger={0.06}
+                      />
+                    </span>
+                  ))}
+                </div>
+
+                <div className="project-divider" />
+
+                {/* Problem / Solution / Impact — fieldIdx 3, 4, 5 */}
+                <div className="project-psi">
+                  <div className="psi-row">
+                    <span className="psi-label">
+                      <TextReveal
+                        ref={setRef(problemLabelIdx)}
+                        lines={["Problem"]}
+                        bgColor="#C0DD97"
+                        stagger={0.04}
+                      />
+                    </span>{" "}
+                    <span className="psi-value">
+                      <TextReveal
+                        ref={setRef(problemValueIdx)}
+                        lines={[project.problem]}
+                        bgColor="#C0DD97"
+                        stagger={0.06}
+                      />
+                    </span>
+                  </div>
+
+                  <div className="psi-row">
+                    <span className="psi-label">
+                      <TextReveal
+                        ref={setRef(solutionLabelIdx)}
+                        lines={["Solution"]}
+                        bgColor="#C0DD97"
+                        stagger={0.04}
+                      />
+                    </span>{" "}
+                    <span className="psi-value">
+                      <TextReveal
+                        ref={setRef(solutionValueIdx)}
+                        lines={[project.solution]}
+                        bgColor="#C0DD97"
+                        stagger={0.06}
+                      />
+                    </span>
+                  </div>
+
+                  <div className="psi-row">
+                    <span className="psi-label">
+                      <TextReveal
+                        ref={setRef(impactLabelIdx)}
+                        lines={["Impact"]}
+                        bgColor="#C0DD97"
+                        stagger={0.04}
+                      />
+                    </span>{" "}
+                    <span className="psi-value flex flex-start">
+                      <TextReveal
+                        ref={setRef(impactValueIdx)}
+                        lines={[project.impact]}
+                        bgColor="#C0DD97"
+                        stagger={0.06}
+                      />
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-
-            {/* Body */}
-            <div className="project-body">
-              {/* Top row */}
-              <div className="project-top">
-                <span className="project-id">{project.id}</span>
-                <span className="project-name">{project.name}</span>
-                <div className="project-links">
-                  <a
-                    href={project.liveUrl}
-                    className="project-link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Live <ExternalLinkIcon />
-                  </a>
-                  <a
-                    href={project.githubUrl}
-                    className="project-link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <GithubIcon /> GitHub
-                  </a>
-                </div>
-              </div>
-
-              {/* Description */}
-              <p className="project-desc">{project.description}</p>
-
-              {/* Tech pills */}
-              <div className="project-tech">
-                {project.tech.map((t) => (
-                  <span key={t} className="tech-pill">
-                    {t}
-                  </span>
-                ))}
-              </div>
-
-              <div className="project-divider" />
-
-              {/* Problem / Solution / Impact */}
-              <div className="project-psi">
-                <div className="psi-row">
-                  <span className="psi-label">Problem</span>
-                  <span className="psi-value">{project.problem}</span>
-                </div>
-                <div className="psi-row">
-                  <span className="psi-label">Solution</span>
-                  <span className="psi-value">{project.solution}</span>
-                </div>
-                <div className="psi-row">
-                  <span className="psi-label">Impact</span>
-                  <span className="psi-value">{project.impact}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

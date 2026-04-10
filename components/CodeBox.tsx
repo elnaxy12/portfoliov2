@@ -48,16 +48,14 @@ function highlightCode(code: string) {
 
 // Default GSAP snippet
 const defaultCode = `
-gsap.to(track, {
-  x: () => -getTotalWidth(),
-  scrollTrigger: {
-    trigger: hScrollRef.current,
-    start: "top top",
-    end: () => '+=' + getTotalWidth(),
-    scrub: true,
-    pin: true,
-  }
-});
+const lenis = new Lenis({
+      lerp: 0.05,
+      wheelMultiplier: 0.7,
+      touchMultiplier: 1.2,
+      smoothWheel: true,
+      syncTouch: true,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
+    });
 `;
 
 export default function CodeBox({
