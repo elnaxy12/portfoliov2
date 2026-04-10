@@ -53,10 +53,10 @@ export function useBallSection(
     window.addEventListener("resize", handleResize);
 
     const ballConfigs = [
-      { selector: '[data-ball="1"]', start: 0.0, peak: 0.3 },
-      { selector: '[data-ball="2"]', start: 0.1, peak: 0.4 },
-      { selector: '[data-ball="3"]', start: 0.2, peak: 0.5 },
-      { selector: '[data-ball="4"]', start: 0.3, peak: 0.6 },
+      { selector: '[data-ball="1"]', start: 0.0, peak: 0.2 },
+      { selector: '[data-ball="2"]', start: 0.1, peak: 0.3 },
+      { selector: '[data-ball="3"]', start: 0.2, peak: 0.4 },
+      { selector: '[data-ball="4"]', start: 0.3, peak: 0.5 },
     ];
 
     const maxOpacity = [0.1, 0.12, 0.13, 1];
@@ -74,7 +74,7 @@ export function useBallSection(
         snapTo: [0, 1],
         duration: { min: 1.2, max: 2 },
         delay: 0.1,
-        ease: "power3.inOut",
+        ease: "power2.inOut",
         directional: false,
       },
       onEnter: () => {
