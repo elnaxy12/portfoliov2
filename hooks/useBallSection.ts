@@ -71,11 +71,23 @@ export function useBallSection(
       anticipatePin: 1,
       invalidateOnRefresh: true,
       snap: {
-        snapTo: [0, 1],
-        duration: { min: 0.1, max: 0.9 },
+        snapTo: (value, self) => {
+          const threshold = 0.1;
+          const direction = self?.direction ?? 1; // default ke scroll down
+
+          if (direction === 1) {
+            return value < threshold ? 0 : 1;
+          }
+
+          if (direction === -1) {
+            return value > 1 - threshold ? 1 : 0;
+          }
+
+          return value < 0.5 ? 0 : 1;
+        },
         delay: 0.1,
-        ease: "power2.inOut",
-        directional: false,
+        duration: { min: 0.8, max: 1.5 },
+        ease: "power3.inOut",
       },
       onEnter: () => {
         currentIndex.current = 3;
