@@ -195,7 +195,7 @@ export default function PaperPlaneScene({
           id="pp-glow"
           fill="none"
           stroke="rgba(255,255,255,0.1)"
-          strokeWidth={isMobile ? "2" : "3"}
+          strokeWidth={isMobile ? "2" : "1.9"}
           strokeLinecap="round"
         />
         <path

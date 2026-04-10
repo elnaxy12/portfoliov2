@@ -1,12 +1,18 @@
-import { useEffect, RefObject } from "react";
+import { useEffect, useRef, RefObject } from "react";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import type { TextRevealHandle } from "../components/TextReveal";
+
 
 export function useBallSection(
+  
   ballSectionRef: RefObject<HTMLDivElement | null>,
   ballRef: RefObject<HTMLDivElement | null>,
   section4Ref: RefObject<HTMLDivElement | null>,
   currentIndex: RefObject<number>,
+  textRevealRef: RefObject<TextRevealHandle | null>,
 ) {
+  
+  const hasPlayedRef = useRef(false);
   // Set initial state kartu
   useEffect(() => {
     if (!section4Ref.current) return;
@@ -53,7 +59,7 @@ export function useBallSection(
       { selector: '[data-ball="4"]', start: 0.12, peak: 0.22 },
     ];
 
-    const maxOpacity = [0.5, 0.55, 0.9, 1];
+    const maxOpacity = [0.1, 0.12, 0.13, 1];
 
     ScrollTrigger.create({
       trigger: ballSectionRef.current,
@@ -125,7 +131,15 @@ export function useBallSection(
                 card.style.transform = "translateY(0)";
               }, i * 90);
             });
+
+            if (!hasPlayedRef.current) {
+              textRevealRef.current?.play();
+              hasPlayedRef.current = true;
+            }
           } else {
+            textRevealRef.current?.reset();
+            hasPlayedRef.current = false;
+
             cards.forEach((card) => {
               delete card.dataset.animated;
               card.style.transition = "none";

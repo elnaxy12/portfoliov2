@@ -1,3 +1,6 @@
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import TextReveal, { TextRevealHandle } from "./TextReveal";
+
 const offerings = [
   {
     num: "01",
@@ -26,181 +29,89 @@ const offerings = [
   },
 ];
 
-export default function Offerings() {
+export interface OfferingsHandle {
+  play: () => void;
+  reset: () => void;
+}
+
+const Offerings = forwardRef<OfferingsHandle>((_, ref) => {
+  const revealRefs = useRef<(TextRevealHandle | null)[]>([]);
+
+  useImperativeHandle(ref, () => ({
+    play() {
+      revealRefs.current.forEach((r) => r?.play());
+    },
+    reset() {
+      revealRefs.current.forEach((r) => r?.reset());
+    },
+  }));
+
   return (
-    <section
-      style={{
-        padding: "2rem 1rem 1rem",
-        maxWidth: 1280,
-        margin: "0 auto",
-        width: "100%",
-        boxSizing: "border-box",
-      }}
-    >
+    <section className="w-full min-h-screen p-6 flex flex-col justify-center text-black">
       <style>{`
-        .offering-card {
-          position: relative;
-          overflow: hidden;
-          border-radius: 12px;
-          padding: 1.1rem 1rem 1rem;
-          cursor: default;
-          transition: border-color 0.4s ease;
-          text-align: center;
-        }
-        // .offering-card::after {
-        //   content: '';
-        //   position: absolute;
-        //   inset: 0;
-        //   background: #111111;
-        //   transform: translateY(100%);
-        //   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        //   border-radius: 12px;
-        //   z-index: 0;
-        // }
-        // .offering-card:hover::after {
-        //   transform: translateY(0%);
-        // }
-        // .offering-card:hover {
-        //   border-color: transparent;
-        // }
-        .card-content {
-          position: relative;
-          z-index: 1;
-        }
-        .offering-card .card-num {
-          font-size: 11px;
-          letter-spacing: 0.12em;
-          margin-bottom: 10px;
-          font-weight: 500;
-          color: rgba(0,0,0,0.35);
-          transition: color 0.4s ease;
-        }
-        // .offering-card:hover .card-num {
-        //   color: rgba(255,255,255,0.35);
-        // }
-        .offering-card .card-title {
-          font-size: 15px;
-          font-weight: 500;
-          margin-bottom: 6px;
-          font-family: monospace;
-          color: #000000;
-          transition: color 0.4s ease;
-        }
-        // .offering-card:hover .card-title {
-        //   color: #ffffff;
-        // }
-        .offering-card .card-text {
-          font-size: 12px;
-          line-height: 1.6;
-          color: rgba(0,0,0,0.55);
-          transition: color 0.4s ease;
-        }
-        // .offering-card:hover .card-text {
-        //   color: rgba(255,255,255,0.55);
-        // }
-
-        .offerings-header {
-          display: flex;
-          align-items: flex-end;
-          justify-content: space-between;
-          margin-bottom: 1.75rem;
-          gap: 12px;
-        }
-        .offerings-header h2 {
-          font-size: 32px;
-          font-weight: 500;
-          line-height: 1.1;
-          margin: 0;
-          color: #000000;
-        }
-        .offerings-header .count {
-          font-size: 12px;
-          letter-spacing: 0.1em;
-          padding-bottom: 4px;
-          flex-shrink: 0;
-          color: rgba(0,0,0,0.35);
-        }
-        .offerings-grid {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 10px;
+        .font-monospace {
+          font-family: monospace; 
         } 
-       .offering-card:nth-child(4) {
-          grid-column: 1;
-        }
-        .offering-card:nth-child(5) {
-          grid-column: 3;
-        }
-   
-        @media (max-width: 768px) {
-          .offerings-header h2 {
-            font-size: 22px;
-          }
-          .offerings-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-        }
-
-        @media (max-width: 480px) {
-          .offerings-header h2 {
-            font-size: 20px;
-          }
-          .offerings-header .count {
-            font-size: 11px;
-          }
-          .offerings-grid {
-            grid-template-columns: 1fr;
-          }
-          .offering-card {
-            padding: 1rem;
-          }
-          .offering-card .card-title {
-            font-size: 13px;
-          }
-          .offering-card .card-text {
-            font-size: 11px;
-          }
-          .offerings-grid {
-            grid-template-columns: 1fr;
-          }
-          .offering-card:nth-child(4),
-          .offering-card:nth-child(5),
-          .offering-card:last-child {
-            grid-column: auto;
-          }
-        }
-      `}</style>
-
-      {/* Header */}
-      <div className="offerings-header">
-        <h2>
-          Gilang Arya Leksana
-          <br />
-          <em
-            style={{
-              fontStyle: "italic",
-              color: "rgba(0,0,0,0.45)",
-              whiteSpace: "nowrap",
+        `}
+      </style>
+      {/* Header kiri atas */}
+      <div className="mb-10 flex flex-col justify-start items-start">
+        <div className="text-[22px] md:text-[32px] font-medium leading-[1.1]">
+          <TextReveal
+            ref={(el) => {
+              revealRefs.current[0] = el;
             }}
-          >
-            Full-Stack Developer
-          </em>
-        </h2>
-        <div className="count">Offerings</div>
+            lines={["Gilang Arya Leksana"]}
+            />
+          </div>
+        <div className="text-[rgba(0,0,0,0.45)] text-[22px] md:text-[32px] font-medium leading-[1.1] italic">
+          <TextReveal
+            ref={(el) => {
+              revealRefs.current[1] = el;
+            }}
+            lines={["Full-Stack Developer"]}
+            />
+        </div>
       </div>
 
-      {/* Grid */}
-      <div className="offerings-grid">
-        {offerings.map((offering) => (
-          <div key={offering.num} className="offering-card">
-            <div className="card-content">
-              <div className="card-num">{offering.num}</div>
-              <div className="card-title">{offering.title}</div>
-              <div className="card-text">{offering.text}</div>
+      {/* Grid offerings */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center items-center">
+        {offerings.map((item, i) => {
+          // Hanya gunakan positioning untuk desktop
+          const positions = [
+            "",
+            "md:col-start-2",
+            "md:col-start-3",
+            "md:col-start-1 md:row-start-2",
+            "md:col-start-3 md:row-start-2", // skip tengah
+          ];
+
+          return (
+            <div key={item.num} className={`text-center font-monospace flex flex-col gap-2 text-sm ${positions[i]}`}>
+              <div className="text-[rgba(0,0,0,0.45)]">
+                <TextReveal
+                  ref={(el) => { revealRefs.current[i * 3 + 2] = el; }}
+                  lines={[item.num]}
+                />
+              </div>
+              <div>
+                <TextReveal
+                  ref={(el) => { revealRefs.current[i * 3 + 3] = el; }}
+                  lines={[item.title]}
+                />
+              </div>
+              <div className="text-[rgba(0,0,0,0.45)]">
+                <TextReveal
+                  ref={(el) => { revealRefs.current[i * 3 + 4] = el; }}
+                  lines={[item.text]}
+                 />  
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
-}
+});
+
+export default Offerings;

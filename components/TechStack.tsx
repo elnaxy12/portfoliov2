@@ -1,5 +1,6 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useSectionReveal } from "../hooks/useSectionReveal";
+import TextReveal, {TextRevealHandle} from "./TextReveal";
 
 // ── SVG Icons (Simple Icons + custom) ─────────────────────────────────────
 
@@ -223,8 +224,28 @@ const categories = Object.keys(categoryBadge) as Category[];
 // ── Component ─────────────────────────────────────────────────────────────
 
 export default function TechStack() {
+  const revealRefs = useRef<(TextRevealHandle | null)[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
   useSectionReveal(sectionRef, { selector: ".ts-item", start: "top bottom" });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // trigger semua TextReveal
+            revealRefs.current.forEach((ref) => ref?.play());
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+  
+    if (sectionRef.current) observer.observe(sectionRef.current);
+  
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section
@@ -368,24 +389,30 @@ export default function TechStack() {
       {/* Header */}
       <div className="ts-header">
         <h2>
-          Technology
-          <br />
-          <em
-            style={{
-              fontStyle: "italic",
-              color: "rgba(0,0,0,0.45)",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Stack &amp; Tools
-          </em>
+          {/* line 1 - warna normal */}
+          <TextReveal
+            ref={(el) => { revealRefs.current[0] = el; }}
+            lines={["Technology"]}
+          />
+          {/* line 2 - warna muted */}
+          <span style={{ fontStyle: "italic", color: "rgba(0,0,0,0.45)" }}>
+            <TextReveal
+              ref={(el) => { revealRefs.current[1] = el; }}
+              lines={["Stack & Tools"]}
+            />
+          </span>
         </h2>
-        <div className="ts-label">Tech Stack</div>
+        <div className="ts-label">
+          <TextReveal
+            ref={(el) => { revealRefs.current[2] = el; }}
+            lines={["Tech Stack"]}
+          />
+        </div>
       </div>
 
       {/* Legend */}
       <div className="ts-legend">
-        {categories.map((cat) => (
+        {categories.map((cat, i) => (
           <span
             key={cat}
             className="ts-badge"
@@ -394,14 +421,17 @@ export default function TechStack() {
               color: categoryBadge[cat].color,
             }}
           >
-            {cat}
+            <TextReveal
+              ref={(el) => { revealRefs.current[i + 3 + techItems.length] = el; }}
+              lines={[cat]}
+            />
           </span>
         ))}
       </div>
 
       {/* Grid */}
       <div className="ts-grid">
-        {techItems.map((item) => {
+        {techItems.map((item, i) => {
           const Icon = Icons[item.name];
           return (
             <div key={item.name} className="ts-item" data-cat={item.category}>
@@ -430,7 +460,12 @@ export default function TechStack() {
                   </svg>
                 )}
               </div>
-              <span className="ts-name">{item.name}</span>
+              <div className="ts-name">
+                <TextReveal
+                  ref={(el) => { revealRefs.current[i + 3] = el; }}
+                  lines={[item.name]}
+                />
+              </div>
             </div>
           );
         })}

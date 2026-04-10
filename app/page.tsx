@@ -17,6 +17,7 @@ import ValuePropositon from "../components/ValueProposition";
 import WindLines from "../components/Windlines";
 import TechStack from "../components/TechStack";
 import Projects from "../components/Projects";
+import TextReveal, { TextRevealHandle } from "../components/TextReveal";
 import { CloudCluster } from "../components/CloudCluster";
 import { CloudClusterDoor } from "../components/CloudClusterDoor";
 import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
@@ -31,6 +32,7 @@ import { useHorizontalScrollParticle } from "../hooks/useHorizontalScrollParticl
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
+  const textRevealRef = useRef<TextRevealHandle>(null);
   const scrollXRef = useRef<number>(0);
   const [scrollX, setScrollX] = useState(0);
   const [windProgress, setWindProgress] = useState(0);
@@ -73,7 +75,13 @@ export default function Home() {
     scrollXRef,
     setWindProgress,
   );
-  useBallSection(ballSectionRef, ballRef, section4Ref, currentIndex);
+  useBallSection(
+    ballSectionRef,
+    ballRef,
+    section4Ref,
+    currentIndex,
+    textRevealRef,
+  );
 
   return (
     <div>
@@ -230,7 +238,7 @@ export default function Home() {
             paddingTop: "1.5rem",
           }}
         >
-          <Offerings />
+          <Offerings ref={textRevealRef} />
         </div>
       </div>
 
