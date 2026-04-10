@@ -3,6 +3,8 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Lenis from "lenis";
 
+gsap.registerPlugin(ScrollTrigger)
+
 export function useLenis(onScroll?: (scrollX: number) => void) {
   const lenisRef = useRef<Lenis | null>(null);
   const onScrollRef = useRef(onScroll); 
@@ -15,20 +17,18 @@ export function useLenis(onScroll?: (scrollX: number) => void) {
     const isMobile = window.matchMedia("(pointer: coarse)").matches;
 
     const lenis = new Lenis({
-      lerp: isMobile ? 0.12 : 0.05,
+      lerp: isMobile ? 0.07 : 0.05,
       wheelMultiplier: 0.6,
       touchMultiplier: isMobile ? 1.5 : 1,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
-      smoothWheel: !isMobile,
+      easing: (t) => 1 - Math.pow(1 - t, 5),
+      smoothWheel: true,
       eventsTarget: window,
     });
     lenisRef.current = lenis;
-
-    lenis.on("scroll", () => ScrollTrigger.update());
-
     lenis.on("scroll", (e: any) => {
-      onScrollRef.current?.(e.scroll); 
-    });
+      ScrollTrigger.update()
+      onScrollRef.current?.(e.scroll)
+    })
 
     const ticker = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(ticker);
