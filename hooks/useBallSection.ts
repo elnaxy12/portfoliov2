@@ -72,7 +72,7 @@ export function useBallSection(
       invalidateOnRefresh: true,
       snap: {
         snapTo: [0, 1],
-        duration: { min: 1.2, max: 2 },
+        duration: { min: 0.4, max: 0.9 },
         delay: 0.1,
         ease: "power2.inOut",
         directional: false,
