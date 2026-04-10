@@ -17,7 +17,7 @@ export function useLenis(onScroll?: (scrollY: number) => void) {
     const lenis = new Lenis({
       lerp: 0.05,
       wheelMultiplier: 0.7,
-      touchMultiplier: 1.8,
+      touchMultiplier: 1.2,
       smoothWheel: true,
       syncTouch: true,
       easing: (t) => 1 - Math.pow(1 - t, 3),
