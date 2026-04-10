@@ -74,7 +74,7 @@ export function useBallSection(
         snapTo: [0, 1],
         duration: { min: 1.2, max: 2 },
         delay: 0.1,
-        ease: "power2.inOut",
+        ease: "power3.inOut",
         directional: false,
       },
       onEnter: () => {
@@ -103,12 +103,7 @@ export function useBallSection(
           );
 
           // bikin lambat di awal (smooth berat)
-          const easeInOut = (t: number) =>
-            t < 0.5
-              ? 2 * t * t
-              : 1 - Math.pow(-2 * t + 2, 2) / 2;
-
-          const localP = easeInOut(rawP);
+          const localP = rawP * rawP;
 
           // ✅ Aktifkan will-change hanya saat animasi berlangsung
           if (localP > 0 && localP < 1) {
