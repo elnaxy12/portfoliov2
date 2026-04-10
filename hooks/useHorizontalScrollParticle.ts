@@ -291,6 +291,9 @@ export function useHorizontalScrollParticle(
     const track = hTrackRef.current;
     const isMobile = window.innerWidth < 768;
 
+    // ← tambah flag ini
+    let isFrozen = false;
+
     const getHorizontalWidth = () => track.scrollWidth - window.innerWidth;
 
     const ctx = gsap.context(() => {
@@ -304,23 +307,31 @@ export function useHorizontalScrollParticle(
           anticipatePin: 0,
           invalidateOnRefresh: true,
           onEnter: () => {
+            isFrozen = false; // ← unfreeze saat masuk
             currentIndex.current = 2;
             planeUpdateRef.current?.(0);
           },
           onLeave: () => {
             currentIndex.current = 3;
             gsap.set(track, { x: -getHorizontalWidth() });
+            if (isMobile) {
+              scrollXRef.current = getHorizontalWidth();
+              isFrozen = true; // ← freeze di posisi akhir
+            }
           },
           onEnterBack: () => {
+            isFrozen = false; // ← unfreeze saat balik masuk
             currentIndex.current = 2;
           },
           onLeaveBack: () => {
             currentIndex.current = 1;
-            scrollXRef.current = 0;
+            if (!isMobile) {
+              scrollXRef.current = 0;
+            }
+            // mobile: biarkan nilai terakhir, tidak di-reset
           },
           onUpdate: (self) => {
             const horizontalWidth = getHorizontalWidth();
-
             const horizontalProgress = Math.min(self.progress, 1);
 
             if (horizontalWidth > 0) {
@@ -333,7 +344,12 @@ export function useHorizontalScrollParticle(
             if (hScrollRef.current) {
               hScrollRef.current.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
             }
-            scrollXRef.current = horizontalProgress * horizontalWidth;
+
+            // ← hanya update scrollX jika tidak frozen
+            if (!isFrozen) {
+              scrollXRef.current = horizontalProgress * horizontalWidth;
+            }
+
             planeUpdateRef.current?.(horizontalProgress);
             setWindProgress(horizontalProgress);
           },
@@ -342,5 +358,4 @@ export function useHorizontalScrollParticle(
     }, hScrollRef);
 
     return () => ctx.revert();
-  }, [hScrollRef, hTrackRef, planeUpdateRef, currentIndex, scrollXRef]);
-}
+  }, [hScrollRef, hTrackRef, planeUpdateRef, currentIndex, scrollXRef]);}
