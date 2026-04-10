@@ -14,21 +14,13 @@ export function useLenis(onScroll?: (scrollY: number) => void) {
   }, [onScroll]);
 
   useEffect(() => {
-    // Inisialisasi Lenis (Sekarang aktif di semua device)
     const lenis = new Lenis({
-      duration: 1.2,           // Durasi scroll (semakin besar semakin lambat/berat)
-      lerp: 0.05,              // Efek licin (0.1 tipis, 0.01 sangat berat)
-      wheelMultiplier: 0.6,    // Kecepatan scroll mouse
-      
-      // --- PENGATURAN MOBILE ---
-      touchMultiplier: 1.5,    // Atur berat scroll di HP (default: 2). 
-                               // Kecilkan angka ini (misal 1.0 atau 0.8) jika ingin scroll terasa lebih berat.
-      
+      lerp: 0.05,
+      wheelMultiplier: 0.7,
+      touchMultiplier: 1.8,
       smoothWheel: true,
-      syncTouch: true,         // Menyelaraskan scroll sentuh dengan animasi Lenis
-      orientation: "vertical",
-      gestureOrientation: "vertical",
-      prevent: (node) => node.closest("[data-lenis-prevent]") !== null,
+      syncTouch: true,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
     });
 
     lenisRef.current = lenis;

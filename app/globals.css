@@ -30,6 +30,10 @@ body {
   font-family: var(--font-poppins), sans-serif;
 }
 
+html, body {
+  overscroll-behavior: none;
+}
+
 .wave-sticky {
   position: sticky;
   bottom: 0;
