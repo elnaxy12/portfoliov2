@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-
+import { SmoothScroll } from "../components/SmoothScroll";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import UpperSvg from "../components/svg/UpperSvg";

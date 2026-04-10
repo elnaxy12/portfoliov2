@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Lenis from "lenis";
@@ -11,6 +11,7 @@ export function useSectionAnimations(
 ) {
   useEffect(() => {
     const sections = gsap.utils.toArray<HTMLElement>(".section-panel");
+    const touchStartY = { current: 0 };
 
     const scrollToSection = (index: number) => {
       if (isAnimating.current || !lenisRef.current) return;
@@ -32,7 +33,19 @@ export function useSectionAnimations(
       if (e.deltaY > 50) scrollToSection(1);
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (currentIndex.current !== 0) return;
+      const diff = touchStartY.current - e.changedTouches[0].clientY;
+      if (diff > 50) scrollToSection(1);
+    };
+
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     sections.forEach((el) => {
       const title = el.querySelector(".sesi-title");
@@ -57,6 +70,8 @@ export function useSectionAnimations(
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [lenisRef, currentIndex, isAnimating]);
 }
