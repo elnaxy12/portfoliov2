@@ -2,20 +2,15 @@ import { useEffect, RefObject } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
-
 gsap.registerPlugin(ScrollTrigger);
 
 interface UseSectionRevealOptions {
-  /** CSS selector untuk card/item yang di-animate. Default: ".reveal-card" */
   selector?: string;
-  /** Delay stagger antar item dalam detik. Default: 0.08 */
   stagger?: number;
-  /** Durasi animasi tiap item dalam detik. Default: 0.55 */
   duration?: number;
-  /** Jarak translateY awal dalam px. Default: 24 */
   yOffset?: number;
-  /** ScrollTrigger start position. Default: "top 85%" */
   start?: string;
+  end?: string;
 }
 
 export function useSectionReveal(
@@ -28,6 +23,7 @@ export function useSectionReveal(
     duration = 0.55,
     yOffset = 24,
     start = "top 85%",
+    end = "top 10%",
   } = options;
 
   useEffect(() => {
@@ -36,7 +32,6 @@ export function useSectionReveal(
     const cards = sectionRef.current.querySelectorAll<HTMLElement>(selector);
     if (!cards.length) return;
 
-    // Set initial state
     gsap.set(cards, {
       opacity: 0,
       y: yOffset,
@@ -46,7 +41,7 @@ export function useSectionReveal(
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start,
-      once: true,
+      end,                        // ← threshold untuk onLeaveBack
       onEnter: () => {
         gsap.to(cards, {
           opacity: 1,
@@ -57,11 +52,18 @@ export function useSectionReveal(
           ease: "power3.out",
         });
       },
+      onLeaveBack: () => {        // ← scroll balik ke atas, reset
+        gsap.set(cards, {
+          opacity: 0,
+          y: yOffset,
+          clipPath: "inset(100% 0% 0% 0%)",
+        });
+      },
     });
 
     return () => {
       trigger.kill();
       gsap.set(cards, { clearProps: "all" });
     };
-  }, [sectionRef, selector, stagger, duration, yOffset, start]);
+  }, [sectionRef, selector, stagger, duration, yOffset, start, end]);
 }

@@ -233,17 +233,16 @@ export default function TechStack() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // trigger semua TextReveal
             revealRefs.current.forEach((ref) => ref?.play());
-            observer.disconnect();
+          } else {
+            revealRefs.current.forEach((ref) => ref?.reset()); // ← reset TextReveal
           }
         });
       },
       { threshold: 0.1 }
     );
-  
+
     if (sectionRef.current) observer.observe(sectionRef.current);
-  
     return () => observer.disconnect();
   }, []);
 
