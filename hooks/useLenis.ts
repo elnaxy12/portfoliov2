@@ -1,40 +1,54 @@
 import { useEffect, useRef } from "react";
-import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import Lenis from "lenis";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function useLenis(onScroll?: (scrollY: number) => void) {
   const lenisRef = useRef<Lenis | null>(null);
+  const onScrollRef = useRef(onScroll);
 
   useEffect(() => {
-  const isMobile = window.matchMedia("(pointer: coarse)").matches;
+    onScrollRef.current = onScroll;
+  }, [onScroll]);
 
-  const lenis = new Lenis({
-    lerp: isMobile ? 0.14 : 0.08,
-    touchMultiplier: isMobile ? 0.8 : 1,
-    syncTouch: isMobile,
-  });
+  useEffect(() => {
+    // Inisialisasi Lenis (Sekarang aktif di semua device)
+    const lenis = new Lenis({
+      duration: 1.2,           // Durasi scroll (semakin besar semakin lambat/berat)
+      lerp: 0.05,              // Efek licin (0.1 tipis, 0.01 sangat berat)
+      wheelMultiplier: 0.6,    // Kecepatan scroll mouse
+      
+      // --- PENGATURAN MOBILE ---
+      touchMultiplier: 1.5,    // Atur berat scroll di HP (default: 2). 
+                               // Kecilkan angka ini (misal 1.0 atau 0.8) jika ingin scroll terasa lebih berat.
+      
+      smoothWheel: true,
+      syncTouch: true,         // Menyelaraskan scroll sentuh dengan animasi Lenis
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      prevent: (node) => node.closest("[data-lenis-prevent]") !== null,
+    });
 
     lenisRef.current = lenis;
 
-    // sync ke ScrollTrigger
     lenis.on("scroll", (e: any) => {
       ScrollTrigger.update();
-      onScroll?.(e.scroll);
+      onScrollRef.current?.(e.scroll);
     });
 
-    // RAF loop (recommended)
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
+    function updateLenis(time: number) {
+      lenis.raf(time * 1000);
     }
 
-    requestAnimationFrame(raf);
+    gsap.ticker.add(updateLenis);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
+      gsap.ticker.remove(updateLenis);
       lenis.destroy();
+      lenisRef.current = null;
     };
   }, []);
 
