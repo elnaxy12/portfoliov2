@@ -200,32 +200,23 @@ export default function Home() {
         <ShapeCluster />
         <CodeBox top="5rem" />
         <ValuePropositon text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters." />
+      </div>
 
-        {/* Di dalam ballSectionRef */}
-        <div
-          data-counter-scale
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 60,
-          }}
-        >
-          <div
-            ref={section4Ref}
-            style={{
-              width: "100%",
-              opacity: 0,
-              pointerEvents: "none",
-              zIndex: 55,
-              position: "relative",
-            }}
-          >
-            <Offerings ref={textRevealRef} />
-          </div>
-        </div>
+      <div
+        ref={section4Ref}
+        className="bg-white w-full flex items-center justify-center"
+        style={{
+          opacity: 0,
+          transform: "translateY(40px) scale(0.95)",
+          pointerEvents: "none",
+        }}
+      ></div>
+
+      <div
+        className="bg-white w-full flex items-center justify-center"
+        style={{ padding: "0 2rem" }}
+      >
+        <Offerings ref={textRevealRef} />
       </div>
 
       <div
