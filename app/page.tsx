@@ -9,7 +9,7 @@ import LowerSvg from "../components/svg/LowerSvg";
 import ParallaxHero from "../components/ParallaxHero";
 import PaperPlaneScene from "../components/Paperplanescene";
 import HorizontalScroll from "../components/Horizontalscroll";
-import Offerings from "../components/Offerings";
+import Offerings, { OfferingsHandle } from "../components/Offerings";
 import CodeBox from "../components/CodeBox";
 import ShapeCluster from "../components/ShapeCluster";
 import ValuePropositon from "../components/ValueProposition";
@@ -20,7 +20,6 @@ import TextReveal, { TextRevealHandle } from "../components/TextReveal";
 import { CloudCluster } from "../components/CloudCluster";
 import { CloudClusterDoor } from "../components/CloudClusterDoor";
 import { ScrollTextOverlay } from "../components/ScrollTextOverlay";
-
 import { useBallAnimation } from "../hooks/useBallAnimation";
 import { useLenis } from "../hooks/useLenis";
 import { useSectionAnimations } from "../hooks/useSectionAnimations";
@@ -31,7 +30,7 @@ import { useHorizontalScrollParticle } from "../hooks/useHorizontalScrollParticl
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
-  const textRevealRef = useRef<TextRevealHandle>(null);
+  const textRevealRef = useRef<OfferingsHandle | null>(null);
   const scrollXRef = useRef<number>(0);
   const [scrollX, setScrollX] = useState(0);
   const [windProgress, setWindProgress] = useState(0);
@@ -198,46 +197,34 @@ export default function Home() {
         }}
       >
         <CloudClusterDoor />
-        {[1, 2, 3, 4].map((n) => (
-          <div
-            key={n}
-            data-ball={String(n)}
-            ref={n === 1 ? ballRef : undefined}
-            style={{
-              position: "absolute",
-              left: "50%",
-              bottom: "33%",
-              width: "20px",
-              height: "20px",
-              opacity: 0,
-              borderRadius: "50%",
-              background: "#ffffff",
-              transform: "translate(-50%, -50%) scale(0)",
-              transformOrigin: "center",
-              zIndex: n,
-              pointerEvents: "none",
-            }}
-          />
-        ))}
-
         <ShapeCluster />
         <CodeBox top="5rem" />
         <ValuePropositon text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters." />
 
-        {/* 🔹 Section4 */}
+        {/* Di dalam ballSectionRef */}
         <div
-          ref={section4Ref}
+          data-counter-scale
           style={{
-            position: "relative",
-            zIndex: 4,
-            opacity: 0,
-            width: "100%",
-            padding: "0 2rem",
-            alignSelf: "flex-center",
-            paddingTop: "1.5rem",
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 60,
           }}
         >
-          <Offerings ref={textRevealRef} />
+          <div
+            ref={section4Ref}
+            style={{
+              width: "100%",
+              opacity: 0,
+              pointerEvents: "none",
+              zIndex: 55,
+              position: "relative",
+            }}
+          >
+            <Offerings ref={textRevealRef} />
+          </div>
         </div>
       </div>
 

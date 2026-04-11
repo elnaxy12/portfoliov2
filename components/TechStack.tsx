@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { useSectionReveal } from "../hooks/useSectionReveal";
-import TextReveal, {TextRevealHandle} from "./TextReveal";
+import TextReveal, { TextRevealHandle } from "./TextReveal";
 
 // ── SVG Icons (Simple Icons + custom) ─────────────────────────────────────
 
@@ -239,7 +239,7 @@ export default function TechStack() {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (sectionRef.current) observer.observe(sectionRef.current);
@@ -248,6 +248,7 @@ export default function TechStack() {
 
   return (
     <section
+      className="bg-white"
       ref={sectionRef}
       style={{
         maxWidth: 1280,
@@ -390,20 +391,26 @@ export default function TechStack() {
         <h2>
           {/* line 1 - warna normal */}
           <TextReveal
-            ref={(el) => { revealRefs.current[0] = el; }}
+            ref={(el) => {
+              revealRefs.current[0] = el;
+            }}
             lines={["Technology"]}
           />
           {/* line 2 - warna muted */}
           <span style={{ fontStyle: "italic", color: "rgba(0,0,0,0.45)" }}>
             <TextReveal
-              ref={(el) => { revealRefs.current[1] = el; }}
+              ref={(el) => {
+                revealRefs.current[1] = el;
+              }}
               lines={["Stack & Tools"]}
             />
           </span>
         </h2>
         <div className="ts-label">
           <TextReveal
-            ref={(el) => { revealRefs.current[2] = el; }}
+            ref={(el) => {
+              revealRefs.current[2] = el;
+            }}
             lines={["Tech Stack"]}
           />
         </div>
@@ -421,7 +428,9 @@ export default function TechStack() {
             }}
           >
             <TextReveal
-              ref={(el) => { revealRefs.current[i + 3 + techItems.length] = el; }}
+              ref={(el) => {
+                revealRefs.current[i + 3 + techItems.length] = el;
+              }}
               lines={[cat]}
             />
           </span>
@@ -461,7 +470,9 @@ export default function TechStack() {
               </div>
               <div className="ts-name">
                 <TextReveal
-                  ref={(el) => { revealRefs.current[i + 3] = el; }}
+                  ref={(el) => {
+                    revealRefs.current[i + 3] = el;
+                  }}
                   lines={[item.name]}
                 />
               </div>

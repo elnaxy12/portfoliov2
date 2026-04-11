@@ -1,6 +1,5 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import TextReveal, { TextRevealHandle } from "./TextReveal";
-import { useSectionReveal } from "../hooks/useSectionReveal";
 
 const offerings = [
   {
@@ -39,25 +38,8 @@ const Offerings = forwardRef<OfferingsHandle>((_, ref) => {
   const revealRefs = useRef<(TextRevealHandle | null)[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
 
-  useSectionReveal(sectionRef, { selector: ".off-item", start: "top 85%" });
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            revealRefs.current.forEach((r) => r?.play());
-          } else {
-            revealRefs.current.forEach((r) => r?.reset());
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
+  // ← useSectionReveal dihapus, dihandle parent
+  // ← IntersectionObserver dihapus, dihandle parent via ref
 
   useImperativeHandle(ref, () => ({
     play() {
@@ -71,7 +53,7 @@ const Offerings = forwardRef<OfferingsHandle>((_, ref) => {
   return (
     <section
       ref={sectionRef}
-      className="w-full min-h-screen p-6 flex flex-col justify-center text-black"
+      className="w-full min-h-screen p-6 flex flex-col justify-center text-black z-100"
     >
       <style>{`
         .font-monospace { font-family: monospace; }
@@ -81,13 +63,17 @@ const Offerings = forwardRef<OfferingsHandle>((_, ref) => {
       <div className="mb-10 flex flex-col justify-start items-start">
         <div className="off-item text-[22px] md:text-[32px] font-medium leading-[1.1]">
           <TextReveal
-            ref={(el) => { revealRefs.current[0] = el; }}
+            ref={(el) => {
+              revealRefs.current[0] = el;
+            }}
             lines={["Gilang Arya Leksana"]}
           />
         </div>
         <div className="off-item text-[rgba(0,0,0,0.45)] text-[22px] md:text-[32px] font-medium leading-[1.1] italic">
           <TextReveal
-            ref={(el) => { revealRefs.current[1] = el; }}
+            ref={(el) => {
+              revealRefs.current[1] = el;
+            }}
             lines={["Full-Stack Developer"]}
           />
         </div>
@@ -111,19 +97,25 @@ const Offerings = forwardRef<OfferingsHandle>((_, ref) => {
             >
               <div className="text-[rgba(0,0,0,0.45)]">
                 <TextReveal
-                  ref={(el) => { revealRefs.current[i * 3 + 2] = el; }}
+                  ref={(el) => {
+                    revealRefs.current[i * 3 + 2] = el;
+                  }}
                   lines={[item.num]}
                 />
               </div>
               <div>
                 <TextReveal
-                  ref={(el) => { revealRefs.current[i * 3 + 3] = el; }}
+                  ref={(el) => {
+                    revealRefs.current[i * 3 + 3] = el;
+                  }}
                   lines={[item.title]}
                 />
               </div>
               <div className="text-[rgba(0,0,0,0.45)]">
                 <TextReveal
-                  ref={(el) => { revealRefs.current[i * 3 + 4] = el; }}
+                  ref={(el) => {
+                    revealRefs.current[i * 3 + 4] = el;
+                  }}
                   lines={[item.text]}
                 />
               </div>

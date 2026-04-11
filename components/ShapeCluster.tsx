@@ -8,6 +8,7 @@ interface ShapeProps {
   top?: number;
   left?: number;
   className?: string;
+  "data-doorknob"?: boolean;
 }
 
 const Shape: React.FC<ShapeProps> = ({
@@ -17,6 +18,7 @@ const Shape: React.FC<ShapeProps> = ({
   shape = "diamond",
   top = 0,
   left = 0,
+  ...rest
 }) => {
   let borderRadiusStyle = "0";
   let transformStyle = "";
@@ -35,6 +37,7 @@ const Shape: React.FC<ShapeProps> = ({
 
   return (
     <div
+      {...rest}
       className="relative"
       style={{
         width: size,
@@ -70,6 +73,7 @@ const ShapeCluster: React.FC = () => {
         left={150}
         colorStart="#ffffff"
         colorEnd="#ffffff"
+        data-doorknob
       />
     </div>
   );
