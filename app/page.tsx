@@ -9,6 +9,7 @@ import LowerSvg from "../components/svg/LowerSvg";
 import ParallaxHero from "../components/ParallaxHero";
 import PaperPlaneScene from "../components/Paperplanescene";
 import HorizontalScroll from "../components/Horizontalscroll";
+import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
 import Offerings, { OfferingsHandle } from "../components/Offerings";
 import CodeBox from "../components/CodeBox";
 import ShapeCluster from "../components/ShapeCluster";
@@ -27,7 +28,7 @@ import { useSection1 } from "../hooks/useSection1";
 import { useBallSection } from "../hooks/useBallSection";
 import { useHorizontalScrollParticle } from "../hooks/useHorizontalScrollParticle";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 export default function Home() {
   const textRevealRef = useRef<OfferingsHandle | null>(null);
@@ -38,6 +39,7 @@ export default function Home() {
   const currentIndex = useRef(0);
   const section1Ref = useRef<HTMLDivElement>(null);
   const ballSectionRef = useRef<HTMLDivElement>(null);
+  const offeringsRef = useRef<HTMLDivElement>(null);
   const offeringTriggerRef = useRef<HTMLDivElement>(null);
   const section4Ref = useRef<HTMLDivElement>(null);
   const offeringsPlaceholderRef = useRef<HTMLDivElement>(null);
@@ -75,17 +77,10 @@ export default function Home() {
     scrollXRef,
     setWindProgress,
   );
-  useBallSection(
-    ballSectionRef,
-    ballRef,
-    section4Ref,
-    currentIndex,
-    textRevealRef,
-  );
-
+  useBallSection(ballSectionRef, ballRef, offeringsRef, lenisRef, currentIndex);
   return (
     <div>
-      {/* <div className="section-panel h-screen bg-black relative">
+      <div className="section-panel h-screen bg-black relative">
         <ParallaxHero />
         <Sidebar />
         <Navbar />
@@ -181,14 +176,13 @@ export default function Home() {
             }}
           />
         </HorizontalScroll>
-      </div> */}
+      </div>
 
       <div
         ref={ballSectionRef}
         className="section-panel h-screen flex items-start md:items-center justify-center"
         style={{
           position: "relative",
-          overflow: "clip",
           background:
             "radial-gradient(circle at bottom center, rgba(255, 255, 255, 255) 0%, rgba(189, 166, 206, 1) 25%)",
         }}
@@ -197,35 +191,26 @@ export default function Home() {
         <ShapeCluster />
         <CodeBox top="5rem" />
         <ValuePropositon text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters." />
+      </div>
 
-        {/* Offerings sebagai layer di atas */}
-        <div
-          ref={section4Ref}
-          className="bg-white w-full h-full flex items-center justify-center"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            zIndex: 10,
-            opacity: 0,
-            transform: "translateY(40px) scale(0.95)",
-            pointerEvents: "none",
-          }}
-        >
-          <Offerings ref={textRevealRef} />
-        </div>
+      <div
+        ref={offeringsRef}
+        className="bg-white w-full min-h-screen flex items-center justify-center"
+        style={{ position: "relative", zIndex: 20 }}
+      >
+        <Offerings ref={textRevealRef} />
       </div>
 
       <div
         className="bg-white w-full flex items-center justify-center"
-        style={{ padding: "0 2rem" }}
+        style={{ padding: "0 2rem", position: "relative", zIndex: 20 }}
       >
         <TechStack />
       </div>
 
       <div
         className="bg-white w-full flex items-center justify-center"
-        style={{ padding: "0 2rem" }}
+        style={{ padding: "0 2rem", position: "relative", zIndex: 20 }}
       >
         <Projects />
       </div>
