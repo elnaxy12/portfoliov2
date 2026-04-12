@@ -38,7 +38,9 @@ export default function Home() {
   const currentIndex = useRef(0);
   const section1Ref = useRef<HTMLDivElement>(null);
   const ballSectionRef = useRef<HTMLDivElement>(null);
+  const offeringTriggerRef = useRef<HTMLDivElement>(null);
   const section4Ref = useRef<HTMLDivElement>(null);
+  const offeringsPlaceholderRef = useRef<HTMLDivElement>(null);
   const waveRef = useRef<HTMLDivElement>(null);
   const hScrollRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -83,15 +85,13 @@ export default function Home() {
 
   return (
     <div>
-      {/* Section 0: Hero */}
-      <div className="section-panel h-screen bg-black relative">
+      {/* <div className="section-panel h-screen bg-black relative">
         <ParallaxHero />
         <Sidebar />
         <Navbar />
         <UpperSvg ref={waveRef} />
       </div>
 
-      {/* Section 1: scroll → hitam ke putih */}
       <div
         ref={section1Ref}
         className="section-panel h-screen flex items-center justify-center"
@@ -114,12 +114,10 @@ export default function Home() {
         </h1>
       </div>
 
-      {/* Section 2: Horizontal scroll + paper plane */}
       <div className="section-panel relative bg-[#9B8EC7]">
         <LowerSvg />
-      </div>
+      </div> 
 
-      {/* Section HorizontallScroll */}
       <div
         ref={hScrollRef}
         className="section-panel bg-[#9B8EC7]"
@@ -183,9 +181,8 @@ export default function Home() {
             }}
           />
         </HorizontalScroll>
-      </div>
+      </div> */}
 
-      {/* Section 3+4: Ball membesar → Section4 muncul */}
       <div
         ref={ballSectionRef}
         className="section-panel h-screen flex items-start md:items-center justify-center"
@@ -200,23 +197,23 @@ export default function Home() {
         <ShapeCluster />
         <CodeBox top="5rem" />
         <ValuePropositon text="Crafted interfaces, seamless interactions, optimized performance, and thoughtfully engineered experiences. I handle the complexity behind the scenes so you can focus on what truly matters." />
-      </div>
 
-      <div
-        ref={section4Ref}
-        className="bg-white w-full flex items-center justify-center"
-        style={{
-          opacity: 0,
-          transform: "translateY(40px) scale(0.95)",
-          pointerEvents: "none",
-        }}
-      ></div>
-
-      <div
-        className="bg-white w-full flex items-center justify-center"
-        style={{ padding: "0 2rem" }}
-      >
-        <Offerings ref={textRevealRef} />
+        {/* Offerings sebagai layer di atas */}
+        <div
+          ref={section4Ref}
+          className="bg-white w-full h-full flex items-center justify-center"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 10,
+            opacity: 0,
+            transform: "translateY(40px) scale(0.95)",
+            pointerEvents: "none",
+          }}
+        >
+          <Offerings ref={textRevealRef} />
+        </div>
       </div>
 
       <div
@@ -226,7 +223,6 @@ export default function Home() {
         <TechStack />
       </div>
 
-      {/* Projects — section normal */}
       <div
         className="bg-white w-full flex items-center justify-center"
         style={{ padding: "0 2rem" }}

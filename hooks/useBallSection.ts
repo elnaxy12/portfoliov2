@@ -36,9 +36,9 @@ export function useBallSection(
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top top",
-      end: "+=1400",
+      end: "+=1600",
       pin: true,
-      pinSpacing: false,
+      pinSpacing: true,
       scrub: 1,
 
       onEnter: () => {
@@ -55,12 +55,28 @@ export function useBallSection(
 
       onUpdate: (self) => {
         const p = self.progress;
-
         const doorKnob = section.querySelector<HTMLElement>("[data-doorknob]");
 
-        // ───── ZOOM ─────
+        // ───── ZOOM IN (0 - 0.5) ─────
+        const zoomInEnd = 0.5;
+        // ───── ZOOM OUT + OFFERINGS (0.5 - 1) ─────
+        const zoomOutStart = 1;
+        // ───── OFFERINGS (0.4 - 0.5) ─────
+        const offerStart = 0.5;
+
         if (doorKnob) {
-          const eased = Math.min(1, p / 0.6) ** 3;
+          let scale;
+
+          if (p <= zoomInEnd) {
+            // Zoom in
+            const eased = Math.min(1, p / zoomInEnd) ** 3;
+            scale = 1 + eased * (maxScale - 1);
+          } else {
+            // Zoom out
+            const outP = (p - zoomOutStart) / (1 - zoomOutStart);
+            const eased = Math.min(1, (1 - outP) ** 2);
+            scale = 1 + eased * (maxScale - 1);
+          }
 
           const sectionRect = section.getBoundingClientRect();
           const knobRect = doorKnob.getBoundingClientRect();
@@ -76,30 +92,48 @@ export function useBallSection(
             100;
 
           section.style.transformOrigin = `${originX}% ${originY}%`;
-          section.style.transform = `scale(${1 + eased * (maxScale - 1)})`;
+          section.style.transform = `scale(${scale})`;
         }
 
-        // ───── SECTION FADE ─────
-        const fadeStart = 0.75;
-
-        section.style.opacity =
-          p > fadeStart ? String(1 - (p - fadeStart) / (1 - fadeStart)) : "1";
-
-        // ───── OFFERINGS ─────
+        // ───── OFFERINGS + LATAR PUTIH FADE IN (0.5 - 1) ─────
         if (!section4Ref.current) return;
 
-        const offerP = p < fadeStart ? 0 : (p - fadeStart) / (1 - fadeStart);
+        const offerP = p < offerStart ? 0 : (p - offerStart) / (1 - offerStart);
 
         section4Ref.current.style.opacity = String(offerP);
-
         section4Ref.current.style.transform = `
-          translateY(${40 - offerP * 40}px)
-          scale(${0.95 + offerP * 0.05})
-        `;
-
+    translateY(${40 - offerP * 40}px)
+    scale(${0.95 + offerP * 0.05})
+  `;
         section4Ref.current.style.filter = `blur(${(1 - offerP) * 8}px)`;
         section4Ref.current.style.pointerEvents =
           offerP > 0.6 ? "auto" : "none";
+
+        // ───── OFFERING CARDS STAGGER ─────
+        if (offerP > 0.9 && !hasPlayedRef.current) {
+          hasPlayedRef.current = true;
+          section4Ref.current
+            .querySelectorAll<HTMLElement>(".offering-card")
+            .forEach((card, i) => {
+              setTimeout(() => {
+                card.style.transition =
+                  "opacity 0.5s ease, transform 0.5s ease";
+                card.style.opacity = "1";
+                card.style.transform = "translateY(0)";
+              }, i * 100);
+            });
+        }
+
+        if (offerP < 0.5 && hasPlayedRef.current) {
+          hasPlayedRef.current = false;
+          section4Ref.current
+            .querySelectorAll<HTMLElement>(".offering-card")
+            .forEach((card) => {
+              card.style.transition = "";
+              card.style.opacity = "0";
+              card.style.transform = "translateY(20px)";
+            });
+        }
       },
     });
 
