@@ -85,7 +85,7 @@ export function useBallSection(
     if (offeringsRef.current) {
       offeringsST = ScrollTrigger.create({
         trigger: offeringsRef.current,
-        start: "bottom bottom",
+        start: "center bottom",
         end: "top top",
         onEnterBack: () => {
           if (!ballSectionRef.current || !lenisRef.current) return;
