@@ -27,7 +27,7 @@ export function useBallSection(
       pinSpacing: true,
       scrub: 1,
       snap: {
-        snapTo: 1, 
+        snapTo: 1,
         duration: 0.5,
         ease: "power2.inOut",
       },
@@ -54,9 +54,16 @@ export function useBallSection(
 
       onUpdate: (self) => {
         const p = self.progress;
+
         const doorKnob = section.querySelector<HTMLElement>("[data-doorknob]");
 
         if (doorKnob) {
+          // Kalau sudah di progress 1, jangan update scale lagi
+          if (p >= 0.99) {
+            section.style.transform = `scale(${maxScale})`;
+            return;
+          }
+
           const eased = Math.min(1, p) ** 2;
           const scale = 1 + eased * (maxScale - 1);
 
@@ -79,8 +86,42 @@ export function useBallSection(
       },
     });
 
+    // Snap dari offerings kembali ke ballSection saat scroll up
+    let offeringsST: ScrollTrigger | null = null;
+
+    if (offeringsRef.current) {
+      offeringsST = ScrollTrigger.create({
+        trigger: offeringsRef.current,
+        start: "top bottom",
+        end: "top top",
+        onEnterBack: () => {
+          if (!ballSectionRef.current || !lenisRef.current) return;
+
+          setTimeout(() => {
+            const ballST = ScrollTrigger.getAll().find(
+              (t) => t.trigger === ballSectionRef.current,
+            );
+
+            if (ballST) {
+              // Scroll ke end of pin zone supaya ballSection di-snap di posisi penuh
+              lenisRef.current?.scrollTo(ballST.end - 10, {
+                duration: 1.2,
+                easing: (t: number) => 1 - Math.pow(1 - t, 3),
+              });
+            } else {
+              lenisRef.current?.scrollTo(ballSectionRef.current!, {
+                duration: 1.2,
+                easing: (t: number) => 1 - Math.pow(1 - t, 3),
+              });
+            }
+          }, 100);
+        },
+      });
+    }
+
     return () => {
       st.kill();
+      offeringsST?.kill();
       ScrollTrigger.refresh();
     };
   }, [ballSectionRef, offeringsRef, lenisRef, currentIndex]);
