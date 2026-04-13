@@ -22,7 +22,7 @@ export function useBallSection(
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top top",
-      end: "+=1000",
+      end: "+=600",
       pin: true,
       pinSpacing: true,
       scrub: 1,
@@ -57,15 +57,8 @@ export function useBallSection(
 
         const doorKnob = section.querySelector<HTMLElement>("[data-doorknob]");
 
-        if (doorKnob) {
-          // Kalau sudah di progress 1, jangan update scale lagi
-          if (p >= 0.99) {
-            section.style.transform = `scale(${maxScale})`;
-            return;
-          }
-
-          const eased = Math.min(1, p) ** 2;
-          const scale = 1 + eased * (maxScale - 1);
+         if (doorKnob) {
+          const eased = Math.min(1, p / 0.8) ** 4;
 
           const sectionRect = section.getBoundingClientRect();
           const knobRect = doorKnob.getBoundingClientRect();
@@ -81,7 +74,7 @@ export function useBallSection(
             100;
 
           section.style.transformOrigin = `${originX}% ${originY}%`;
-          section.style.transform = `scale(${scale})`;
+          section.style.transform = `scale(${1 + eased * (maxScale - 1)})`;
         }
       },
     });
