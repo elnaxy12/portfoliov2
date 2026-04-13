@@ -27,7 +27,7 @@ export function useBallSection(
       pinSpacing: true,
       scrub: 1,
       snap: {
-        snapTo: 1,
+        snapTo: [0, 1],
         duration: 0.5,
         ease: "power2.inOut",
       },
@@ -85,7 +85,7 @@ export function useBallSection(
     if (offeringsRef.current) {
       offeringsST = ScrollTrigger.create({
         trigger: offeringsRef.current,
-        start: "top bottom",
+        start: "bottom bottom",
         end: "top top",
         onEnterBack: () => {
           if (!ballSectionRef.current || !lenisRef.current) return;
@@ -96,8 +96,7 @@ export function useBallSection(
             );
 
             if (ballST) {
-              // Scroll ke end of pin zone supaya ballSection di-snap di posisi penuh
-              lenisRef.current?.scrollTo(ballST.end - 10, {
+              lenisRef.current?.scrollTo(ballST.start, {
                 duration: 1.2,
                 easing: (t: number) => 1 - Math.pow(1 - t, 3),
               });
