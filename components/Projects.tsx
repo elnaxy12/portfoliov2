@@ -24,7 +24,7 @@ const projects: Project[] = [
       "Template HTML untuk penjualan sepatu — clean, responsif, dan siap pakai tanpa framework.",
     tech: ["HTML", "CSS", "JavaScript"],
     videoUrl:
-      "/previews/Dashboard   Voxy - Google Chrome 2026-05-13 19-10-24.mp4",
+      "https://res.cloudinary.com/dnjef4h1h/video/upload/v1778695051/Dashboard_Voxy_-_Google_Chrome_2026-05-13_19-10-24_br5k00.mp4",
     liveUrl:
       "https://voxy-sneaker-store-html-tailwind-te.vercel.app/pages/home.html",
     githubUrl:
@@ -44,7 +44,7 @@ const projects: Project[] = [
       "Template HTML dashboard app dengan layout data-dense yang bersih dan navigasi intuitif.",
     tech: ["HTML", "CSS", "JavaScript"],
     videoUrl:
-      "/previews/Dashboard - App Business - Google Chrome 2026-05-13 19-08-22.mp4",
+      "https://res.cloudinary.com/dnjef4h1h/video/upload/v1778694892/Dashboard_-_App_Business_-_Google_Chrome_2026-05-13_19-08-22_yjrkqb.mp4",
     liveUrl: "https://elnaxy12.github.io/dashboard-app-onlineHost/",
     githubUrl: "https://github.com/elnaxy12/dashboard-app-onlineHost",
     problem:
