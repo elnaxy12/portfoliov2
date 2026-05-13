@@ -24,7 +24,7 @@ const projects: Project[] = [
       "Template HTML untuk penjualan sepatu — clean, responsif, dan siap pakai tanpa framework.",
     tech: ["HTML", "CSS", "JavaScript"],
     videoUrl:
-      "/previews/Dashboard _ voxy - Google Chrome 2026-05-13 19-10-24.mp4",
+      "/previews/Dashboard   Voxy - Google Chrome 2026-05-13 19-10-24.mp4",
     liveUrl:
       "https://voxy-sneaker-store-html-tailwind-te.vercel.app/pages/home.html",
     githubUrl:
