@@ -7,6 +7,7 @@ interface Project {
   name: string;
   description: string;
   tech: string[];
+  videoUrl?: string;
   liveUrl: string;
   githubUrl: string;
   problem: string;
@@ -22,8 +23,12 @@ const projects: Project[] = [
     description:
       "Template HTML untuk penjualan sepatu — clean, responsif, dan siap pakai tanpa framework.",
     tech: ["HTML", "CSS", "JavaScript"],
-    liveUrl: "https://...",
-    githubUrl: "https://...",
+    videoUrl:
+      "/previews/Dashboard _ voxy - Google Chrome 2026-05-13 19-10-24.mp4",
+    liveUrl:
+      "https://voxy-sneaker-store-html-tailwind-te.vercel.app/pages/home.html",
+    githubUrl:
+      "https://github.com/elnaxy12/Voxy-Sneaker-Store-HTML-Tailwind-Template",
     problem:
       "Banyak toko sepatu kecil belum punya online presence yang proper karena keterbatasan teknis dan biaya.",
     solution:
@@ -38,8 +43,10 @@ const projects: Project[] = [
     description:
       "Template HTML dashboard app dengan layout data-dense yang bersih dan navigasi intuitif.",
     tech: ["HTML", "CSS", "JavaScript"],
-    liveUrl: "https://...",
-    githubUrl: "https://...",
+    videoUrl:
+      "/previews/Dashboard - App Business - Google Chrome 2026-05-13 19-08-22.mp4",
+    liveUrl: "https://elnaxy12.github.io/dashboard-app-onlineHost/",
+    githubUrl: "https://github.com/elnaxy12/dashboard-app-onlineHost",
     problem:
       "Banyak template dashboard yang terlalu berat atau over-engineered untuk kebutuhan sederhana.",
     solution:
@@ -458,10 +465,29 @@ export default function Projects() {
                 className="project-preview"
                 style={{ background: project.accent }}
               >
-                <div className="project-preview-icon">
-                  <PreviewIcon />
-                </div>
-                <span className="project-preview-label">No preview</span>
+                {project.videoUrl ? (
+                  <video
+                    src={project.videoUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "top",
+                      display: "block",
+                    }}
+                  />
+                ) : (
+                  <>
+                    <div className="project-preview-icon">
+                      <PreviewIcon />
+                    </div>
+                    <span className="project-preview-label">No preview</span>
+                  </>
+                )}
               </div>
 
               {/* Body */}
