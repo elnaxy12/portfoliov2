@@ -21,7 +21,7 @@ const projects: Project[] = [
     id: "01",
     name: "Voxy Sneaker Store",
     description:
-      "Template HTML untuk penjualan sepatu — clean, responsif, dan siap pakai tanpa framework.",
+      "HTML template for sneaker sales — clean, responsive, and ready to use without any framework.",
     tech: ["HTML", "CSS", "JavaScript"],
     videoUrl:
       "https://res.cloudinary.com/dnjef4h1h/video/upload/v1778695051/Dashboard_Voxy_-_Google_Chrome_2026-05-13_19-10-24_br5k00.mp4",
@@ -30,29 +30,29 @@ const projects: Project[] = [
     githubUrl:
       "https://github.com/elnaxy12/Voxy-Sneaker-Store-HTML-Tailwind-Template",
     problem:
-      "Banyak toko sepatu kecil belum punya online presence yang proper karena keterbatasan teknis dan biaya.",
+      "Many small sneaker stores still lack a proper online presence due to technical and budget limitations.",
     solution:
-      "Template siap pakai berbasis HTML/CSS/JS yang ringan, mudah dikustomisasi tanpa butuh backend.",
+      "A lightweight ready-to-use HTML/CSS/JS template that is easy to customize without requiring a backend.",
     impact:
-      "Mempercepat go-online UMKM dengan zero dependency dan setup under 5 menit.",
+      "Helps small businesses go online faster with zero dependencies and setup in under 5 minutes.",
     accent: "#E8E0D5",
   },
   {
     id: "02",
     name: "Dashboard App",
     description:
-      "Template HTML dashboard app dengan layout data-dense yang bersih dan navigasi intuitif.",
+      "HTML dashboard app template with a clean data-dense layout and intuitive navigation.",
     tech: ["HTML", "CSS", "JavaScript"],
     videoUrl:
       "https://res.cloudinary.com/dnjef4h1h/video/upload/v1778694892/Dashboard_-_App_Business_-_Google_Chrome_2026-05-13_19-08-22_yjrkqb.mp4",
     liveUrl: "https://elnaxy12.github.io/dashboard-app-onlineHost/",
     githubUrl: "https://github.com/elnaxy12/dashboard-app-onlineHost",
     problem:
-      "Banyak template dashboard yang terlalu berat atau over-engineered untuk kebutuhan sederhana.",
+      "Many dashboard templates are too heavy or over-engineered for simple use cases.",
     solution:
-      "Dashboard template pure HTML/CSS/JS — ringan, fast load, dan bisa dipakai langsung tanpa build step.",
+      "A pure HTML/CSS/JS dashboard template — lightweight, fast-loading, and usable instantly without any build step.",
     impact:
-      "Fondasi UI yang reusable untuk berbagai project internal maupun client.",
+      "Provides a reusable UI foundation for various internal and client projects.",
     accent: "#D5DDE8",
   },
 ];
@@ -387,7 +387,10 @@ export default function Projects() {
           line-height: 1.5;
           color: rgba(0,0,0,0.6);
         }
-
+         .psi-value div {
+            display: flex;
+            align-items: flex-start !important;
+          }
         /* ── Responsive ── */
         @media (max-width: 768px) {
           .projects-header h2 { font-size: 22px; }
