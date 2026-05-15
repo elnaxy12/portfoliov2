@@ -65,3 +65,7 @@ html, body {
 .tok-property {
   color: #9cdcfe;
 }
+
+body.zoom-active {
+  overflow: hidden;
+}

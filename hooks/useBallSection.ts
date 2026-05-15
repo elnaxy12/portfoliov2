@@ -13,6 +13,7 @@ export function useBallSection(
     if (!ballSectionRef.current) return;
 
     const section = ballSectionRef.current;
+    const sidebar = document.querySelector<HTMLElement>("aside");
 
     const maxScale =
       Math.ceil(
@@ -34,10 +35,17 @@ export function useBallSection(
 
       onEnter: () => {
         currentIndex.current = 3;
+        if (sidebar) {
+          sidebar.style.opacity = "0";
+        }
+        document.body.classList.add("zoom-active");
       },
 
       onLeave: () => {
         currentIndex.current = 4;
+        if (sidebar) {
+          sidebar.style.opacity = "1";
+        }
         if (!offeringsRef.current || !lenisRef.current) return;
 
         setTimeout(() => {
@@ -48,8 +56,19 @@ export function useBallSection(
         }, 100);
       },
 
+      onLeaveBack: () => {
+        currentIndex.current = 2;
+        document.body.classList.remove("zoom-active");
+        if (sidebar) {
+          sidebar.style.opacity = "1";
+        }
+      },
+
       onEnterBack: () => {
         currentIndex.current = 3;
+        if (sidebar) {
+          sidebar.style.opacity = "0";
+        }
       },
 
       onUpdate: (self) => {
@@ -57,7 +76,7 @@ export function useBallSection(
 
         const doorKnob = section.querySelector<HTMLElement>("[data-doorknob]");
 
-         if (doorKnob) {
+        if (doorKnob) {
           const eased = Math.min(1, p / 0.8) ** 4;
 
           const sectionRect = section.getBoundingClientRect();
