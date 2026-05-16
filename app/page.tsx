@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import UpperSvg from "../components/svg/UpperSvg";
 import LowerSvg from "../components/svg/LowerSvg";
@@ -85,7 +84,6 @@ export default function Home() {
       <div className="section-panel h-screen bg-black relative">
         <ParallaxHero />
         <Sidebar />
-        <Navbar />
         <UpperSvg ref={waveRef} />
       </div>
 

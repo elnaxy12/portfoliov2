@@ -1,41 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useState, RefObject } from "react";
+import Lenis from "lenis";
 
-export default function Navbar() {
+interface NavbarProps {
+  lenisRef: RefObject<Lenis | null>;
+}
+
+export default function Navbar({ lenisRef }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const scrollTo = (e: React.MouseEvent, target: string) => {
+    e.preventDefault();
+    setIsOpen(false);
+    lenisRef.current?.scrollTo(target, { duration: 1.2 });
+  };
 
   return (
     <nav className="px-8 py-4 flex justify-end items-center absolute top-0 right-0 left-0 z-50">
       {/* Desktop */}
       <div className="hidden md:flex items-center gap-2 backdrop-blur-sm bg-black/20 border border-white/10 shadow-lg p-2 rounded-full">
         <a
-          href="/"
-          className="text-white hover:text-gray-400 text-sm px-4 py-2"
-        >
-          Home
-        </a>
-        <a
-          href="/about"
+          href="#about"
+          onClick={(e) => scrollTo(e, "#about")}
           className="text-white hover:text-gray-400 text-sm px-4 py-2"
         >
           About
         </a>
         <a
-          href="/certified"
+          href="#projects"
+          onClick={(e) => scrollTo(e, "#projects")}
+          className="text-white hover:text-gray-400 text-sm px-4 py-2"
+        >
+          Project
+        </a>
+        <a
+          href="#certified"
+          onClick={(e) => scrollTo(e, "#certified")}
           className="text-white hover:text-gray-400 text-sm px-4 py-2"
         >
           Certified
         </a>
         <a
-          href="/contact"
-          className="text-white hover:text-gray-400 text-sm bg-black border border-white/10 shadow-lg px-8 py-3 rounded-full"
+          href="#contact"
+          onClick={(e) => scrollTo(e, "#contact")}
+          className="text-white text-sm bg-black border border-white/10 shadow-lg px-8 py-3 rounded-full"
         >
           Contact
         </a>
       </div>
 
-      {/* Mobile Hamburger Button */}
+      {/* Mobile Hamburger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="md:hidden text-white backdrop-blur-sm bg-black/20 border border-white/10 p-3 rounded-full"
@@ -57,25 +72,29 @@ export default function Navbar() {
       >
         <div className="flex flex-col p-4 gap-2">
           <a
-            href="/"
-            className="text-white hover:text-gray-400 text-sm px-4 py-3 rounded-xl hover:bg-white/10 transition-colors"
-          >
-            Home
-          </a>
-          <a
-            href="/about"
+            href="#about"
+            onClick={(e) => scrollTo(e, "#about")}
             className="text-white hover:text-gray-400 text-sm px-4 py-3 rounded-xl hover:bg-white/10 transition-colors"
           >
             About
           </a>
           <a
-            href="/certified"
+            href="#projects"
+            onClick={(e) => scrollTo(e, "#projects")}
+            className="text-white hover:text-gray-400 text-sm px-4 py-3 rounded-xl hover:bg-white/10 transition-colors"
+          >
+            Project
+          </a>
+          <a
+            href="#certified"
+            onClick={(e) => scrollTo(e, "#certified")}
             className="text-white hover:text-gray-400 text-sm px-4 py-3 rounded-xl hover:bg-white/10 transition-colors"
           >
             Certified
           </a>
           <a
-            href="/contact"
+            href="#contact"
+            onClick={(e) => scrollTo(e, "#contact")}
             className="text-white text-sm px-4 py-3 rounded-xl bg-black border border-white/10 text-center mt-2"
           >
             Contact
