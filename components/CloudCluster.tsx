@@ -22,14 +22,78 @@ export function Cloud({
 }
 
 const clouds = [
-  { top: "15%", left: "-5%", width: "180px", opacity: 1, flip: false },
-  { top: "25%", right: "-3%", width: "140px", opacity: 1, flip: true },
-  { top: "8%", left: "30%", width: "160px", opacity: 1, flip: false },
-  { top: "55%", left: "10%", width: "120px", opacity: 1, flip: true },
-  { top: "40%", right: "15%", width: "200px", opacity: 1, flip: false },
-  { top: "70%", left: "50%", width: "150px", opacity: 1, flip: true },
-  { top: "60%", right: "-2%", width: "130px", opacity: 1, flip: false },
-  { top: "80%", left: "20%", width: "110px", opacity: 1, flip: false },
+  {
+    top: "15%",
+    left: "-5%",
+    width: "180px",
+    opacity: 1,
+    flip: false,
+    duration: 18,
+    delay: 0,
+  },
+  {
+    top: "25%",
+    right: "-3%",
+    width: "140px",
+    opacity: 1,
+    flip: true,
+    duration: 22,
+    delay: 3,
+  },
+  {
+    top: "8%",
+    left: "30%",
+    width: "160px",
+    opacity: 1,
+    flip: false,
+    duration: 15,
+    delay: 6,
+  },
+  {
+    top: "55%",
+    left: "10%",
+    width: "120px",
+    opacity: 1,
+    flip: true,
+    duration: 20,
+    delay: 1,
+  },
+  {
+    top: "40%",
+    right: "15%",
+    width: "200px",
+    opacity: 1,
+    flip: false,
+    duration: 25,
+    delay: 8,
+  },
+  {
+    top: "70%",
+    left: "50%",
+    width: "150px",
+    opacity: 1,
+    flip: true,
+    duration: 17,
+    delay: 4,
+  },
+  {
+    top: "60%",
+    right: "-2%",
+    width: "130px",
+    opacity: 1,
+    flip: false,
+    duration: 21,
+    delay: 2,
+  },
+  {
+    top: "80%",
+    left: "20%",
+    width: "110px",
+    opacity: 1,
+    flip: false,
+    duration: 19,
+    delay: 7,
+  },
 ];
 
 export function CloudCluster() {
@@ -46,7 +110,7 @@ export function CloudCluster() {
             width: c.width,
             opacity: c.opacity,
             pointerEvents: "none",
-            transform: c.flip ? "scaleX(-1)" : undefined,
+            animation: `${c.flip ? "cloudDriftFlip" : "cloudDrift"} ${c.duration}s ease-in-out ${c.delay}s infinite`,
           }}
         />
       ))}

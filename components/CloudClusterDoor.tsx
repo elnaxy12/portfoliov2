@@ -22,14 +22,14 @@ export function Cloud({
 }
 
 const clouds = [
-  { top: "5%", left: "-8%", width: "200px", opacity: 1, flip: false },
-  { top: "10%", right: "-5%", width: "170px", opacity: 1, flip: true },
-  { top: "30%", left: "-3%", width: "150px", opacity: 1, flip: false },
-  { top: "20%", left: "35%", width: "180px", opacity: 1, flip: true },
-  { top: "50%", right: "-8%", width: "160px", opacity: 1, flip: false },
-  { top: "45%", left: "5%", width: "130px", opacity: 1, flip: true },
-  { top: "70%", left: "40%", width: "190px", opacity: 1, flip: false },
-  { top: "75%", right: "5%", width: "140px", opacity: 1, flip: true },
+  { top: "5%",  left: "-8%",  width: "200px", opacity: 1, flip: false, duration: 20, delay: 0 },
+  { top: "10%", right: "-5%", width: "170px", opacity: 1, flip: true,  duration: 24, delay: 3 },
+  { top: "30%", left: "-3%",  width: "150px", opacity: 1, flip: false, duration: 16, delay: 7 },
+  { top: "20%", left: "35%",  width: "180px", opacity: 1, flip: true,  duration: 22, delay: 1 },
+  { top: "50%", right: "-8%", width: "160px", opacity: 1, flip: false, duration: 18, delay: 5 },
+  { top: "45%", left: "5%",   width: "130px", opacity: 1, flip: true,  duration: 26, delay: 9 },
+  { top: "70%", left: "40%",  width: "190px", opacity: 1, flip: false, duration: 21, delay: 2 },
+  { top: "75%", right: "5%",  width: "140px", opacity: 1, flip: true,  duration: 19, delay: 6 },
 ];
 
 export function CloudClusterDoor() {
@@ -46,7 +46,7 @@ export function CloudClusterDoor() {
             width: c.width,
             opacity: c.opacity,
             pointerEvents: "none",
-            transform: c.flip ? "scaleX(-1)" : undefined,
+            animation: `${c.flip ? "cloudDriftBFlip" : "cloudDriftB"} ${c.duration}s ease-in-out ${c.delay}s infinite`,
           }}
         />
       ))}
