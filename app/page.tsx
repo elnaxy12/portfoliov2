@@ -17,6 +17,7 @@ import ValuePropositon from "../components/ValueProposition";
 import WindLines from "../components/Windlines";
 import TechStack from "../components/TechStack";
 import Projects from "../components/Projects";
+import ScrollBar from "../components/ScrollBar";
 import TextReveal, { TextRevealHandle } from "../components/TextReveal";
 import { CloudCluster } from "../components/CloudCluster";
 import { CloudClusterDoor } from "../components/CloudClusterDoor";
@@ -80,6 +81,7 @@ export default function Home() {
   useBallSection(ballSectionRef, ballRef, offeringsRef, lenisRef, currentIndex);
   return (
     <div>
+      <ScrollBar lenisRef={lenisRef} />
       <div className="section-panel h-screen bg-black relative">
         <ParallaxHero />
         <Sidebar />
