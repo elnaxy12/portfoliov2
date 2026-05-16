@@ -2,8 +2,13 @@
 import { useEffect, useRef } from "react";
 import Lenis from "lenis";
 
-export default function ScrollBar({ lenisRef }: { lenisRef: React.RefObject<Lenis | null> }) {
+export default function ScrollBar({
+  lenisRef,
+}: {
+  lenisRef: React.RefObject<Lenis | null>;
+}) {
   const thumbRef = useRef<HTMLDivElement>(null);
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const check = setInterval(() => {
@@ -11,17 +16,31 @@ export default function ScrollBar({ lenisRef }: { lenisRef: React.RefObject<Leni
       if (!lenis) return;
 
       lenis.on("scroll", ({ progress }: { progress: number }) => {
-        if (thumbRef.current) {
-          const trackHeight = window.innerHeight;
-          const thumbHeight = thumbRef.current.offsetHeight;
-          thumbRef.current.style.top = `${progress * (trackHeight - thumbHeight)}px`;
-        }
+        const thumb = thumbRef.current;
+        if (!thumb) return;
+
+        // Update posisi
+        const trackHeight = window.innerHeight;
+        const thumbHeight = thumb.offsetHeight;
+        thumb.style.top = `${progress * (trackHeight - thumbHeight)}px`;
+
+        // Tampilkan
+        thumb.style.opacity = "1";
+
+        // Reset fade timer
+        if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+        fadeTimerRef.current = setTimeout(() => {
+          thumb.style.opacity = "0";
+        }, 1000); // fade setelah 1 detik tidak scroll
       });
 
       clearInterval(check);
     }, 50);
 
-    return () => clearInterval(check);
+    return () => {
+      clearInterval(check);
+      if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    };
   }, [lenisRef]);
 
   return (
@@ -44,7 +63,8 @@ export default function ScrollBar({ lenisRef }: { lenisRef: React.RefObject<Leni
           height: "6%",
           backgroundColor: "rgb(44, 44, 44)",
           borderRadius: "99px",
-          transition: "top 0.1s linear",
+          transition: "top 0.1s linear, opacity 0.4s ease",
+          opacity: 0, // mulai tersembunyi
         }}
       />
     </div>
