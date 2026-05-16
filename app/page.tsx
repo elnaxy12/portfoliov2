@@ -17,6 +17,7 @@ import WindLines from "../components/Windlines";
 import TechStack from "../components/TechStack";
 import Projects from "../components/Projects";
 import ScrollBar from "../components/ScrollBar";
+import LoadingScreen from "../components/LoadingScreen";
 import TextReveal, { TextRevealHandle } from "../components/TextReveal";
 import { CloudCluster } from "../components/CloudCluster";
 import { CloudClusterDoor } from "../components/CloudClusterDoor";
@@ -80,6 +81,7 @@ export default function Home() {
   useBallSection(ballSectionRef, ballRef, offeringsRef, lenisRef, currentIndex);
   return (
     <div>
+      <LoadingScreen />
       <ScrollBar lenisRef={lenisRef} />
       <div className="section-panel h-screen bg-black relative">
         <ParallaxHero />
@@ -111,7 +113,7 @@ export default function Home() {
 
       <div className="section-panel relative bg-[#9B8EC7]">
         <LowerSvg />
-      </div> 
+      </div>
 
       <div
         ref={hScrollRef}
