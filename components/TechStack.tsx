@@ -248,7 +248,6 @@ export default function TechStack() {
 
   return (
     <section
-      className="bg-white"
       ref={sectionRef}
       style={{
         maxWidth: 1280,

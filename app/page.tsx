@@ -18,6 +18,7 @@ import TechStack from "../components/TechStack";
 import Projects from "../components/Projects";
 import ScrollBar from "../components/ScrollBar";
 import LoadingScreen from "../components/LoadingScreen";
+import TopographicBackground from "../components/Topographicbackground";
 import TextReveal, { TextRevealHandle } from "../components/TextReveal";
 import { CloudCluster } from "../components/CloudCluster";
 import { CloudClusterDoor } from "../components/CloudClusterDoor";
@@ -196,25 +197,43 @@ export default function Home() {
       </div>
 
       <div
-        ref={offeringsRef}
-        className="bg-white w-full min-h-screen flex items-center justify-center"
-        style={{ position: "relative", zIndex: 20 }}
+        style={{
+          position: "relative",
+          backgroundImage: "none",
+          backgroundColor: "#FFFFFF",
+        }}
       >
-        <Offerings ref={textRevealRef} />
-      </div>
+        <div
+          ref={offeringsRef}
+          className="w-full min-h-screen flex items-center justify-center"
+          style={{ position: "relative", zIndex: 20 }}
+        >
+          <Offerings ref={textRevealRef} />
+        </div>
 
-      <div
-        className="bg-white w-full flex items-center justify-center"
-        style={{ padding: "0 2rem", position: "relative", zIndex: 20 }}
-      >
-        <TechStack />
-      </div>
-
-      <div
-        className="bg-white w-full flex items-center justify-center"
-        style={{ padding: "0 2rem", position: "relative", zIndex: 20 }}
-      >
-        <Projects />
+        <TopographicBackground
+          bgColor="transparent"
+          lineColor="rgba(0,0,0,0.12)"
+          style={{
+            position: "absolute",
+            inset: 0,
+            height: "100%",
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          className="w-full flex items-center justify-center" // hapus bg-white disini
+          style={{ padding: "0 2rem", position: "relative", zIndex: 1 }}
+        >
+          <TechStack />
+        </div>
+        <div
+          className="w-full flex items-center justify-center"
+          style={{ padding: "0 2rem", position: "relative", zIndex: 20 }}
+        >
+          <Projects />
+        </div>
       </div>
     </div>
   );
