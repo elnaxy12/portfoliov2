@@ -2,7 +2,12 @@ import { useEffect, useRef, CSSProperties, ReactNode } from "react";
 
 type Point = [number, number];
 type Segment = [Point, Point];
-type SegFn = (top: Point, bottom: Point, left: Point, right: Point) => Segment[];
+type SegFn = (
+  top: Point,
+  bottom: Point,
+  left: Point,
+  right: Point,
+) => Segment[];
 
 interface DrawOptions {
   step: number;
@@ -16,9 +21,13 @@ export interface TopographicBackgroundProps {
   bgColor?: string;
   lineColor?: string;
   lineWidth?: number;
+  /** Jarak antar grid — makin besar makin jarang garisnya & makin ringan. Default 18 */
   step?: number;
+  /** Jumlah kontur — makin kecil makin ringan. Default 6 */
   levels?: number;
   speed?: number;
+  /** Target FPS — turunkan untuk lebih ringan. Default 30 */
+  fps?: number;
   style?: CSSProperties;
   children?: ReactNode;
 }
@@ -31,26 +40,38 @@ function noise(x: number, y: number, t: number): number {
   return (s1 + s2 + s3 + s4) / 4;
 }
 
-function lerp(a: number, b: number, va: number, vb: number, threshold: number): number {
+function lerp(
+  a: number,
+  b: number,
+  va: number,
+  vb: number,
+  threshold: number,
+): number {
   if (Math.abs(vb - va) < 0.0001) return a;
-  return a + (b - a) * (threshold - va) / (vb - va);
+  return a + ((b - a) * (threshold - va)) / (vb - va);
 }
 
 const SEG_MAP: Partial<Record<number, SegFn>> = {
-  1:  (t, b, l, r) => [[l, b]],
-  2:  (t, b, l, r) => [[b, r]],
-  3:  (t, b, l, r) => [[l, r]],
-  4:  (t, b, l, r) => [[t, r]],
-  5:  (t, b, l, r) => [[l, t], [r, b]],
-  6:  (t, b, l, r) => [[t, b]],
-  7:  (t, b, l, r) => [[l, t]],
-  8:  (t, b, l, r) => [[l, t]],
-  9:  (t, b, l, r) => [[t, b]],
-  10: (t, b, l, r) => [[l, b], [t, r]],
-  11: (t, b, l, r) => [[t, r]],
+  1: (t, b, l) => [[l, b]],
+  2: (t, b, _l, r) => [[b, r]],
+  3: (t, b, l, r) => [[l, r]],
+  4: (t, b, _l, r) => [[t, r]],
+  5: (t, b, l, r) => [
+    [l, t],
+    [r, b],
+  ],
+  6: (t, b) => [[t, b]],
+  7: (t, b, l) => [[l, t]],
+  8: (t, b, l) => [[l, t]],
+  9: (t, b) => [[t, b]],
+  10: (t, b, l, r) => [
+    [l, b],
+    [t, r],
+  ],
+  11: (t, b, _l, r) => [[t, r]],
   12: (t, b, l, r) => [[l, r]],
-  13: (t, b, l, r) => [[b, r]],
-  14: (t, b, l, r) => [[l, b]],
+  13: (t, b, _l, r) => [[b, r]],
+  14: (t, b, l) => [[l, b]],
 };
 
 function drawFrame(
@@ -58,14 +79,14 @@ function drawFrame(
   w: number,
   h: number,
   t: number,
-  options: DrawOptions
+  options: DrawOptions,
 ): void {
   const { step, levels, bgColor, lineColor, lineWidth } = options;
   const cols = Math.ceil(w / step) + 1;
   const rows = Math.ceil(h / step) + 1;
 
   const grid: number[][] = Array.from({ length: rows }, (_, j) =>
-    Array.from({ length: cols }, (_, i) => noise(i * step, j * step, t))
+    Array.from({ length: cols }, (_, i) => noise(i * step, j * step, t)),
   );
 
   ctx.clearRect(0, 0, w, h);
@@ -101,10 +122,13 @@ function drawFrame(
         const segFn = SEG_MAP[idx];
         if (!segFn) continue;
 
-        const top:    Point = [lerp(x, x + step, v00, v10, threshold), y];
-        const bottom: Point = [lerp(x, x + step, v01, v11, threshold), y + step];
-        const left:   Point = [x, lerp(y, y + step, v00, v01, threshold)];
-        const right:  Point = [x + step, lerp(y, y + step, v10, v11, threshold)];
+        const top: Point = [lerp(x, x + step, v00, v10, threshold), y];
+        const bottom: Point = [
+          lerp(x, x + step, v01, v11, threshold),
+          y + step,
+        ];
+        const left: Point = [x, lerp(y, y + step, v00, v01, threshold)];
+        const right: Point = [x + step, lerp(y, y + step, v10, v11, threshold)];
 
         const segs = segFn(top, bottom, left, right);
         for (const [p1, p2] of segs) {
@@ -121,15 +145,17 @@ export default function TopographicBackground({
   bgColor = "#F5F2EC",
   lineColor = "rgba(60,50,35,0.18)",
   lineWidth = 1.1,
-  step = 8,
-  levels = 10,
-  speed = 0.008,
+  step = 18, // default lebih besar = garis lebih jarang = lebih ringan
+  levels = 6, // default lebih sedikit kontur
+  speed = 0.006,
+  fps = 30, // throttle ke 30fps by default
   style = {},
   children,
 }: TopographicBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
   const tRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -147,20 +173,49 @@ export default function TopographicBackground({
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
-    const options: DrawOptions = { step, levels, bgColor, lineColor, lineWidth };
+    const options: DrawOptions = {
+      step,
+      levels,
+      bgColor,
+      lineColor,
+      lineWidth,
+    };
+    const interval = 1000 / fps;
+    let active = false;
 
-    const loop = () => {
-      tRef.current += speed;
-      drawFrame(ctx, canvas.width, canvas.height, tRef.current, options);
+    const loop = (time: number) => {
+      if (!active) return;
+
+      // Throttle FPS
+      if (time - lastTimeRef.current >= interval) {
+        lastTimeRef.current = time;
+        tRef.current += speed;
+        drawFrame(ctx, canvas.width, canvas.height, tRef.current, options);
+      }
+
       rafRef.current = requestAnimationFrame(loop);
     };
-    rafRef.current = requestAnimationFrame(loop);
+
+    // Pause saat tidak visible di viewport
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        active = true;
+        rafRef.current = requestAnimationFrame(loop);
+      } else {
+        active = false;
+        cancelAnimationFrame(rafRef.current);
+      }
+    });
+
+    observer.observe(canvas);
 
     return () => {
+      active = false;
       cancelAnimationFrame(rafRef.current);
       ro.disconnect();
+      observer.disconnect();
     };
-  }, [bgColor, lineColor, lineWidth, step, levels, speed]);
+  }, [bgColor, lineColor, lineWidth, step, levels, speed, fps]);
 
   return (
     <div
@@ -180,6 +235,13 @@ export default function TopographicBackground({
           width: "100%",
           height: "100%",
           display: "block",
+          // Fade out di semua tepi supaya garis tidak kelihatan kepotong
+          maskImage:
+            "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)",
+          maskComposite: "intersect",
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)",
+          WebkitMaskComposite: "destination-in",
         }}
       />
       {children && (
